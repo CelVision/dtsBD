@@ -905,7 +905,7 @@ function itemuse($itmn,&$data=NULL) {
 			$itme = 0;
 			$log .= $itm . '没有电了，请先充电。<br>';
 		}else{
-			$log .= $itm . '水晶球失去了光泽<br>';
+			$log .= $itm . '水晶球失去了光泽。<br>';
 		}
 	} elseif (strpos ( $itmk, 'B' ) === 0) {
 		$flag = false;
@@ -1715,7 +1715,7 @@ function itemuse($itmn,&$data=NULL) {
 			$flag = false;
 			for($i = 1; $i <= 6; $i ++) {
 				//global ${'itmk' . $i}, ${'itme' . $i}, ${'itm' . $i};
-				if (${'itmk' . $i} == 'R' && ${'itm' . $i} !== '七彩水晶球') {
+				if (${'itmk' . $i} == 'R' && ${'itm'.$i} !== '七彩水晶球') {
 					//if((strpos(${'itm'.$i}, '雷达') !== false)&&(strpos(${'itm'.$i}, '电池') === false)) {
 					${'itme' . $i} += $itme;
 					$itms --;

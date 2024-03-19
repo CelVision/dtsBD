@@ -4,13 +4,15 @@
 		exit('Access Denied');
 	}
 
+	
+	include_once GAME_ROOT.'./gamedata/commandscfg.php'
+	
 	//识别输入的指令
 	function command_input($in_command)
 	{
 		global $log, $mode;
 		global $commands_blank, $commands_crimson, $commands_azure, $commands_kagari, $commands_breakdown;
-		include_once GAME_ROOT.'./gamedata/commandscfg.php';
-		
+		;
 		if($in_command == $commands_blank)
 		{
 		    $log .= '身份确认为软件工程师，指令输入成功';

@@ -140,7 +140,7 @@ $weather_active_r = Array(
 
 //'通常','作战姿态','强袭姿态','探物姿态','偷袭姿态','治疗姿态','✧狂飙姿态✧','哨戒姿态','✧灵子姿态✧'
 //姿态对攻击力的影响始终生效（1：只在作出先制攻击时生效）
-$pose_attack_active = 0;
+$pose_attack_active = 1;
 //姿态对攻击力的影响（单位：百分比加算）
 $pose_attack_modifier = Array(0,100,0,-25,25,-50,177,-77);
 //姿态对防御力的影响始终生效（1：只在受到先制攻击伤害时生效）
@@ -148,25 +148,25 @@ $pose_defend_active = 1;
 //姿态对防御力的影响（单位：百分比加算）
 $pose_defend_modifier = Array(0,25,0,-25,-25,-50,-333,77);
 //姿态对遇敌率的影响（遇敌率越低道具发现率越高）
-$pose_find_modifier = Array(0,15,20,-20,20,5,80,85);
+$pose_find_modifier = Array(0,15,20,-30,20,5,80,85);
 //姿态对躲避率的影响
 $pose_hide_modifier = Array(0,-25,-10,-10,10,-25,-80,-40);
 //姿态对先制率的影响（单位：百分比加算）（计算方式：进攻方姿态先制率-防守方姿态先制率）
-$pose_active_modifier = Array(0,0,50,0,25,-5,33,-100);
+$pose_active_modifier = Array(0,0,50,0,25,33,33,-100);
 //姿态对反击率的影响（单位：百分比加算）
 $pose_counter_modifier = Array(0,25,0,0,0,-100,33,-100);
 
 //'通常','','重视防御','重视反击','重视躲避'
 //应战策略对攻击力的影响始终生效（1：只在作出反击时生效）
-$tactic_attack_active = 0;
+$tactic_attack_active = 1;
 //应战策略对攻击力的加成（单位：百分比加算）
-$tactic_attack_modifier = Array(0,20,-25,25,-50);
+$tactic_attack_modifier = Array(0,20,-25,25,-33);
 //应战策略对防御力的影响始终生效（1：只在受反击伤害时生效）
 $tactic_defend_active = 1;
 //应战策略对防御力的加成（单位：百分比加算）
-$tactic_defend_modifier = Array(0,-20,50,-25,0);
+$tactic_defend_modifier = Array(0,-10,50,-15,0);
 //应战策略对躲避率的影响
-$tactic_hide_modifier = Array(0,0,0,-15,15);
+$tactic_hide_modifier = Array(0,0,0,-15,25);
 //应战策略对先制率的影响（单位：百分比加算）
 $tactic_active_modifier = Array(0,0,0,10,0);
 //应战策略对反击率的影响（单位：百分比加算）
@@ -374,14 +374,14 @@ $ex_max_inf_r = Array('p' => 60, 'u' => 40, 'i'=> 50,'e' => 50,'w'=> 40,'f' => 7
 $ex_skill_inf_r = Array('p' => 0.1, 'u' => 0.05, 'i'=> 0.08,'e' => 0.08,'w' => 0.08, 'f' => 0.1, 'k' => 0.1);
 
 //各种受伤状态对战斗攻击力的影响因子
-$inf_att_p = Array('a'=> 0.75,'u'=> 0.6);
+$inf_att_p = Array('a'=> 0.65,'u'=> 0.4);
 //各种受伤状态对战斗防御力的影响因子
-$inf_def_p = Array('b'=> 0.75,'i'=> 0.9,'w'=>0.75);
+$inf_def_p = Array('b'=> 0.65,'i'=> 0.8,'w'=>0.65);
 //各种受伤状态对战斗命中率的影响因子
-$inf_htr_p = Array('h' => 0.75,'i'=> 0.8,'e' => 0.9);
+$inf_htr_p = Array('h' => 0.65,'i'=> 0.6,'e' => 0.8);
 //各种受伤状态对战斗先攻率的影响因子
-$inf_active_p = Array('i'=> 0.9,'e' => 0.2,'w'=> 0.8);
+$inf_active_p = Array('i'=> 0.8,'e' => 0.2,'w'=> 0.6);
 //各种受伤状态对战斗反击率的影响因子
-$inf_counter_p = Array('i'=> 0.9,'e' => 0.2,'w'=> 0.8);
+$inf_counter_p = Array('i'=> 0.8,'e' => 0.2,'w'=> 0.6);
 
 ?>
