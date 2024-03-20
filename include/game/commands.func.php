@@ -5,7 +5,7 @@
 	}
 
 	
-	include_once GAME_ROOT.'./gamedata/commandscfg.php'
+	include_once GAME_ROOT.'./gamedata/commandscfg.php';
 	
 	//识别输入的指令
 	function command_input($in_command)

@@ -170,6 +170,7 @@ if($hp > 0){
 					$log .= "你的手突然掐住了你的头左右摇摆！<br><span class='yellow'>“你还想要干什么，啊？你还想要干什么！！”</span><br>看来你的手和脑子之间起了一点小摩擦。<br><br>";
 					$mode = 'command';
 				} else {	
+					//合成判定
 					if($itemcmd == 'itemmix' || $itemcmd == 'elementmix'){
 						$main = 'itemmix_tips';
 					}
@@ -622,7 +623,7 @@ if($hp > 0){
 			}
 		}elseif($mode == 'commands'){
 			include_once GAME_ROOT.'./include/game/commands.func.php';
-			command_input($in_commands);
+			command_input($in_command);
 			}
 		elseif($mode == 'depot') {
 			include_once GAME_ROOT.'./include/game/depot.func.php';
