@@ -8,7 +8,7 @@
 	include_once GAME_ROOT.'./gamedata/commandscfg.php';
 	
 	//识别输入的指令
-	function command_input($in_command)
+	function command_input($in_commands)
 	{
 		global $log, $mode;
 		global $commands_blank, $commands_crimson, $commands_azure, $commands_kagari, $commands_breakdown;

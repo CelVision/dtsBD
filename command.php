@@ -623,7 +623,7 @@ if($hp > 0){
 			}
 		}elseif($mode == 'commands'){
 			include_once GAME_ROOT.'./include/game/commands.func.php';
-			command_input($in_command);
+			command_input($in_commands);
 			}
 		elseif($mode == 'depot') {
 			include_once GAME_ROOT.'./include/game/depot.func.php';
