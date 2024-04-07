@@ -155,6 +155,7 @@ if($mode == 'enter') {
 		list($itm[4],$itmk[4],$itme[4],$itms[4],$itmsk[4]) = explode(",",$stitemlist[$index]);
 	} while(!$itmk[4] || ($itmk[3] == $itmk[4]));
 
+	/*
 	if ($name == 'Amarillo_NMC') {
 		$msp += 500;$mhp += 500;$hp += 500;$sp += 500;
 		$att += 200;$def += 200;
@@ -180,7 +181,7 @@ if($mode == 'enter') {
 	}elseif($name == '枪毙的某神' || $name == '精灵们的手指舞') {
 		$art = 'TDG地雷的证明';$artk = 'A'; $arte = 1; $arts = 1; $artsk = 'zZ';
 	}
-
+    */
 	# 格式化道具数据
 	if(!empty($itm))
 	{

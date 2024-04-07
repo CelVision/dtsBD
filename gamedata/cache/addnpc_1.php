@@ -2,6 +2,30 @@
 if(!defined('IN_GAME')) exit('Access Denied');
 $anpcinfo = array
 ( 
+	/*1 => array
+	(
+		'mode' => 1,
+		'num' => 1
+		'pass' => 'bra',
+		'club' => 0,
+		'bid' => 0,
+		'inf' => '',
+		'rage' => 80,
+		'pose'=> 1,
+		'tactic' => 2,
+		'killnum' => 0,
+		'rp' => 150,
+		'teamID' => '',
+		'teamPass' => '',
+		'pls' => 99,
+		'mhp' => 1000,
+		'msp' => 200,
+		'att' => 1000,
+		'def' => 1000,
+		'lvl' => 45,
+		'skill' => 0,
+		'money' => 0,
+	)*/
 	2 => array
 	(
 		'mode' => 2,
@@ -356,7 +380,7 @@ $anpcinfo = array
 		'teampsss' => '',
 		'gd' => 'f',
 		'pls' => 33,
-		'mhp' => 30000,
+		'mhp' => 3000,
 		'msp' => 400,
 		'att' => 80000,
 		'def' => 80000,

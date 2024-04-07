@@ -332,7 +332,7 @@ if(!defined('IN_GAME')) exit('Access Denied');
     19 => Array(
       'itm1' => '裱花布里欧修', 'itmk1' => 'HH', 'itme1' => 255,  'itms1' => 10, 'itmsk1' => 'z',
       'itm2' => '埃斯卡依云斐济水', 'itmk2' => 'HS', 'itme2' => 255,  'itms2' => 20, 'itmsk2' => 'z',
-      'itm6' => '强效西柚汁', 'itmk6' => 'HB', 'itme6' => 127,  'itms6' => 15, 'itmsk6' => 'z',
+      'itm5' => '强效西柚汁', 'itmk5' => 'HB', 'itme5' => 127,  'itms5' => 15, 'itmsk5' => 'z',
     ),
     # 24. 殴系爱好者
     24 => Array(
