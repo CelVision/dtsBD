@@ -170,7 +170,7 @@ function hack($itmn = 0) {
 			$log .= '你擅自入侵禁区控制系统，被控制系统远程消灭！<br>';
 			death('hack');
 	} elseif($itme <= 0) {
-		$log .= "<span class=\"red\">$itm</span>的电池耗尽了。";
+		$log .= "<span class=\"red\">$itm</span>的耗尽了。";
 	}
 	return;
 }

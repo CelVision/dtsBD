@@ -6,7 +6,7 @@
 	//空白指令生成//
 	$commands_blank = 'blank123';
 	//红暮指令生成//
-	$commands_crimson = "crimson".rand(10000,99999);
+	$commands_crimson = "crimson";
 	//蓝凝指令生成//
 	$commands_azure = "azure".rand(100000,999999);
 	//篝指令生成//

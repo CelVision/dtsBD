@@ -10,40 +10,41 @@
 	//识别输入的指令
 	function command_input($in_commands)
 	{
-		global $log, $mode;
+		global $log, $mode,$db,$tablepre,$now;
 		global $commands_blank, $commands_crimson, $commands_azure, $commands_kagari, $commands_breakdown;
-		;
+		include_once GAME_ROOT . './include/system.func.php';
+
 		if($in_commands == $commands_blank)
 		{
 		    $log .= "身份确认为软件工程师，指令输入成功<br>
 			        <i>听好了，如果你是第一天来这里上班，请谨记以下三条！<br>
 					一，上班不要迟到；二，下班了不要在公司逗留；三，不要谈论老总！<br>
 				                                ———————  一位前辈的注释</i>";
-		    $mode = 'command';
+
 		    return;
 		}
 		elseif($in_commands == $commands_crimson)
 		{
-		    $log .= '身份确认为软件工程师，指令输入成功';
-		    $mode = 'command';
+		    $log .= "似乎是那个人的私人电话...你头脑一热，居然按下了拨打键！<br><span class='red'>这便样衰了!</span><br>";
+			addnpc(1,0,1);
+			$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【红暮】','','终于被你发现了吗...我在无月之影等你')");
+			
 		    return;
 		}
 	    elseif($in_commands == $commands_azure)
 		{
 		    $log .= '身份确认为软件工程师，指令输入成功';
-		    $mode = 'command';
+			addnpc(1,0,1);
 		    return;
 		}
 		elseif($in_commands == $commands_kagari)
 		{
 		    $log .= '身份确认为软件工程师，指令输入成功';
-		    $mode = 'command';
 		    return;
 		}
 		elseif($in_commands == $commands_breakdown)
 		{
 		    $log .= '身份确认为软件工程师，指令输入成功';
-		    $mode = 'command';
 		    return;
 		}else{
 			$log .= "指令执行失败<br>
@@ -54,5 +55,6 @@
 			return;
 		}
 	}
+    
 
-	
+?>

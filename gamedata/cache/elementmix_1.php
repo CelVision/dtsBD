@@ -240,9 +240,9 @@
 		# 仪水镜：投入全种类元素各7份
 		Array('stuff'=>Array(0=>Array(0,7),1=>Array(1,7),2=>Array(2,7),3=>Array(3,7),4=>Array(4,7),5=>Array(5,7)),'result'=>Array('仪水镜','Y',1,1,''),),
 		# 元素晶体：投入全种类元素各333份
-		Array('stuff'=>Array(0=>Array(0,333),1=>Array(1,333),2=>Array(2,333),3=>Array(3,333),4=>Array(4,333),5=>Array(5,333)),'result'=>Array('元素晶体','ME',10,1,''),),
+		Array('stuff'=>Array(0=>Array(0,333),1=>Array(1,333),2=>Array(2,333),3=>Array(3,333),4=>Array(4,333),5=>Array(5,333)),'result'=>Array('元素晶体','ME',10,1,'v'),),
 		# 水晶球：投入全种类元素各777份
-		Array('stuff'=>Array(0=>Array(0,777),1=>Array(1,777),2=>Array(2,777),3=>Array(3,777),4=>Array(4,777),5=>Array(5,777)),'result'=>Array('七彩水晶球','ER',7,7,''),),
+		Array('stuff'=>Array(0=>Array(0,777),1=>Array(1,777),2=>Array(2,777),3=>Array(3,777),4=>Array(4,777),5=>Array(5,777)),'result'=>Array('七彩水晶球','ER',7,7,'v'),),
 	);
 	# 素材随机的固定结果配方
 	$rand_emix_fixlist = Array

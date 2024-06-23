@@ -27,7 +27,7 @@
 	$npcinfo = array
 	( 
 	//1 = 红暮
-	1 => array
+	/*1 => array
 		(
 		'mode' => 1,
 		'num' => 1,
@@ -115,7 +115,7 @@
 			'itms3' => 1,
 			),
 		),
-	),
+	),*/
 
 	14 => array(
 		'mode' => 1,

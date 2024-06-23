@@ -905,7 +905,7 @@ function itemuse($itmn,&$data=NULL) {
 			$itme = 0;
 			$log .= $itm . '没有电了，请先充电。<br>';
 		}else{
-			$log .= $itm . '水晶球失去了光泽。<br>';
+			$log .= $itm . '水晶球失去了光泽。用元素能量做一个新的吧<br>';
 		}
 	} elseif (strpos ( $itmk, 'B' ) === 0) {
 		$flag = false;
@@ -913,7 +913,7 @@ function itemuse($itmn,&$data=NULL) {
 		$bat_kind = substr($itmk,1,1);
 		for($i = 1; $i <= 6; $i ++) {
 			//global ${'itm' . $i}, ${'itmk' . $i}, ${'itme' . $i}, ${'itms' . $i};
-			if (${'itmk' . $i} == 'E'.$bat_kind && ${'itms' . $i}) {
+			if (${'itmk' . $i} == 'E'.$bat_kind && ${'itms' . $i} && ${'itm'.$i}!=='七彩水晶球') {
 				if(${'itme' . $i} >= $elec_cap){
 					$log .= "包裹{$i}里的<span class=\"yellow\">{${'itm'.$i}}</span>已经充满电了。<br>";
 				}else{
@@ -1711,11 +1711,11 @@ function itemuse($itmn,&$data=NULL) {
 			} else {
 				$log .= "你的武器已经安装了消音器。<br>";
 			}
-		} elseif ($itm == '探测器电池') {
+		} elseif ($itm == '探测器电池') {//这一段代码似乎并不生效
 			$flag = false;
 			for($i = 1; $i <= 6; $i ++) {
 				//global ${'itmk' . $i}, ${'itme' . $i}, ${'itm' . $i};
-				if (${'itmk' . $i} == 'R' && ${'itm'.$i} !== '七彩水晶球') {
+				if (${'itmk' . $i} == 'R' && (strpos( ${'itm'.$i},'七彩水晶球') === false)) {
 					//if((strpos(${'itm'.$i}, '雷达') !== false)&&(strpos(${'itm'.$i}, '电池') === false)) {
 					${'itme' . $i} += $itme;
 					$itms --;
@@ -1760,6 +1760,7 @@ function itemuse($itmn,&$data=NULL) {
 		}	elseif ($itm == '天然呆四面的奖赏') {
 			//global $wep, $wepk, $wepe, $weps, $wepsk;
             //码语行人，$club==21的时候不能使用天然呆四面的奖赏
+			//四面奖赏现在100%改动耐久...至于四面dn就放到四面豆腐身上吧
             if ($club == 21) {
 				$log .= "<span class=\"yellow\">突然，你的眼前出现了扭曲的字符！</span><br>";
 				$log .= "<span class=\"glitchb\">
@@ -1786,7 +1787,7 @@ function itemuse($itmn,&$data=NULL) {
 			$log .= "你召唤了<span class='lime'>天然呆四面</span>对你的武器进行改造！<br>";
 			addnews ( $now, 'newwep', $name, $itm, $wep ,$nick);
 			$dice=rand(0,99);
-			if ($dice<70)
+			if ($dice<0)
 			{
 				$log.="<span class='lime'>天然呆四面</span>把你的武器弄坏了！<br>";
 				$log.="你的武器变成了一块废铁！<br>";
@@ -1800,7 +1801,7 @@ function itemuse($itmn,&$data=NULL) {
 				include_once GAME_ROOT . './include/game/itemmain.func.php';
 				itemget($data);
 			}
-			else  if ($dice<90)
+			else  if ($dice<100)
 			{
 				$log.="<span class='lime'>天然呆四面</span>把玩了一会儿你的武器。<br>";
 				$log.="你的武器的耐久似乎稍微多了一点。<br>";
@@ -2704,6 +2705,9 @@ function itemuse($itmn,&$data=NULL) {
 		} elseif ($itm == '幻境控制密钥-空白') {
 			include_once GAME_ROOT.'./gamedata/commandscfg.php';
 			$log .= '<br>空白指令为'.$commands_blank.'。<br>填入更高级的代码残片以使用<br>';
+		} elseif ($itm == '红杀敕令') {
+			include_once GAME_ROOT.'./gamedata/commandscfg.php';
+			$log .= '<br>'.$commands_crimson.'。';
 		} elseif ($itm == '人品探测器') {
 			//global $rp;
 			$log .= '滴滴~<br>“你的RP值为'.$rp.'。”<br>“总之祝你好运。”<br>';
