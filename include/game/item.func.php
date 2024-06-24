@@ -2703,11 +2703,9 @@ function itemuse($itmn,&$data=NULL) {
 		} elseif ($itm == '提示纸条U') {
 			$log .= '你读着纸条上的内容：<br>“纸条啥的……”<br>“希望你不会在纸条上写自己的遗书。”<br>“那会很无聊的。”<br>';
 		} elseif ($itm == '幻境控制密钥-空白') {
-			include_once GAME_ROOT.'./gamedata/commandscfg.php';
-			$log .= '<br>空白指令为'.$commands_blank.'。<br>填入更高级的代码残片以使用<br>';
+			$log .= '<br>空白指令为'.$gamevars['rand_commands'][0][0].'。<br>填入更高级的代码残片以使用<br>';
 		} elseif ($itm == '红杀敕令') {
-			include_once GAME_ROOT.'./gamedata/commandscfg.php';
-			$log .= '<br>'.$commands_crimson.'。';
+			$log .= '<br>'.$gamevars['rand_commands'][1][0].'。';
 		} elseif ($itm == '人品探测器') {
 			//global $rp;
 			$log .= '滴滴~<br>“你的RP值为'.$rp.'。”<br>“总之祝你好运。”<br>';
