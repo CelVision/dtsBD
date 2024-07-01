@@ -1627,9 +1627,13 @@ function checkarb(&$dmg, $w, $aky, $dky, $active = 0) {
 	if (strpos ( $dky, $w ) !== false && !$dmginv) {
 		$dice = rand ( 0, 99 );
 		if ($dice < 90) {
-			$dmg /= 2;
-			$log .= $active ? "<span class=\"yellow\">{$w_name}的装备使你的攻击伤害减半了！</span><br>" : "<span class=\"yellow\">你的装备使{$w_name}的攻击伤害减半了！</span><br>";
-
+			if (strpos ( $dky, 'F' ) !== false){
+			    $dmg /= 2.5;
+			    $log .= $active ? "<span class=\"yellow\">{$w_name}的装备抵消了你大部分的灵力伤害！</span><br>" : "<span class=\"yellow\">你的装备抵消了{$w_name}的大部分灵力伤害！</span><br>";
+			}else{
+                $dmg /= 2;
+				$log .= $active ? "<span class=\"yellow\">{$w_name}的装备使你的攻击伤害减半了！</span><br>" : "<span class=\"yellow\">你的装备使{$w_name}的攻击伤害减半了！</span><br>";
+			}
 		}else{
 			$log .= $active ? "{$w_name}的装备没能发挥减半伤害的效果！<br>" : "你的装备没能发挥减半伤害的效果！<br>";
 		}

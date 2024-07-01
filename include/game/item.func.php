@@ -2207,7 +2207,7 @@ function itemuse($itmn,&$data=NULL) {
 			addnpc ( 6, 0,1);
 			addnpc ( 6, 0,1);
 			//假蓝凝
-			addnpc ( 9, 0,1);
+			//addnpc ( 9, 0,1);
 			addnews ($now , 'key2', $name,$nick);						
 			$itms --;
 			if($itms <= 0){
@@ -2702,7 +2702,7 @@ function itemuse($itmn,&$data=NULL) {
 			$log .= '你读着纸条上的内容：<br>“Tactic.”<br>“#$%@.....?”<br>这段提示似乎损坏了<br>';
 		} elseif ($itm == '提示纸条U') {
 			$log .= '你读着纸条上的内容：<br>“纸条啥的……”<br>“希望你不会在纸条上写自己的遗书。”<br>“那会很无聊的。”<br>';
-		} elseif ($itm == '幻境控制密钥-空白') {
+		} elseif ($itm == '空白纸条') {
 			$log .= '<br>空白指令为'.$gamevars['rand_commands'][0][0].'。<br>填入更高级的代码残片以使用<br>';
 		} elseif ($itm == '红杀敕令') {
 			$log .= '<br>'.$gamevars['rand_commands'][1][0].'。';

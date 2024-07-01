@@ -16,6 +16,15 @@ $mixinfo = array
 
 	
 	array('class' => 'wc', 'stuff' => array('汽油','空瓶'),'result' => array('☆火焰瓶☆','WC',80,50,'ud'),),	
+	array('class' => 'wc', 'stuff' => array('喷雾器罐','毒药'),'result' => array('☆毒气弹☆','WC',80,50,'pd'),),	
+	array('class' => 'wc', 'stuff' => array('灯油','钉'),'result' => array('☆仙女棒☆','WC',20,60,'rd'),),	
+	array('class' => 'wc', 'stuff' => array('红色方块','走失的猫咪','铁甲蛹壳'),'result' => array('●雄猫红甲虫●','WC',88,600,'rwuM'),),
+	array('class' => 'wc', 'stuff' => array('原型武器C','电磁护盾','花天牛',),'result' => array('●驱电马车●','WC',180,300,'ec'),),
+	array('class' => 'wc', 'stuff' => array('美味水','KEY系儿童套餐','独角虫角',),'result' => array('●好味之键●','HB',655,120,),),
+	array('class' => 'wc', 'stuff' => array('白色的羽毛','白色的羽毛','空气护盾','『特尔斯的龙旋风型』'),'result' => array('𖥅圣洁沙鹰𖥅','WC',180,240,'rn'),),
+	array('class' => 'wc', 'stuff' => array('●雄猫红甲虫●','●驱电马车●','●好味之键●'),'result' => array('𖥅帝皇凯撒𖥅','WC',380,240,'rcHNn'),),
+	array('class' => 'wc', 'stuff' => array('𖥅帝皇凯撒𖥅','𖥅圣洁沙鹰𖥅'),'result' => array('⬠白泽甲虫⬠','WC',500,'∞','rcnAaZ'),),
+	array('class' => 'wc', 'stuff' => array('○白泽甲虫○','☆爆裂模式☆','黑色方块','☆★☆大打击☆★☆'),'result' => array('⬢达克赛德总统⬢','WC',2000,'∞','rcnNAj'),),
 	array('class' => 'wc', 'stuff' => array('幻之使魔','永恒之桶'),'result' => array('灵魂的结晶','WC',180,240,'rn'),),
 	array('class' => 'wc', 'stuff' => array('幻符【杀人玩偶】','★时停怀表★','永恒飞刃'),'result' => array('幻葬『夜雾幻影杀人鬼』','WC',300,'∞','Zkrny'),),
 	
@@ -103,9 +112,9 @@ $mixinfo = array
 	array('class' => 'wd', 'stuff' => array('『祝福宝石』','★瓶装幽灵★','某种电子零件'),'result' => array('★幽灵冲击★','WD',320,200,'Nn'),),
 	array('class' => 'wd', 'stuff' => array('★幽灵冲击★','《魔女的魔导书》','笔记本电脑'),'result' => array('奥术飞弹','WD',400,300,'Nnr'),),
 	array('class' => 'wd', 'stuff' => array('寒冰炸弹','奥术飞弹','烈焰风暴'),'result' => array('★BIUBIUBIU★','WD',600,400,'ZnNdry'),),
-	array('class' => 'wd', 'stuff' => array('脉冲蓄电池','增幅设备','高压线圈'),'result' => array('【高斯脉冲】','WD',360,60,'eeedN'),),
-    array('class' => 'wd', 'stuff' => array('辐射蓄电池','巨大透镜','某种机械设备'),'result' => array('【伦琴辐射】','WD',470,60,'pppd'),),
-	array('class' => 'wd', 'stuff' => array('【高斯脉冲】','【伦琴辐射】','★C4★'),'result' => array('【辐能风暴】','WD',1440,240,'ppeeddNyZ'),),
+	array('class' => 'wd', 'stuff' => array('脉冲蓄电池','增幅设备','高压线圈'),'result' => array('【高斯脉冲】','WD',160,60,'eeedN'),),
+    array('class' => 'wd', 'stuff' => array('辐射蓄电池','巨大透镜','某种机械设备'),'result' => array('【伦琴辐射】','WD',270,60,'pppd'),),
+	array('class' => 'wd', 'stuff' => array('【高斯脉冲】','【伦琴辐射】','★C4★'),'result' => array('【辐能风暴】','WD',440,240,'ppeeddNyZ'),),
 
 	array('class' => 'wmu', 'stuff' => array('《计算机硬件概论》','《MIPS汇编导论》','《初探游戏引擎》'),'result' => array('《深入游戏引擎》','WCP',361,60,'ed'),),
 	array('class' => 'wmu', 'stuff' => array('★Monster Energy★','★Canada Dry★','★Eska Sparking Water★'),'result' => array('★Ultimate Mix★','WCF',223,52,'fkZ'),),
@@ -382,7 +391,7 @@ $mixinfo = array
 	array('class' => 'hidden', 'stuff' => array('黑色碎片','十字发卡'),'result' => array('黑色发卡','X',1,1,),),
 	array('class' => 'hidden', 'stuff' => array('『T.E.R.R.A』','『A.Q.U.A』','『V.E.N.T.U.S』'),'result' => array('『G.A.M.E.O.V.E.R』','Y',1,1,'v'),),
 	array('class' => 'hidden', 'stuff' => array('提示纸条K','提示纸条E'),'result' => array('提示纸条Y','WC',1,1,'zd'),),
-	array('class' => 'hidden', 'stuff' => array('提示纸条D','提示纸条T','提示纸条S'),'result' => array('幻境控制密钥-空白','Y',1,1,'zd'),),
+	//array('class' => 'hidden', 'stuff' => array('提示纸条D','提示纸条T','提示纸条S'),'result' => array('幻境控制密钥-空白','Y',1,1,'zd'),),
 	array('class' => 'hidden', 'stuff' => array('［ＩＮＮＯＣＥＮＣＥ］','［ＤＩＬＩＧＥＮＣＥ］','［ＣＯＮＳＣＩＥＮＣＥ］'),'result' => array('【E.S.C.A.P.E】','Y',1,1,),),
 	array('class' => 'hidden', 'stuff' => array('［ΨТОВХ］','［ЫΑИЙВХΨ］','［ΩЙΑТΨ］'),'result' => array('【E.S.C.A.P.E】','Y',1,1,),),
 	array('class' => 'hidden', 'stuff' => array('［ｒｍ］','［－ｒ］','［－ｆ］'),'result' => array('【E.S.C.A.P.E】','Y',1,1,),),

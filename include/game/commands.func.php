@@ -11,15 +11,16 @@
 	function generate_random_command()
 	{
 		include GAME_ROOT.'./gamedata/commandscfg.php';
-        global $gamevars, $commands;
+        global $gamevars, $commands,$log;
 		$gamevars['rand_commands'] = Array();
 		foreach($commands as $ckey => $clist)
 		{
 			$c_temp = $clist[0];
 			$c_code = explode('-',substr($clist[1],1));
 			$c_temp .= rand($c_code[0],$c_code[1]);
-			$gamevars['rand_commands'][$ckey] = Array($c_temp,$c_list[2]);
+			$gamevars['rand_commands'][$ckey] = Array($c_temp,$clist[2]);
 		}
+		unset($clist);
 		save_gameinfo();
 		return $gamevars['rand_commands'];
 	}
@@ -33,7 +34,11 @@
 		global $gamevars;
 		include_once GAME_ROOT . './include/system.func.php';
 
-		if(empty($gamevars['rand_commands'])) $gamevars['rand_commands'] = generate_random_command();
+		if(!isset($gamevars['rand_commands']))
+		{
+		    $gamevars['rand_commands'] = generate_random_command();
+		}
+		
 
 		if($in_commands == $gamevars['rand_commands'][0][0])
 		{
@@ -46,13 +51,14 @@
 		}
 		elseif($in_commands == $gamevars['rand_commands'][1][0])
 		{
-			if($gamevars['rand_commands'][1][1]=='0')
+			if($gamevars['rand_commands'][1][1] == '1')
 			{
-		    $log .= "似乎是那个人的私人电话...你头脑一热，居然按下了拨打键！<br><span class='red'>这下便样衰了!</span><br>";
-			addnpc(1,0,1);
-			$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【红暮】','','终于被你发现了吗...我在无月之影等你')");
-			$gamevars['rand_commands'][1][1] = '1';
-		    return;
+				$gamevars['rand_commands'][1][1] = '0';
+				$log .= "似乎是那个人的私人电话...你头脑一热，居然按下了拨打键！<br><span class='red'>这下便样衰了!</span><br>";
+			    addnpc(1,0,1);
+			    $db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【红暮】','','终于被你发现了吗...我在无月之影等你')");
+				save_gameinfo();
+		        return;
 			}else{
 				$log.="<span class='red'>您拨打的号码暂时无法接通</span><br>";
 				return;
@@ -61,9 +67,18 @@
 		}
 	    elseif($in_commands == $gamevars['rand_commands'][2][0])
 		{
-		    $log .= '身份确认为软件工程师，指令输入成功';
-			addnpc(1,0,1);
-		    return;
+		    if($gamevars['rand_commands'][2][1] == '1')
+			{
+				$gamevars['rand_commands'][2][1] = '0';
+				$log .= "你咬了咬牙，按下了控制台的按钮...<br><span class='cyan'>一股寒风从你耳边吹过...</span><br>";
+			    addnpc(9,0,1);
+			    $db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【蓝凝?】','','TARGET IN SIGHT，Deploying IN Admin Backend')");
+				save_gameinfo();
+		        return;
+			}else{
+				$log.="<span class='red'>您拨打的号码暂时无法接通</span><br>";
+				return;
+			}
 		}
 		elseif($in_commands == $gamevars['rand_commands'][3][0])
 		{
