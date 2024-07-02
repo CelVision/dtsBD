@@ -2704,8 +2704,12 @@ function itemuse($itmn,&$data=NULL) {
 			$log .= '你读着纸条上的内容：<br>“纸条啥的……”<br>“希望你不会在纸条上写自己的遗书。”<br>“那会很无聊的。”<br>';
 		} elseif ($itm == '空白纸条') {
 			$log .= '<br>空白指令为'.$gamevars['rand_commands'][0][0].'。<br>填入更高级的代码残片以使用<br>';
-		} elseif ($itm == '红杀敕令') {
-			$log .= '<br>'.$gamevars['rand_commands'][1][0].'。';
+		} elseif ($itm == '赤红钥环') {
+			$log .= '<br>你捏住了赤红色的钥匙环，突然感受到手上传来一阵吃痛！<br>'.$gamevars['rand_commands'][1][0].'手掌上被钥匙灼伤出一串字符！<br>';
+			$inf = str_replace('u','',$inf);
+			$inf = ($inf . 'u');
+		} elseif ($itm == '冰蓝钥柄') {
+			$log .= '<br>'.$gamevars['rand_commands'][2][0].'。';
 		} elseif ($itm == '人品探测器') {
 			//global $rp;
 			$log .= '滴滴~<br>“你的RP值为'.$rp.'。”<br>“总之祝你好运。”<br>';

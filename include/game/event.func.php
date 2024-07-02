@@ -160,7 +160,7 @@ function event(){
 			$log = ($log . "隶属于时空部门G的特殊部队『天使』正在实弹演习！<BR>你被卷入了弹幕中！<BR>");
 			if($dice1 <= 1 ){
 				$log = ($log . "在弹幕的狂风中，你有惊无险地回避着弹幕，总算擦弹成功了。<BR>");
-				if($dice2 == 40 && $rp > 200 && $killnum > 3){
+				if($dice2 == 40 && $rp > 600 && $killnum > 3){
 					$log = ($log . "咦，头顶上……好像有一名少女被弹幕击中了……？<BR>“对不起、对不起！”伴随着焦急的道歉声，少女以及她乘坐的机体向你笔直坠落下来。<br>你还来不及反应，重达数十吨的机体便直接落在了你的头上。<br>");
 					include_once GAME_ROOT . './include/state.func.php';
 					death('gradius');
@@ -367,7 +367,7 @@ function event(){
 			}else{
 				if ($rp < 40){
 					$log = ($log . "你感觉有什么东西在你身后吹气！<BR>太可怕了，还是赶快离开为妙！<BR>");
-					event_rp_up(rand(500,1000));
+					event_rp_up(rand(100,500));
 					//$rp = $rp + rand(500,1000);
 				}elseif ($rp < 500){
 					$log = ($log . "你感觉有什么东西贯穿了你的身体！<BR>太可怕了，还是赶快离开为妙！<BR>");
