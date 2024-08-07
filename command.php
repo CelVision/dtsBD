@@ -45,6 +45,8 @@ extract($pdata,EXTR_REFS);
 $log = $cmd = $main = '';
 $gamedata = array();
 init_playerdata();
+include_once GAME_ROOT.'./include/game/commands.func.php';
+generate_random_command();
 
 //读取玩家互动信息
 $result = $db->query("SELECT lid,time,log FROM {$tablepre}log WHERE toid = '$pid' AND prcsd = 0 ORDER BY time,lid");
