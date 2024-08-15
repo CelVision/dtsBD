@@ -2705,7 +2705,7 @@ function itemuse($itmn,&$data=NULL) {
 		} elseif ($itm == '空白纸条') {
 			$log .= '<br>空白指令为'.$gamevars['rand_commands'][0][0].'。<br>填入更高级的代码残片以使用<br>';
 		} elseif ($itm == '赤红钥环') {
-			$log .= '<br>你捏住了赤红色的钥匙环，突然感受到手上传来一阵吃痛！<br>'.$gamevars['rand_commands'][1][0].'手掌上被钥匙灼伤出一串字符！<br>';
+			$log .= '<br>你捏住了赤红色的钥匙环，突然感受到手上传来一阵吃痛！<br>'.$gamevars['rand_commands'][1][0].'<br>手掌上被钥匙灼伤出一串字符！<br>';
 			$inf = str_replace('u','',$inf);
 			$inf = ($inf . 'u');
 		} elseif ($itm == '冰蓝钥柄') {

@@ -10,19 +10,21 @@
 	//生成指令
 	function generate_random_command()
 	{
-		include GAME_ROOT.'./gamedata/commandscfg.php';
-        global $gamevars, $commands,$log;
-		$gamevars['rand_commands'] = Array();
-		foreach($commands as $ckey => $clist)
+		if(!isset($gamevars['rand_commands']))
 		{
-			$c_temp = $clist[0];
-			$c_code = explode('-',substr($clist[1],1));
-			$c_temp .= rand($c_code[0],$c_code[1]);
-			$gamevars['rand_commands'][$ckey] = Array($c_temp,$clist[2]);
-		}
+		   include GAME_ROOT.'./gamedata/commandscfg.php';
+           global $gamevars, $commands,$log;
+		   $gamevars['rand_commands'] = Array();
+		   foreach($commands as $ckey => $clist)
+		    {
+			   $c_temp = $clist[0];
+			   $c_code = explode('-',substr($clist[1],1));
+			   $c_temp .= rand($c_code[0],$c_code[1]);
+			   $gamevars['rand_commands'][$ckey] = Array($c_temp,$clist[2]);
+		    }
 		unset($clist);
 		save_gameinfo();
-		return $gamevars['rand_commands'];
+	    }
 	}
 
 
