@@ -42,8 +42,6 @@ function rs_game($mode = 0) {
 		$combonum = $deathlimit;
 		//重设游戏剧情开关
 		$gamevars = Array();
-        //生成本局指令
-		
 		save_gameinfo();
 		
 	}
