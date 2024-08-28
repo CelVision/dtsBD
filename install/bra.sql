@@ -27,6 +27,7 @@ CREATE TABLE bra_game (
   `hdamage` int(10) UNSIGNED NOT NULL DEFAULT '0',
   `hplayer` char(15) NOT NULL DEFAULT '',
   `combonum` smallint(5) UNSIGNED NOT NULL DEFAULT '0',
+  `mapinfo` text NOT NULL,
   `gamevars` text NOT NULL,
   `noisevars` varchar(1000) NOT NULL DEFAULT '',
 

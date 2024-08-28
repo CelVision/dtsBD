@@ -5,7 +5,7 @@ if(!defined('IN_GAME')) {
 }
 
 function rs_game($mode = 0) {
-	global $db,$gtablepre,$tablepre,$groomid,$gamecfg,$now,$gamestate,$plsinfo,$typeinfo,$areanum,$areaadd,$afktime,$combonum,$deathlimit;
+	global $db,$gtablepre,$tablepre,$groomid,$gamecfg,$now,$gamestate,$plsinfo,$typeinfo,$areanum,$areaadd,$afktime,$combonum,$deathlimit,$maplist;
 //	$stime=getmicrotime();
 	$dir = GAME_ROOT.'./gamedata/';
 	$sqldir = GAME_ROOT.'./gamedata/sql/';
@@ -26,7 +26,7 @@ function rs_game($mode = 0) {
 		}*/
 		
 		//清空战斗信息
-		global $hdamage,$hplayer,$noisetime,$noisepls,$noiseid,$noiseid2,$noisemode,$starttime,$gamevars;
+		global $hdamage,$hplayer,$noisetime,$noisepls,$noiseid,$noiseid2,$noisemode,$starttime,$gamevars,$mapinfo;
 		$hdamage = 0;
 		$hplayer = '';
 		$noisetime = 0;
@@ -42,10 +42,26 @@ function rs_game($mode = 0) {
 		$combonum = $deathlimit;
 		//重设游戏剧情开关
 		$gamevars = Array();
+		//清空地图
+		$mapinfo = Array();
 		save_gameinfo();
 		
 	}
 	if ($mode & 2) {
+
+		//生成地图
+		global $maplist;
+		include_once GAME_ROOT.'./include/mapgenerate.func.php';
+        create_map_list();
+
+
+		//控制台初始化
+		global $gamevars;
+		include_once GAME_ROOT. './gamedata/commandscfg.php';
+		include_once GAME_ROOT.'./include/game/commands.func.php';
+		generate_random_command();
+		save_gameinfo();
+
 		//echo " - 禁区初始化 - ";
 		global $rswtharr,$arealist,$areanum,$weather,$hack,$areatime,$starttime,$startmin,$areaadd,$areahour;
 		list($sec,$min,$hour,$day,$month,$year,$wday,$yday,$isdst) = localtime($starttime);
@@ -58,6 +74,8 @@ function rs_game($mode = 0) {
 		$weather = $rswtharr[array_rand($rswtharr)];
 		$hack = 0;
 		movehtm($areatime);
+
+		
 	}
 	if ($mode & 4) {
 		//echo " - 角色数据库初始化 - ";
@@ -153,6 +171,9 @@ function rs_game($mode = 0) {
 			$db->query($npcqry);
 			unset($npcqry);
 		}*/
+
+		//控制台初始化放在这里了
+		
 	}
 	if ($mode & 16) {
 		//echo " - 地图道具/陷阱初始化 - ";
@@ -249,6 +270,7 @@ function rs_game($mode = 0) {
 		}
 	}
 	if ($mode & 32) {
+
 		//echo " - 商店初始化 - ";
 		$sql = file_get_contents("{$sqldir}shopitem.sql");
 		$sql = str_replace("\r", "\n", str_replace(' bra_', ' '.$tablepre, $sql));

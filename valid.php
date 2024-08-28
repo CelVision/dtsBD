@@ -135,7 +135,7 @@ if($mode == 'enter') {
     if($dice4 <= 6){
 		$itm[6] = '银白盒子'; $itmk[6] = 'ps'; $itme[6] = 1; $itms[6] = 1; $itmsk[6] = '';
     }else{
-        $itm[6] = 'GRAND OPENING 「开门大吉」'; $itmk[5] = 'p000'; $itme[5] = 1; $itms[5] = 1;
+        $itm[6] = 'GRAND OPENING 「开门大吉」'; $itmk[6] = 'p000'; $itme[6] = 1; $itms[6] = 1;
 	}
 	
 

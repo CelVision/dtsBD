@@ -1,8 +1,6 @@
 <?php
 
-	if(!defined('IN_GAME')) {
-		exit('Access Denied');
-	}
+
 
 	
 	include_once GAME_ROOT.'./gamedata/commandscfg.php';
@@ -22,8 +20,9 @@
 		}
 		unset($clist);
 		save_gameinfo();
-		return $gamevars['rand_commands'];
+		//return $gamevars['rand_commands'];
 	}
+
 
 
 	
@@ -33,12 +32,11 @@
 		global $log, $mode,$db,$tablepre,$now;
 		global $gamevars;
 		include_once GAME_ROOT . './include/system.func.php';
-
 		if(!isset($gamevars['rand_commands']))
 		{
-		    $gamevars['rand_commands'] = generate_random_command();
+			generate_random_command();
 		}
-		
+
 
 		if($in_commands == $gamevars['rand_commands'][0][0])
 		{

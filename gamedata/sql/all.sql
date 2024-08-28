@@ -82,6 +82,7 @@ CREATE TABLE `acbra2_game` (
   `hdamage` int(10) unsigned NOT NULL DEFAULT '0',
   `hplayer` char(15) NOT NULL DEFAULT '',
   `combonum` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `mapinfo` text NOT NULL,
   `gamevars` text NOT NULL,
   `noisevars` varchar(1000) NOT NULL DEFAULT '',
   `rdown` tinyint(1) unsigned NOT NULL DEFAULT '0',

@@ -263,7 +263,7 @@ function load_gameinfo() {
 function save_gameinfo() 
 {
 	global $now,$db,$gtablepre,$tablepre;
-	global $groomid,$gamenum,$gamestate,$lastupdate,$starttime,$winmode,$winner,$arealist,$areanum,$areatime,$areawarn,$validnum,$alivenum,$deathnum,$afktime,$optime,$weather,$hack,$combonum,$gamevars;
+	global $groomid,$gamenum,$gamestate,$lastupdate,$starttime,$winmode,$winner,$arealist,$areanum,$areatime,$areawarn,$validnum,$alivenum,$deathnum,$afktime,$optime,$weather,$hack,$combonum,$gamevars,$mapinfo;
 	if(!isset($gamenum)||!isset($gamestate)){return;}
 	
 	if($gamestate > 10)
@@ -301,6 +301,7 @@ function save_gameinfo()
 	$gameinfo['weather'] = $weather;
 	//$gamevars0 = ($gamevars['sanmaact'] ? 1 : 0) + ($gamevars['sanmadead'] ? 2 : 0);
 	$gameinfo['gamevars'] = json_encode($gamevars,JSON_UNESCAPED_UNICODE);
+	$gameinfo['mapinfo'] = $mapinfo;
 	$gameinfo['hack'] = $hack;
 	$gameinfo['combonum'] = $combonum;
 
