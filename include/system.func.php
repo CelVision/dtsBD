@@ -49,17 +49,48 @@ function rs_game($mode = 0) {
 	}
 	if ($mode & 2) {
 
-		//生成地图
-		global $maplist;
-		include_once GAME_ROOT.'./include/mapgenerate.func.php';
-        create_map_list();
+		//生成地图(吐槽一下循环调用)
+		global $maplist, $mapinfo;
+		//生成出一个0和1组成的array，每个位置对应一个地图
+		$mapid = Array();
+		//无月，雏菊，英灵不动他
+		$mapid[0] = 0;
+		$mapid[33] = 0;
+		$mapid[34] = 0;
+		for($id=1 ; $id<33 ; $id++)
+			{
+				$dice = rand(0,1);
+				$mapid[$id] = $dice;
+			}
+		//tada!地图序号表
+		global $db,$gtablepre,$mapinfo,$groomid;
+		include_once GAME_ROOT."./gamedata/cache/mapresource_1.php";
+		$mapinfo = Array();
+		for($id=0 ; $id<35 ; $id++)
+			{
+				if (isset($maps[$id][$mapid[$id]]))
+				{
+					$mapinfo[$id] = $maps[$id][$mapid[$id]];
+				}else{//双重保险措施啊啊啊啊啊啊啊啊32个地图我还没有构思好
+					$mapinfo[$id] = $maps[$id][$mapid[0]];
+				}
+			}
+		save_gameinfo();
+		
 
 
-		//控制台初始化
-		global $gamevars;
+		//控制台初始化(这里也是一开始循环调用了！)
 		include_once GAME_ROOT. './gamedata/commandscfg.php';
-		include_once GAME_ROOT.'./include/game/commands.func.php';
-		generate_random_command();
+		global $gamevars, $commands,$log;
+		$gamevars['rand_commands'] = Array();
+		foreach($commands as $ckey => $clist)
+		{
+			$c_temp = $clist[0];
+			$c_code = explode('-',substr($clist[1],1));
+			$c_temp .= rand($c_code[0],$c_code[1]);
+			$gamevars['rand_commands'][$ckey] = Array($c_temp,$clist[2]);
+			unset($clist);
+		}
 		save_gameinfo();
 
 		//echo " - 禁区初始化 - ";
