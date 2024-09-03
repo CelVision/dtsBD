@@ -96,11 +96,11 @@ $maps = Array
         'isindoor' =>0 ,  
          ),
       0 => Array(
-          'plsinfo'=>'',
+          'plsinfo'=>'红魔馆',
           'xyinfo'=>'H-6',
-          'areainfo'=>'',
+          'areainfo'=>'坐落于雾之湖湖畔的洋馆。建筑内阴暗逼仄，大雾弥漫，是恶魔居住的地方。<br><span class=\"yellow\">自动防御系统还在忠实地工作着，看来需要随时保持警惕。</span><br>',
           'events'=>Array(),
-          'isindoor' =>1 ,  
+          'isindoor' =>0 ,  
            ),
          
     ),
@@ -332,7 +332,7 @@ $maps = Array
     ),
     32=>array(
       0 => Array(
-        'plsinfo'/1=>'SCP研究设施',
+        'plsinfo'=>'SCP研究设施',
         'xyinfo'=>'J-2',
         'areainfo'=>'最近突然在地平线远端出现的第二座大型建筑，<BR>感觉有种不祥的气息……<br>',
         'events'=>Array(),

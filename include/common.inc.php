@@ -51,6 +51,7 @@ require GAME_ROOT.'./include/roommng.func.php';
 require GAME_ROOT.'./include/game/revclubskills.func.php';
 require GAME_ROOT.'./include/game/dice.func.php';
 require GAME_ROOT.'./include/game/titles.func.php';
+require_once GAME_ROOT.'./gamedata/maps_1.php';
 require config('resources',$gamecfg);
 require config('gamecfg',$gamecfg);
 require config('combatcfg',$gamecfg);
@@ -114,6 +115,7 @@ if(CURSCRIPT !== 'chat')
 			//save_gameinfo();
 			//include_once GAME_ROOT.'./include/system.func.php';
 			rs_game(1+2+4+8+16+32);
+			
 			//save_gameinfo();
 			$ginfochange = true;
 		}

@@ -5,17 +5,18 @@ if(!defined('IN_GAME')) {
 }
 
 function rs_game($mode = 0) {
-	global $db,$gtablepre,$tablepre,$groomid,$gamecfg,$now,$gamestate,$plsinfo,$typeinfo,$areanum,$areaadd,$afktime,$combonum,$deathlimit,$maplist;
+	global $db,$gtablepre,$tablepre,$groomid,$gamecfg,$now,$gamestate,$plsinfo,$typeinfo,$areanum,$areaadd,$afktime,$combonum,$deathlimit,$mapinfo;
 //	$stime=getmicrotime();
 	$dir = GAME_ROOT.'./gamedata/';
-	$sqldir = GAME_ROOT.'./gamedata/sql/';
+	$sqldir = GAME_ROOT.'./gamedata/sql/'; 
 	if ($mode & 1) {
 		//重设玩家互动信息、聊天记录、地图道具、地图陷阱、进行状况
 		$sql = file_get_contents("{$sqldir}reset.sql");
 		$sql = str_replace("\r", "\n", str_replace(' bra_', ' '.$tablepre, $sql));
 		
 		$db->queries($sql);
-		
+		//debug日志
+		file_put_contents( GAME_ROOT.'./debug.txt',var_export($now,1),);
 		//重设游戏进行状况的时间
 		/*if($fp = fopen("{$dir}newsinfo.php", 'wb')) {
 			global $checkstr;
@@ -50,7 +51,8 @@ function rs_game($mode = 0) {
 	if ($mode & 2) {
 
 		//生成地图(吐槽一下循环调用)
-		global $maplist, $mapinfo;
+		include config('mapresource',$gamecfg);
+		global $mapid, $mapinfo,$mapid;
 		//生成出一个0和1组成的array，每个位置对应一个地图
 		$mapid = Array();
 		//无月，雏菊，英灵不动他
@@ -63,25 +65,55 @@ function rs_game($mode = 0) {
 				$mapid[$id] = $dice;
 			}
 		//tada!地图序号表
-		global $db,$gtablepre,$mapinfo,$groomid;
-		include_once GAME_ROOT."./gamedata/cache/mapresource_1.php";
 		$mapinfo = Array();
 		for($id=0 ; $id<35 ; $id++)
 			{
 				if (isset($maps[$id][$mapid[$id]]))
 				{
 					$mapinfo[$id] = $maps[$id][$mapid[$id]];
-				}else{//双重保险措施啊啊啊啊啊啊啊啊32个地图我还没有构思好
+				}else{//32个地图我还没有构思好,有替代就用，没有就用0号
 					$mapinfo[$id] = $maps[$id][$mapid[0]];
 				}
 			}
 		save_gameinfo();
-		
+
+
+
+		//-------------------------------------------
+		//以后重构嘻嘻
+		//-------------------------------------------
+        
+		//plsinfo起手
+		file_put_contents( GAME_ROOT.'./gamedata/maps_1.php','<?php'.PHP_EOL.'$plsinfo = Array('.PHP_EOL,);
+        for($i=0 ; $i<35 ;$i++)
+       {
+         //debug
+		//file_put_contents( GAME_ROOT.'./debug.txt',var_export($mapinfo[$i]['plsinfo'],1),FILE_APPEND);
+		file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',var_export($i,1)."=>",FILE_APPEND);
+		file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',var_export($mapinfo[$i]['plsinfo'],1),FILE_APPEND);
+		file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',','.PHP_EOL,FILE_APPEND);
+       }
+       //areainfo部分
+	   file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',');'.PHP_EOL.'$areainfo = Array('.PHP_EOL,FILE_APPEND);
+	   for($i=0 ; $i<35 ;$i++)
+	   {
+	
+		file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',var_export($i,1)."=>",FILE_APPEND);
+		//反斜杠需要处理一下
+		$ainfo = var_export($mapinfo[$i]['areainfo'],1);
+		$binfo = str_replace('\\', '', $ainfo);
+		file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',$binfo,FILE_APPEND);
+		file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',','.PHP_EOL,FILE_APPEND);
+       }
+
+	   file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',');'.PHP_EOL.'?>',FILE_APPEND);
+
+
 
 
 		//控制台初始化(这里也是一开始循环调用了！)
-		include_once GAME_ROOT. './gamedata/commandscfg.php';
-		global $gamevars, $commands,$log;
+		include GAME_ROOT. './gamedata/commandscfg.php';
+		global $gamevars,$log;
 		$gamevars['rand_commands'] = Array();
 		foreach($commands as $ckey => $clist)
 		{

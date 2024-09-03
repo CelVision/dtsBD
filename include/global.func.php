@@ -247,7 +247,7 @@ function logsave($pid,$time,$log = '',$type = 's'){
 
 function load_gameinfo() {
 	global $now,$db,$gtablepre,$tablepre;
-	global $groomid,$gamenum,$gamestate,$lastupdate,$starttime,$winmode,$winner,$arealist,$areanum,$areatime,$areawarn,$validnum,$alivenum,$deathnum,$afktime,$optime,$weather,$hack,$combonum,$gamevars;
+	global $groomid,$gamenum,$gamestate,$lastupdate,$starttime,$winmode,$winner,$arealist,$areanum,$areatime,$areawarn,$validnum,$alivenum,$deathnum,$afktime,$optime,$weather,$hack,$combonum,$gamevars,$mapinfo;
 	global $hdamage,$hplayer,$noisetime,$noisepls,$noiseid,$noiseid2,$noisemode;
 	$result = $db->query("SELECT * FROM {$gtablepre}game WHERE groomid = {$groomid}");
 	$gameinfo = $db->fetch_array($result);
@@ -301,10 +301,11 @@ function save_gameinfo()
 	$gameinfo['weather'] = $weather;
 	//$gamevars0 = ($gamevars['sanmaact'] ? 1 : 0) + ($gamevars['sanmadead'] ? 2 : 0);
 	$gameinfo['gamevars'] = json_encode($gamevars,JSON_UNESCAPED_UNICODE);
-	$gameinfo['mapinfo'] = $mapinfo;
+	$gameinfo['mapinfo'] = json_encode($mapinfo,JSON_UNESCAPED_UNICODE);
 	$gameinfo['hack'] = $hack;
 	$gameinfo['combonum'] = $combonum;
-
+    //用来debug
+	//file_put_contents( GAME_ROOT.'./debug.txt',var_export($mapinfo,1),FILE_APPEND);
 	$db->array_update("{$gtablepre}game",$gameinfo,"groomid = {$groomid}");
 	return;
 }
@@ -336,6 +337,7 @@ function save_combatinfo(){
 }
 
 function getchat($last,$team='',$limit=0) {
+	include_once  GAME_ROOT.'./gamedata/maps_1.php';
 	global $db,$tablepre,$chatlimit,$chatinfo,$plsinfo,$hplsinfo;
 	$limit = $limit ? $limit : $chatlimit;
 	$result = $db->query("SELECT * FROM {$tablepre}chat WHERE cid>'$last' AND (type!='1' OR (type='1' AND recv='$team')) ORDER BY cid desc LIMIT $limit");
@@ -344,6 +346,9 @@ function getchat($last,$team='',$limit=0) {
 
 	//登记非功能性地点信息时合并隐藏地点
 	$tplsinfo = $plsinfo;
+	//file_put_contents( GAME_ROOT.'./debug.txt',PHP_EOL.var_export($plsinfo,1),);
+	file_put_contents( GAME_ROOT.'./debug.txt',PHP_EOL.var_export($tplsinfo,1),);
+	file_put_contents( GAME_ROOT.'./debug.txt',PHP_EOL.var_export($hplsinfo,1),);
 	foreach($hplsinfo as $hgroup=>$hpls) $tplsinfo += $hpls;
 	
 	while($chat = $db->fetch_array($result)) {
