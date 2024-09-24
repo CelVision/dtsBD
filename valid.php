@@ -121,39 +121,34 @@ if($mode == 'enter') {
 	$itm[1] = '面包'; $itmk[1] = 'HH'; $itme[1] = 120; $itms[1] = 15;
 	$itm[2] = '矿泉水'; $itmk[2] = 'HS'; $itme[2] = 140; $itms[2] = 15;
 	//$itm[6] = '银白盒子'; $itmk[6] = 'p'; $itme[6] = 1; $itms[6] = 1; $itmsk[6] = 'ps';
-	$dice3 = rand(1,3);
-	if($dice3 == 1){
-		$itm[5] = '★Eska Sparking Water★';
-	}elseif($dice3 == 2){
-		$itm[5] = '★Canada Dry★';
-	}else{
-		$itm[5] = '★Monster Energy★';
-	}
-	$itmk[5] = 'HB'; $itme[5] = 70; $itms[5] = 15;
-
-	$dice4 = rand(1,10);
-    if($dice4 <= 6){
-		$itm[6] = '银白盒子'; $itmk[6] = 'ps'; $itme[6] = 1; $itms[6] = 1; $itmsk[6] = '';
-    }else{
-        $itm[6] = 'GRAND OPENING 「开门大吉」'; $itmk[6] = 'p000'; $itme[6] = 1; $itms[6] = 1;
-	}
-	
-
-	$weplist = openfile(config('stwep',$gamecfg));
+	include_once GAME_ROOT.'gamedata/cache/randomequip_1.php';
 	do { 
-		$index = rand(1,count($weplist)-1); 
-		list($wep,$wepk,$wepe,$weps,$wepsk) = explode(",",$weplist[$index]);
+		$itemflag = $food;
+		$itemflag = explode("\r\n",$itemflag);
+		$rand = rand(0,count($itemflag)-1);
+		list($itm[3],$itmk[3],$itme[3],$itms[3],$itmsk[3]) = explode(",",$itemflag[$rand]);
+	} while(!$itmk[3]);
+
+
+	include_once GAME_ROOT.'gamedata/cache/randomequip_1.php';
+	do { 
+		$itemflag = $weaplow;
+		$itemflag = explode("\r\n",$itemflag);
+		$rand = rand(0,count($itemflag)-1);
+		list($wep,$wepk,$wepe,$weps,$wepsk) = explode(",",$itemflag[$rand]);
 	} while(!$wepk);
 
 	$stitemlist = openfile(config('stitem',$gamecfg));
 	do { 
-		$index = rand(1,count($stitemlist)-1); 
-		list($itm[3],$itmk[3],$itme[3],$itms[3],$itmsk[3]) = explode(",",$stitemlist[$index]);
-	} while(!$itmk[3]);
+		$itm[6] = '道具补给包'; $itmk[6] = 'p1I'; $itme[6] = 1; $itms[6] = 1; $itmsk[6] = '';
+	} while(!$itmk[6]);
+
 	do { 
-		$index = rand(1,count($stitemlist)-1); 
-		list($itm[4],$itmk[4],$itme[4],$itms[4],$itmsk[4]) = explode(",",$stitemlist[$index]);
-	} while(!$itmk[4] || ($itmk[3] == $itmk[4]));
+		$itm[5] = '防具补给包'; $itmk[5] = 'p1E'; $itme[5] = 1; $itms[5] = 3; $itmsk[5] = '';
+	} while(!$itmk[5]);
+	do { 
+		$itm[4] = '武器补给包'; $itmk[4] = 'p1W'; $itme[4] = 1; $itms[4] = 1; $itmsk[4] = '';
+	} while(!$itmk[4]);
 
 	/*
 	if ($name == 'Amarillo_NMC') {

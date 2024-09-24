@@ -51,6 +51,7 @@ require GAME_ROOT.'./include/roommng.func.php';
 require GAME_ROOT.'./include/game/revclubskills.func.php';
 require GAME_ROOT.'./include/game/dice.func.php';
 require GAME_ROOT.'./include/game/titles.func.php';
+//用once防止小房间撞配置
 require_once GAME_ROOT.'./gamedata/maps_1.php';
 require config('resources',$gamecfg);
 require config('gamecfg',$gamecfg);

@@ -50,7 +50,7 @@ function rs_game($mode = 0) {
 	}
 	if ($mode & 2) {
 
-		//生成地图(吐槽一下循环调用)
+//生成地图(吐槽一下循环调用)
 		include config('mapresource',$gamecfg);
 		global $mapid, $mapinfo,$mapid;
 		//生成出一个0和1组成的array，每个位置对应一个地图
@@ -76,24 +76,24 @@ function rs_game($mode = 0) {
 				}
 			}
 		save_gameinfo();
-
+//地图生成部分结束
 
 
 		//-------------------------------------------
-		//以后重构嘻嘻
+		//map_1.php生成部分。common.inc.php似乎是一个绕不过的坎，每次行动都需要引用配置文件中的plsinfo等变量
+		//之后想到好办法再重构吧，这里直接走捷径了
 		//-------------------------------------------
         
-		//plsinfo起手
+//plsinfo起手
 		file_put_contents( GAME_ROOT.'./gamedata/maps_1.php','<?php'.PHP_EOL.'$plsinfo = Array('.PHP_EOL,);
         for($i=0 ; $i<35 ;$i++)
        {
-         //debug
 		//file_put_contents( GAME_ROOT.'./debug.txt',var_export($mapinfo[$i]['plsinfo'],1),FILE_APPEND);
 		file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',var_export($i,1)."=>",FILE_APPEND);
 		file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',var_export($mapinfo[$i]['plsinfo'],1),FILE_APPEND);
 		file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',','.PHP_EOL,FILE_APPEND);
        }
-       //areainfo部分
+//areainfo部分
 	   file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',');'.PHP_EOL.'$areainfo = Array('.PHP_EOL,FILE_APPEND);
 	   for($i=0 ; $i<35 ;$i++)
 	   {
@@ -105,9 +105,8 @@ function rs_game($mode = 0) {
 		file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',$binfo,FILE_APPEND);
 		file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',','.PHP_EOL,FILE_APPEND);
        }
-
+//结尾，写东西在这行前面写就行
 	   file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',');'.PHP_EOL.'?>',FILE_APPEND);
-
 
 
 
@@ -235,7 +234,6 @@ function rs_game($mode = 0) {
 			unset($npcqry);
 		}*/
 
-		//控制台初始化放在这里了
 		
 	}
 	if ($mode & 16) {
@@ -251,6 +249,14 @@ function rs_game($mode = 0) {
 //				writeover($mapfile,$checkstr);
 //			}
 //		}
+
+
+
+//这里是胶冻，终于也要对这一部分下手了
+//原理是通过之前的mapid部分生成物品
+        global $mapid;
+        file_put_contents( GAME_ROOT.'./debug.txt',var_export($mapid,1),FILE_APPEND);
+
 		$file = config('mapitem',$gamecfg);
 		$itemlist = openfile($file);
 		$in = sizeof($itemlist);

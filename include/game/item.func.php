@@ -970,6 +970,36 @@ function itemuse($itmn,&$data=NULL) {
 				$rand = rand(0,count($itemflag)-1);
 				list($in,$ik,$ie,$is,$isk) = explode(',',$itemflag[$rand]);
 			}
+		}elseif(strpos( $oitmk , 'p1') === 0){//初始福袋   胶冻
+			include_once config('randomequip',$gamecfg);
+			if(strpos($itmk,'p1W')===0){
+				$dice = diceroll(100);
+				if($dice < 70) {
+					$itemflag = $weaplow;
+				}else{
+					$itemflag = $weaphigh;
+				}
+			}elseif(strpos($itmk,'p1E')===0){
+				$dice = diceroll(100);
+				if($dice < 70) {
+					$itemflag = $equiplow;
+				}else{
+					$itemflag = $equiphigh;
+				}
+			}
+			elseif(strpos($itmk,'p1I')===0){
+				$dice = diceroll(100);
+				if($dice < 70) {
+					$itemflag = $itemlow;
+				}else{
+					$itemflag = $itemhigh;
+				}
+			}
+			if($itemflag){
+				$itemflag = explode("\r\n",$itemflag);
+				$rand = rand(0,count($itemflag)-1);
+				list($in,$ik,$ie,$is,$isk) = explode(',',$itemflag[$rand]);
+			}
 		}elseif(strpos( $oitmk, 'p0' ) === 0){//新福袋·VOL1
 			// 用$clbpara['opened_pack']记录打开福袋的名称，只要有这个名称，就搞事！
  			if(!empty($clbpara['opened_pack'])){
