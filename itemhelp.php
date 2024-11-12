@@ -24,12 +24,12 @@ if(filemtime($mapitemfile) > filemtime($writefile))
 	$itemlist = openfile($file);
 	$in = sizeof($itemlist);
 	//登记非功能性地点信息时合并隐藏地点
-	foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
+	foreach($hplsinfo as $hgroup=>$hpls) $mapinfo[0] += $hpls;
 	for($i = 1; $i < $in; $i++) 
 		if(!empty($itemlist[$i]) && strpos($itemlist[$i],',')!==false)
 		{
 			list($iarea,$imap,$inum,$iname,$ikind,$ieff,$ista,$iskind) = explode(',',$itemlist[$i]);
-			if ($imap==99) $mixhelpinfo.="<tr><td class=\"b3\" height=20px><span>全图随机</span></td>\n"; else $mixhelpinfo.="<tr><td class=\"b3\" height=20px><span>{$plsinfo[$imap]}</span></td>\n";
+			if ($imap==99) $mixhelpinfo.="<tr><td class=\"b3\" height=20px><span>全图随机</span></td>\n"; else $mixhelpinfo.="<tr><td class=\"b3\" height=20px><span>{$mapinfo[0][$imap]}</span></td>\n";
 			$mixhelpinfo.="<td class=\"b3\"><span>{$iname}</span></td>\n";
 			$mixhelpinfo.="<td class=\"b3\"><span>";
 			if (substr($ikind,0,2)=="GB")

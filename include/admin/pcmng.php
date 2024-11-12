@@ -162,9 +162,10 @@ include template('admin_pcmng');
 
 
 function dbsearch($start,$checkmode,$checkinfo){
-	global $showlimit,$db,$tablepre,$resultinfo,$cmd_info,$plsinfo,$hplsinfo;
+	global $showlimit,$db,$tablepre,$resultinfo,$cmd_info,$mapinfo,$hplsinfo;
 	//登记非功能性地点信息时合并隐藏地点
-	foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
+	$plsinfo = $mapinfo[0];
+	foreach($hplsinfo as $hgroup=>$hpls) $plsinfo = array_merge($plsinfo,$hpls);
 	$limitstr = " LIMIT $start,$showlimit";
 	if(($checkmode == 'name')&&($checkinfo)) {
 		$result = $db->query("SELECT * FROM {$tablepre}players WHERE name LIKE '%{$checkinfo}%' AND type='0'".$limitstr);

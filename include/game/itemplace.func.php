@@ -207,11 +207,12 @@ function parse_itemmix_resultshow($rarr){
 
 function get_npc_helpinfo($nlist,$tooltip=1)
 {
-	global $npcinit,$plsinfo,$hplsinfo,$gamecfg,$iteminfo,$clubinfo;
+	global $npcinit,$mapinfo,$hplsinfo,$gamecfg,$iteminfo,$clubinfo;
 	global $posetips,$tactips,$poseinfo,$tacinfo;
 	//登记非功能性地点信息时合并隐藏地点
-	foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
 
+	$plsinfo = $mapinfo[0];
+	foreach($hplsinfo as $hgroup=>$hpls) $$plsinfo = array_merge($plsinfo,$hpls);
 	$tnlist = $nlist;
 	foreach ($tnlist as $i => $npcs)
 	{
@@ -315,9 +316,10 @@ function get_npc_helpinfo($nlist,$tooltip=1)
 
 function get_item_place($which)
 {
-	global $plsinfo,$hplsinfo,$gamecfg;
+	global $mapinfo,$hplsinfo,$gamecfg;
 	//登记非功能性地点信息时合并隐藏地点
-	foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
+	$plsinfo = $mapinfo[0];
+	foreach($hplsinfo as $hgroup=>$hpls) $$plsinfo = array_merge($plsinfo,$hpls);
 	//获取某物品的获取方式，如刷新地点或商店是否有卖等
 	$result="";
 	$file = config('mapitem',$gamecfg);

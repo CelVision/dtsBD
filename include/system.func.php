@@ -5,7 +5,7 @@ if(!defined('IN_GAME')) {
 }
 
 function rs_game($mode = 0) {
-	global $db,$gtablepre,$tablepre,$groomid,$gamecfg,$now,$gamestate,$plsinfo,$typeinfo,$areanum,$areaadd,$afktime,$combonum,$deathlimit,$mapinfo;
+	global $db,$gtablepre,$tablepre,$groomid,$gamecfg,$now,$gamestate,$mapinfo,$typeinfo,$areanum,$areaadd,$afktime,$combonum,$deathlimit,$mapinfo;
 //	$stime=getmicrotime();
 	$dir = GAME_ROOT.'./gamedata/';
 	$sqldir = GAME_ROOT.'./gamedata/sql/'; 
@@ -65,7 +65,7 @@ function rs_game($mode = 0) {
 				$mapid[$id] = $dice;
 			}
 		//tada!地图序号表
-		$mapinfo = Array();
+		/*$mapinfo = Array();
 		for($id=0 ; $id<35 ; $id++)
 			{
 				if (isset($maps[$id][$mapid[$id]]))
@@ -74,18 +74,31 @@ function rs_game($mode = 0) {
 				}else{//32个地图我还没有构思好,有替代就用，没有就用0号
 					$mapinfo[$id] = $maps[$id][$mapid[0]];
 				}
+			}*/
+		for($id=0 ; $id<35 ; $id++)
+			{
+				if (!isset($maps[$id][$mapid[$id]]))
+				{//32个地图我还没有构思好,有替代就用，没有就用0
+					$mapid[$id] = 0;
+				}
+				// 0plsinfo 1xyinfo 
+				$mapinfo[0][$id] = $maps[$id][$mapid[$id]]['plsinfo'];
+				$mapinfo[1][$id] = $maps[$id][$mapid[$id]]['xyinfo'];
+				$mapinfo[2][$id] = $maps[$id][$mapid[$id]]['areainfo'];
+				$mapinfo[3][$id] = $maps[$id][$mapid[$id]]['events'];
+				$mapinfo[4][$id] = $maps[$id][$mapid[$id]]['isindoor'];
 			}
 		save_gameinfo();
 //地图生成部分结束
-
+/*      留个纪念吧
 
 		//-------------------------------------------
 		//map_1.php生成部分。common.inc.php似乎是一个绕不过的坎，每次行动都需要引用配置文件中的plsinfo等变量
 		//之后想到好办法再重构吧，这里直接走捷径了
 		//-------------------------------------------
-        
+    
 //plsinfo起手
-		file_put_contents( GAME_ROOT.'./gamedata/maps_1.php','<?php'.PHP_EOL.'$plsinfo = Array('.PHP_EOL,);
+		file_put_contents( GAME_ROOT.'./gamedata/maps_1.php','<?php'.PHP_EOL.'$mapinfo[0] = Array('.PHP_EOL,);
         for($i=0 ; $i<35 ;$i++)
        {
 		//file_put_contents( GAME_ROOT.'./debug.txt',var_export($mapinfo[$i]['plsinfo'],1),FILE_APPEND);
@@ -94,7 +107,7 @@ function rs_game($mode = 0) {
 		file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',','.PHP_EOL,FILE_APPEND);
        }
 //areainfo部分
-	   file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',');'.PHP_EOL.'$areainfo = Array('.PHP_EOL,FILE_APPEND);
+	   file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',');'.PHP_EOL.'$mapinfo[2] = Array('.PHP_EOL,FILE_APPEND);
 	   for($i=0 ; $i<35 ;$i++)
 	   {
 	
@@ -107,7 +120,7 @@ function rs_game($mode = 0) {
        }
 //结尾，写东西在这行前面写就行
 	   file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',');'.PHP_EOL.'?>',FILE_APPEND);
-
+	   */
 
 
 		//控制台初始化(这里也是一开始循环调用了！)
@@ -128,7 +141,7 @@ function rs_game($mode = 0) {
 		global $rswtharr,$arealist,$areanum,$weather,$hack,$areatime,$starttime,$startmin,$areaadd,$areahour;
 		list($sec,$min,$hour,$day,$month,$year,$wday,$yday,$isdst) = localtime($starttime);
 		$areatime = (ceil(($starttime + $areahour*60)/600))*600;//$areahour已改为按分钟计算，ceil是为了让禁区分钟为10的倍数
-		$plsnum = sizeof($plsinfo);
+		$plsnum = sizeof($mapinfo[0]);
 		$arealist = range(1,$plsnum-1);
 		shuffle($arealist);
 		array_unshift($arealist,0);
@@ -154,7 +167,7 @@ function rs_game($mode = 0) {
 		include_once config('npc',$gamecfg);
 		include_once GAME_ROOT."./include/game/clubslct.func.php";
 		//$typenum = sizeof($typeinfo);
-		$plsnum = sizeof($plsinfo);
+		$plsnum = sizeof($mapinfo[0]);
 		$npcqry = '';
 		
 		//for($i = 1; $i < $typenum; $i++) {
@@ -239,7 +252,7 @@ function rs_game($mode = 0) {
 	if ($mode & 16) {
 		//echo " - 地图道具/陷阱初始化 - ";
 		//感谢 Martin1994 提供地图道具数据库化的源代码
-		$plsnum = sizeof($plsinfo);
+		$plsnum = sizeof($mapinfo[0]);
 		$iqry = $tqry = '';
 //		if($gamestate == 0){
 //			global $checkstr;
@@ -255,7 +268,6 @@ function rs_game($mode = 0) {
 //这里是胶冻，终于也要对这一部分下手了
 //原理是通过之前的mapid部分生成物品
         global $mapid;
-        file_put_contents( GAME_ROOT.'./debug.txt',var_export($mapid,1),FILE_APPEND);
 
 		$file = config('mapitem',$gamecfg);
 		$itemlist = openfile($file);
@@ -406,11 +418,11 @@ function rs_sttime() {
 
 function add_once_area($atime) {
 	//实际上GAMEOVER的判断是在common.inc.php里
-	global $db,$gtablepre,$tablepre,$now,$gamestate,$areaesc,$arealist,$areanum,$arealimit,$areaadd,$plsinfo,$weather,$hack,$validnum,$alivenum,$deathnum;
+	global $db,$gtablepre,$tablepre,$now,$gamestate,$areaesc,$arealist,$areanum,$arealimit,$areaadd,$mapinfo,$weather,$hack,$validnum,$alivenum,$deathnum;
 	global $gamevars,$deepzones,$sentinel_typelist,$npc_away_from_deepzones;
 	
 	if (($gamestate > 10)&&($now > $atime)) {
-		$plsnum = sizeof($plsinfo) - 1;
+		$plsnum = sizeof($mapinfo[0]) - 1;
 		if(($areanum >= $arealimit*$areaadd)&&($validnum<=0)) {//无人参加GAMEOVER不是因为这里，这里只是保险。
 			gameover($atime,'end4');
 			return;
@@ -680,12 +692,12 @@ function gameover($time = 0, $mode = '', $winname = '') {
 }
 
 function movehtm($atime = 0) {
-	global $plsinfo,$arealist,$areanum,$hack,$pls,$xyinfo,$areahour,$areaadd;
+	global $mapinfo,$arealist,$areanum,$hack,$pls,$xyinfo,$areahour,$areaadd;
 
 	/*$movehtm = GAME_ROOT.TPLDIR.'/move.htm';
 	$movedata = '<option value="main">■ 移动 ■<br />';
 
-	foreach($plsinfo as $key => $value) {
+	foreach($mapinfo[0] as $key => $value) {
 		if(array_search($key,$arealist) > $areanum || $hack){
 		$movedata .= "<option value=\"$key\"><!--{if \$pls == $key}--><--现在位置--><!--{else}-->$value($xyinfo[$key])<!--{/if}--><br />";
 		}
@@ -695,7 +707,7 @@ function movehtm($atime = 0) {
 	/*$areahtm = GAME_ROOT.TPLDIR.'/areainfo.htm';
 	$areadata = '<span class="evergreen"><b>现在的禁区是：</b></span>';
 	for($i=0;$i<=$areanum;$i++){
-		$areadata .= '&nbsp;'.$plsinfo[$arealist[$i]];
+		$areadata .= '&nbsp;'.$mapinfo[0][$arealist[$i]];
 	}
 	$areadata .= '<br><span class="evergreen"><b>下回的禁区是：</b></span>';*/
 	
@@ -704,7 +716,7 @@ function movehtm($atime = 0) {
 		global $areatime;
 		$atime = $areatime;
 	}
-	if($areanum < count($plsinfo)) {
+	if($areanum < count($mapinfo[0])) {
 		$at= getdate($atime);
 		$nexthour = $at['hours'];$nextmin = $at['minutes'];
 		while($nextmin >= 60){
@@ -713,10 +725,10 @@ function movehtm($atime = 0) {
 		if($nexthour >= 24){$nexthour-=24;}
 		$areadata .= "<b>{$nexthour}时{$nextmin}分：</b> ";
 		for($i=1;$i<=$areaadd;$i++) {
-			$areadata .= '&nbsp;'.$plsinfo[$arealist[$areanum+$i]].'&nbsp;';
+			$areadata .= '&nbsp;'.$mapinfo[0][$arealist[$areanum+$i]].'&nbsp;';
 		}
 	}
-	if($areanum+$areaadd < count($plsinfo)) {
+	if($areanum+$areaadd < count($mapinfo[0])) {
 		$at2= getdate($atime + $areahour*60);
 		$nexthour2 = $at2['hours'];$nextmin2 = $at2['minutes'];
 		while($nextmin2 >= 60){
@@ -725,10 +737,10 @@ function movehtm($atime = 0) {
 		if($nexthour2 >= 24){$nexthour2-=24;}
 		$areadata .= "；<b>{$nexthour2}时{$nextmin2}分：</b> ";
 		for($i=1;$i<=$areaadd;$i++) {
-			$areadata .= '&nbsp;'.$plsinfo[$arealist[$areanum+$areaadd+$i]].'&nbsp;';
+			$areadata .= '&nbsp;'.$mapinfo[0][$arealist[$areanum+$areaadd+$i]].'&nbsp;';
 		}
 	}
-	if($areanum+$areaadd*2 < count($plsinfo)) {
+	if($areanum+$areaadd*2 < count($mapinfo[0])) {
 		$at3= getdate($atime + $areahour*120);
 		$nexthour3 = $at3['hours'];$nextmin3 = $at3['minutes'];
 		while($nextmin3 >= 60){
@@ -737,7 +749,7 @@ function movehtm($atime = 0) {
 		if($nexthour3 >= 24){$nexthour3-=24;}
 		$areadata .= "；<b>{$nexthour3}时{$nextmin3}分：</b> ";
 		for($i=1;$i<=$areaadd;$i++) {
-			$areadata .= '&nbsp;'.$plsinfo[$arealist[$areanum+$areaadd*2+$i]].'&nbsp;';
+			$areadata .= '&nbsp;'.$mapinfo[0][$arealist[$areanum+$areaadd*2+$i]].'&nbsp;';
 		}
 	}
 	return $areadata;
@@ -746,12 +758,12 @@ function movehtm($atime = 0) {
 }
 
 function addnpc($type,$sub,$num,$time = 0,$anpcdata = NULL) {
-	global $now,$db,$gtablepre,$tablepre,$log,$plsinfo,$typeinfo,$arealist,$areanum,$gamecfg;
+	global $now,$db,$gtablepre,$tablepre,$log,$mapinfo,$typeinfo,$arealist,$areanum,$gamecfg;
 	global $hidding_typelist,$deepzones;
 	include_once GAME_ROOT."./include/game/clubslct.func.php";
 
 	$time = $time == 0 ? $now : $time;
-	$plsnum = sizeof($plsinfo);
+	$plsnum = sizeof($mapinfo[0]);
 	/*if(empty($anpcinfo) || empty($npcinit)){
 		include_once config('addnpc',$gamecfg);
 	}*/
@@ -869,7 +881,7 @@ function addnpc($type,$sub,$num,$time = 0,$anpcdata = NULL) {
 }
 
 function evonpc($type,$name){
-	global $now,$db,$gtablepre,$tablepre,$log,$plsinfo,$typeinfo,$enpcinfo,$gamecfg;
+	global $now,$db,$gtablepre,$tablepre,$log,$mapinfo,$typeinfo,$enpcinfo,$gamecfg;
 	if(!$type || !$name){return false;}
 	if(empty($enpcinfo)){
 		include_once config('evonpc',$gamecfg);

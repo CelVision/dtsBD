@@ -15,7 +15,7 @@ namespace revbattle
 	# 2.与敌人战斗结束、显示战斗报告后，点击确认按钮时身上存在额外action，跳转回此函数判断接下来该显示哪一页面；
 	function revbattle_prepare($command,$message=NULL,$data=NULL)
 	{
-		global $log,$mode,$plsinfo,$db,$tablepre,$action_list;
+		global $log,$mode,$mapinfo,$db,$tablepre,$action_list;
 		if(!isset($data))
 		{
 			global $pdata;
@@ -46,7 +46,7 @@ namespace revbattle
 		# 检查敌人是否处于当前位置
 		if ($edata['pls'] != $pls) 
 		{
-			$log .= "<span class=\"yellow\">" . $edata ['name'] . "</span>已经离开了<span class=\"yellow\">$plsinfo[$pls]</span>。<br>";
+			$log .= "<span class=\"yellow\">" . $edata ['name'] . "</span>已经离开了<span class=\"yellow\">'".$mapinfo[0][$pls]."</span>。<br>";
 			$action = ''; $bid = 0;
 			$mode = 'command';
 			return;

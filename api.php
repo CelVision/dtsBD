@@ -331,7 +331,7 @@
   }
   /** 获取佣兵信息 */
   function getMercInfo() {
-    global $pdata, $plsinfo, $pls, $arealist, $areanum, $hack;
+    global $pdata, $mapinfo, $pls, $arealist, $areanum, $hack;
     $uidata = $pdata;
     $clbpara = get_clbpara($uidata['clbpara']);
     $merc_ids = get_skillpara('c11_merc', 'id', $clbpara);
@@ -359,7 +359,7 @@
           // 下次支付工资回合数
           'nextPay' => get_skillvars('c11_merc','mst') - get_skillpara('c11_merc','mms',$clbpara)[$mkey],
           // 佣兵位置
-          'position' => $plsinfo[$nowmerc['pls']],
+          'position' => $mapinfo[0][$nowmerc['pls']],
           // 佣兵是否可协战
           'canAssist' => $nowmerc['pls'] == $pls,
           // 佣兵出击消耗金钱

@@ -176,7 +176,7 @@ function hack($itmn = 0) {
 }
 
 function newradar($m = 0){
-	global $mode,$log,$cmd,$main,$pls,$db,$tablepre,$plsinfo,$arealist,$areanum,$hack,$gamestate;
+	global $mode,$log,$cmd,$main,$pls,$db,$tablepre,$mapinfo,$arealist,$areanum,$hack,$gamestate;
 	global $pnum,$npc2num,$npc3num,$npc4num,$npc5num,$npc6num,$radarscreen,$typeinfo,$weather;
 	global $horizon;
 	
@@ -202,7 +202,7 @@ function newradar($m = 0){
 		$npctplist = Array(90,2,5,6,11,14);
 	}
 	$tdheight = 20;
-	$screenheight = count($plsinfo)*$tdheight;
+	$screenheight = count($mapinfo[0])*$tdheight;
 	if (CURSCRIPT == 'botservice') 
 	{
 		if ($m==2)
@@ -239,8 +239,8 @@ function newradar($m = 0){
 			$radarscreen .= "<td class=b2><div class=nttx>{$typeinfo[$value]}</div></td>";
 		}
 		$radarscreen .= '</tr>';
-		for($i=0;$i<count($plsinfo);$i++) {
-			$radarscreen .= "<tr><td class=b2 height={$tdheight}px><div class=nttx>{$plsinfo[$i]}</div></td>";
+		for($i=0;$i<count($mapinfo[0]);$i++) {
+			$radarscreen .= "<tr><td class=b2 height={$tdheight}px><div class=nttx>{$mapinfo[0][$i]}</div></td>";
 			if((array_search($i,$arealist) > $areanum) || $hack) {
 				if($i==$pls) {
 					//$result = $db->query("SELECT pid FROM {$tablepre}players WHERE hp>0 AND type='0' AND pls=$i");

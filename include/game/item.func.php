@@ -14,7 +14,7 @@ function itemuse($itmn,&$data=NULL) {
 	global $exdmginf,$ex_inf,$cskills,$elements_info,$sparkle,$event_bgm,$exp,$lvl,$club,$skillpoint;
 	global $upexp,$baseexp,$elec_cap;
 	//Some globals seems to be still needed... ...
-	global $itemspkinfo,$plsinfo;
+	global $itemspkinfo,$mapinfo;
 	global $pid;
 
 	if(!isset($data))
@@ -1578,7 +1578,7 @@ function itemuse($itmn,&$data=NULL) {
 				$log .= '你没有需要充电的物品。<br>';
 			}
 			}elseif ($itm == '群青多面体') {
-			//global $plsinfo,$nosta,$db,$tablepre;
+			//global $mapinfo[0],$nosta,$db,$tablepre;
 			$result = $db->query("SELECT pid,name,pls FROM {$tablepre}players WHERE type = 14 && hp > 0");
 			$ndata = array();
 			while($nd = $db->fetch_array($result)){
@@ -1588,9 +1588,9 @@ function itemuse($itmn,&$data=NULL) {
 				foreach($ndata as $key => &$val){
 					$npls = $val['pls'];
 					while($npls == $val['pls']){
-						$npls = rand(1,count($plsinfo)-1);
+						$npls = rand(1,count($mapinfo[0])-1);
 					}				
-					$val['pls'] = $npls;$npls = $plsinfo[$npls];
+					$val['pls'] = $npls;$npls = $mapinfo[0][$npls];
 					$log .= "<span class=\"yellow\">{$key}</span>响应道具号召，移动到了<span class=\"yellow\">{$npls}</span>。<br>";
 					addnews($now,'npcmove',$name,$key,$nick);
 				}
@@ -1720,7 +1720,7 @@ function itemuse($itmn,&$data=NULL) {
 				$log .= "<span class=\"yellow\">唔，看起来这个针线包对你似乎没有什么意义……</span><br>";
                 return;
             } elseif (($arb == $noarb) || !$arb) {
-				$log .= '你没有装备防具，不能使用针线包。<br>';
+				$log .= '你没有装备身体防具，不能使用针线包。<br>';
 			} elseif(strpos($arbsk,'^')!==false){
 				$log .= '<span class="yellow">你不能对背包使用针线包。<br>';
 			} elseif(strpos($arbsk,'Z')!==false){
@@ -1728,6 +1728,24 @@ function itemuse($itmn,&$data=NULL) {
 			}else {
 				$arbe += (rand ( 0, 2 ) + $itme);
 				$log .= "用<span class=\"yellow\">$itm</span>给防具打了补丁，<span class=\"yellow\">$arb</span>的防御力变成了<span class=\"yellow\">$arbe</span>。<br>";
+				$itms --;
+			}
+		} elseif ($itm == "纽扣") {
+			if($club == 21){
+				$log .= "<span class=\"yellow\">突然，你的眼前出现了扭曲的字符！</span><br>";
+				$log .= "<span class=\"glitchb\">
+				“别看纽扣这么小，<br>
+				打上太多可不妙。<br>
+				与其数值罩白梦，<br>
+				不如让她转生了！”<br></span><br>";
+				$log .= "<span class=\"yellow\">唔，看起来这个纽扣对你似乎没有什么意义……</span><br>";
+			}elseif(($arh == $noarh) || !$arh) {
+				$log .= '你没有装备头部防具，不能使用纽扣。<br>';
+			}elseif(strpos($arhsk,'Z')!==false){
+				$log .= '<span class="yellow">该防具太单薄以至于不能使用纽扣。</span><br>你感到一阵蛋疼菊紧，你的蛋疼度增加了<span class="yellow">233</span>点。<br>';
+			}else {
+				$arhe += (rand ( 0, 2 ) + $itme);
+				$log .= "用<span class=\"yellow\">$itm</span>给防具打了纽扣，<span class=\"yellow\">$arh</span>的防御力变成了<span class=\"yellow\">$arhe</span>。<br>";
 				$itms --;
 			}
 		} elseif ($itm == '消音器') {
@@ -2443,7 +2461,7 @@ function itemuse($itmn,&$data=NULL) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		} elseif ($itmk =='ZA'){
-			//global $plsinfo,$db,$tablepre;
+			//global $mapinfo[0],$db,$tablepre;
 			if($itm =='→【单兵撤退按钮】←'){
 				$log .= "你按下了这个按钮。<br>但似乎什么都没有发生。<br>按钮就这样消失了。<br>在你觉得你买到了假冒伪劣产品时，你听到了来自红暮的广播。<br>";
 				//销毁物品
@@ -2455,15 +2473,15 @@ function itemuse($itmn,&$data=NULL) {
 				$kitm1="［ＩＮＮＯＣＥＮＣＥ］";
 				$kitm2="［ＤＩＬＩＧＥＮＣＥ］";
 				$kitm3="［ＣＯＮＳＣＩＥＮＣＥ］";
-				$rndpls1= rand(1,count($plsinfo)-2);
-				$rndpls2= rand(1,count($plsinfo)-2);
-				$rndpls3= rand(1,count($plsinfo)-2);
+				$rndpls1= rand(1,count($mapinfo[0])-2);
+				$rndpls2= rand(1,count($mapinfo[0])-2);
+				$rndpls3= rand(1,count($mapinfo[0])-2);
 				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm1', 'XA', '1', '1', '', '$rndpls1')");
 				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm2', 'XA', '1', '1', '', '$rndpls2')");
 				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm3', 'XA', '1', '1', '', '$rndpls3')");
-				$plsname1 = $plsinfo[$rndpls1];
-				$plsname2 = $plsinfo[$rndpls2];
-				$plsname3 = $plsinfo[$rndpls3];
+				$plsname1 = $mapinfo[0][$rndpls1];
+				$plsname2 = $mapinfo[0][$rndpls2];
+				$plsname3 = $mapinfo[0][$rndpls3];
 				$log .= "然后，你听到了来自蓝凝的私聊——<br><span class=\"clan\">【蓝凝】就给你一些提示吧，你需要找到三个代码断片进行合成：{$kitm1}，{$kitm2}与{$kitm3}，它们分别位于{$plsname1}，{$plsname2}与{$plsname3}。<br>【蓝凝】别谢我，问就是我免贵姓雷了。祝你好运！</span>";
 				$log .= "<br>看起来，在脱出幻境之前，你需要玩一把寻宝游戏了……";
 			}elseif($itm == '→【神器任意门】←'){
@@ -2477,15 +2495,15 @@ function itemuse($itmn,&$data=NULL) {
 				$kitm1="［ΨТОВХ］";
 				$kitm2="［ЫΑИЙВХΨ］";
 				$kitm3="［ΩЙΑТΨ］";
-				$rndpls1= rand(1,count($plsinfo)-2);
-				$rndpls2= rand(1,count($plsinfo)-2);
-				$rndpls3= rand(1,count($plsinfo)-2);
+				$rndpls1= rand(1,count($mapinfo[0])-2);
+				$rndpls2= rand(1,count($mapinfo[0])-2);
+				$rndpls3= rand(1,count($mapinfo[0])-2);
 				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm1', 'XB', '1', '1', '', '$rndpls1')");
 				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm2', 'XB', '1', '1', '', '$rndpls2')");
 				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm3', 'XB', '1', '1', '', '$rndpls3')");
-				$plsname1 = $plsinfo[$rndpls1];
-				$plsname2 = $plsinfo[$rndpls2];
-				$plsname3 = $plsinfo[$rndpls3];
+				$plsname1 = $mapinfo[0][$rndpls1];
+				$plsname2 = $mapinfo[0][$rndpls2];
+				$plsname3 = $mapinfo[0][$rndpls3];
 				$log .= "然后，你听到了来自不明人士的私聊——<br><span class=\"lime\">【？？？】就给你一些提示吧，你需要找到三个代码断片进行合成：{$kitm1}，{$kitm2}与{$kitm3}，它们分别位于{$plsname1}，{$plsname2}与{$plsname3}。<br>【？？？】祝你好运！</span>";
 				$log .= "<br>看起来，在脱出幻境之前，你需要玩一把寻宝游戏了……";
 			}else{
@@ -2499,15 +2517,15 @@ function itemuse($itmn,&$data=NULL) {
 				$kitm1="［ｒｍ］";
 				$kitm2="［－ｒ］";
 				$kitm3="［－ｆ］";
-				$rndpls1= rand(1,count($plsinfo)-2);
-				$rndpls2= rand(1,count($plsinfo)-2);
-				$rndpls3= rand(1,count($plsinfo)-2);
+				$rndpls1= rand(1,count($mapinfo[0])-2);
+				$rndpls2= rand(1,count($mapinfo[0])-2);
+				$rndpls3= rand(1,count($mapinfo[0])-2);
 				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm1', 'XC', '1', '1', '', '$rndpls1')");
 				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm2', 'XC', '1', '1', '', '$rndpls2')");
 				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm3', 'XC', '1', '1', '', '$rndpls3')");
-				$plsname1 = $plsinfo[$rndpls1];
-				$plsname2 = $plsinfo[$rndpls2];
-				$plsname3 = $plsinfo[$rndpls3];
+				$plsname1 = $mapinfo[0][$rndpls1];
+				$plsname2 = $mapinfo[0][$rndpls2];
+				$plsname3 = $mapinfo[0][$rndpls3];
 				$log .= "然后，你听到了来自不明人士的私聊——<br><span class=\"lime\">【？？？】就给你一些提示吧，你需要找到三个代码断片进行合成：{$kitm1}，{$kitm2}与{$kitm3}，它们分别位于{$plsname1}，{$plsname2}与{$plsname3}。<br>【？？？】祝你好运！</span>";
 				$log .= "<br>看起来，在脱出幻境之前，你需要玩一把寻宝游戏了……";
 			}
@@ -2919,14 +2937,14 @@ function itemuse($itmn,&$data=NULL) {
 				}
 
 				# Producing a valid arealist
-				$rndhappypls= rand(1,count($plsinfo)-2);
+				$rndhappypls= rand(1,count($mapinfo[0])-2);
 
 				# Process the item insertation process.
 				# But, before that, a special treatment for map traps:
 				if ($selfdestructdice2 == 6){
 					# Insert traps into maptrap table.
 					for ($i = 0; $i < $happyitemnumber; $i++){
-						$rndhappypls= rand(1,count($plsinfo)-2);
+						$rndhappypls= rand(1,count($mapinfo[0])-2);
 						$db->query("INSERT INTO {$tablepre}maptrap (itm, itmk, itme, itms, itmsk, pls) VALUES ('$happyitemname', '$happyitemkind', '$happyitemeffect', '1', '$pid', '$rndhappypls')");
 					}
 					$log .= "你的身体在高空中炸出了一片烟花。<br>
@@ -2935,7 +2953,7 @@ function itemuse($itmn,&$data=NULL) {
 				}else{
 					# Insert items into mapitem table.
 					for ($i = 0; $i < $happyitemnumber; $i++){
-						$rndhappypls= rand(1,count($plsinfo)-2);
+						$rndhappypls= rand(1,count($mapinfo[0])-2);
 						$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$happyitemname', '$happyitemkind', '$happyitemeffect', '1', '$pid', '$rndhappypls')");
 					}
 					$log .= "你的身体在高空中炸出了一片烟花。<br>

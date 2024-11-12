@@ -46,7 +46,7 @@
                         <td class="b1" height="20px">位置</td>
                         <td class="b3">
                             <!--{eval $cancover = $nowmerc['pls'] == $pls ? '(可协战)' : '';}-->
-                            <span>{$plsinfo[$nowmerc['pls']]}{$cancover}</span>
+                            <span>{$mapinfo[0][$nowmerc['pls']]}{$cancover}</span>
                         </td>
                     </tr>
                 </table>
@@ -73,7 +73,7 @@
                     <select name="c11_merc{$mkey}moveto" id="c11_mercmoveto" style="width: 45px;">
                         <!--{loop range(0,count($arealist)-1) $pl}-->
                             <!--{if array_search($pl,$arealist) > $areanum || $hack}-->
-                                <option value="$pl" <!--{if $nowmerc['pls']==$pl}-->selected<!--{/if}-->>$plsinfo[$pl]<br />
+                                <option value="$pl" <!--{if $nowmerc['pls']==$pl}-->selected<!--{/if}-->>$mapinfo[0][$pl]<br />
                             <!--{/if}-->
                         <!--{/loop}-->
                     </select>

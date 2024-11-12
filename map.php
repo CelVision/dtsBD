@@ -6,7 +6,7 @@ require './include/common.inc.php';
 
 $mapvcoordinate = Array('A','B','C','D','E','F','G','H','I','J');
 
-for($i=0;$i<count($plsinfo);$i++){
+for($i=0;$i<count($mapinfo[0]);$i++){
 	if($hack || array_search($i,$arealist) > ($areanum + $areaadd)){
 		$plscolor[$i] = 'mapspanlime';
 	} elseif(array_search($i,$arealist) <= $areanum) {
@@ -41,7 +41,7 @@ for($i=0;$i<10;$i++){
 	$mapcontent .= '<tr align="center"><TD class=map align=center><div class=nttx>'.$mapvcoordinate[$i].'</div></TD>';
 	for($j=1;$j<=10;$j++){
 		if(isset($mpp[$mapvcoordinate[$i]][$j])){
-			$mapcontent .= '<td width="48" height="48" class="map2" align=middle><span class="'.$plscolor[$mpp[$mapvcoordinate[$i]][$j]].'">'.$plsinfo[$mpp[$mapvcoordinate[$i]][$j]].'</span></td>';
+			$mapcontent .= '<td width="48" height="48" class="map2" align=middle><span class="'.$plscolor[$mpp[$mapvcoordinate[$i]][$j]].'">'.$mapinfo[0][$mpp[$mapvcoordinate[$i]][$j]].'</span></td>';
 		}else{
 			$mapcontent .= '<td width="48" height="48" class="map2" align=middle><IMG src="map/blank.gif" width="48" height="48" border=0></td>';
 		}

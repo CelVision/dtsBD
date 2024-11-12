@@ -613,15 +613,15 @@ function event(){
 		$event = 1;
 		//echo $rp;
 	}elseif ($pls==34){//英灵殿
-		global $art,$plsinfo,$gamestate,$hack,$arealist,$areanum;
+		global $art,$mapinfo,$gamestate,$hack,$arealist,$areanum;
 		if (($art!='Untainted Glory')&&($gamestate != 50)){
 			$rpls=-1;
 			while ($rpls<0 || $arealist[$rpls]==34){
-				if($hack){$rpls = rand(0,sizeof($plsinfo)-1);}
-				else {$rpls = rand($areanum+1,sizeof($plsinfo)-1);}
+				if($hack){$rpls = rand(0,sizeof($mapinfo[0])-1);}
+				else {$rpls = rand($areanum+1,sizeof($mapinfo[0])-1);}
 			} 
 			$pls=$arealist[$rpls];
-			$log.="殿堂的深处传来一个声音：<span class=\"evergreen\">“你还没有进入这里的资格”。</span><br>一股未知的力量包围了你，当你反应过来的时候，发现自己正身处<span class=\"yellow\">{$plsinfo[$pls]}</span>。<br>";
+			$log.="殿堂的深处传来一个声音：<span class=\"evergreen\">“你还没有进入这里的资格”。</span><br>一股未知的力量包围了你，当你反应过来的时候，发现自己正身处<span class=\"yellow\">{$mapinfo[0][$pls]}</span>。<br>";
 			//if (CURSCRIPT !== 'botservice') $log.="<span id=\"HsUipfcGhU\"></span>";
 		}
 		$event = 1;

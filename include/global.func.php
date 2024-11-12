@@ -254,6 +254,7 @@ function load_gameinfo() {
 	if(!empty($gameinfo)) extract($gameinfo);
 	$arealist = explode(',',$gameinfo['arealist']);
 	$gamevars = json_decode($gamevars,true);
+	$mapinfo = json_decode($mapinfo,true);
 	$noisevars = json_decode($noisevars,true);
 	if(!empty($noisevars)) extract($noisevars);
 	if(isset($gamevars['sanmaact']) && isset($gamevars['sanmadead'])) unset($gamevars['sanmaact']);
@@ -338,16 +339,16 @@ function save_combatinfo(){
 
 function getchat($last,$team='',$limit=0) {
 	include_once  GAME_ROOT.'./gamedata/maps_1.php';
-	global $db,$tablepre,$chatlimit,$chatinfo,$plsinfo,$hplsinfo;
+	global $db,$tablepre,$chatlimit,$chatinfo,$mapinfo,$hplsinfo;
 	$limit = $limit ? $limit : $chatlimit;
 	$result = $db->query("SELECT * FROM {$tablepre}chat WHERE cid>'$last' AND (type!='1' OR (type='1' AND recv='$team')) ORDER BY cid desc LIMIT $limit");
 	$chatdata = Array('lastcid' => $last, 'msg' => array());
 	if(!$db->num_rows($result)){$chatdata = array('lastcid' => $last, 'msg' => '');return $chatdata;}
 
 	//登记非功能性地点信息时合并隐藏地点
-	$tplsinfo = $plsinfo;
-	//file_put_contents( GAME_ROOT.'./debug.txt',PHP_EOL.var_export($plsinfo,1),);
-	foreach($hplsinfo as $hgroup=>$hpls) $tplsinfo += $hpls;
+	$tplsinfo = $mapinfo[0];
+	//file_put_contents( GAME_ROOT.'./debug.txt',PHP_EOL.var_export($mapinfo[0],1),);
+	foreach($hplsinfo as $hgroup=>$hpls) $tplsinfo = array_merge($tplsinfo, $hpls);
 	
 	while($chat = $db->fetch_array($result)) {
 		//if(!$chatdata['lastcid']){$chatdata['lastcid'] = $chat['cid'];}
@@ -445,9 +446,9 @@ function systemputchat($time,$type,$msg = ''){
 	if($type == 'areaadd' || $type == 'areawarn'){
 		$alist = $msg;
 		$msg = '';
-		global $plsinfo;
+		global $mapinfo;
 		foreach($alist as $ar) {
-			$msg .= "$plsinfo[$ar] ";
+			$msg .= $mapinfo[0][$ar] ;
 		}
 		if($type == 'areaadd'){
 			$msg = '增加禁区：'.$msg;

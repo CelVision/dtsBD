@@ -7,7 +7,7 @@ if(!defined('IN_GAME')) {
 
 
 function  nparse_news($start = 0, $range = 0  ){//$type = '') {
-	global $week,$nowep,$db,$tablepre,$lwinfo,$plsinfo,$hplsinfo,$wthinfo,$typeinfo,$exdmginf,$newslimit,$cskills;
+	global $week,$nowep,$db,$tablepre,$lwinfo,$mapinfo,$hplsinfo,$wthinfo,$typeinfo,$exdmginf,$newslimit,$cskills;
 	//$file = $file ? $file : $newsfile;	
 	//$ninfo = openfile($file);
 	$range = $range == 0 ? $newslimit : $range ;
@@ -59,7 +59,8 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		}
 
 		//登记非功能性地点信息时合并隐藏地点 为什么会有两个news.func.php？？？
-		foreach($hplsinfo as $hgroup=>$hpls) $plsinfo += $hpls;
+		$plsinfo = $mapinfo[0];
+		foreach($hplsinfo as $hgroup=>$hpls) $plsinfo = array_merge($plsinfo,$hpls);
 		//死法（除DN外）：道具名登记在$d上；
 		if(strpos($news,'death')!==false && $news!=='death28' && isset($d)) $d = parse_nameinfo_desc($d);
 		//赠送道具、吃到毒补给、陷阱、改变天气、强化武器、唱歌、打开礼物盒：道具名登记在$c上；
@@ -102,7 +103,7 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，增加禁区：";
 			$alist = explode('_',$a);
 			foreach($alist as $ar) {
-				$newsinfo .= "{$plsinfo[$ar]} ";
+				$newsinfo .= $mapinfo[0][$ar] ;
 			}
 			$newsinfo .= "<span class=\"yellow\">【天气：{$wthinfo[$b]}】</span><br>\n";
 		} elseif($news == 'hack') {
@@ -343,9 +344,9 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		} elseif($news == 'key3'){
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}出于未知原因，在战场上部署了更多的种火！Ψпψтμψхλδ！</span><br>\n";
 		} elseif($news == 'fsmove'){
-			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}在【$plsinfo[$c]】移动了全部种火NPC的位置！真是不解风情啊！</span><br>\n";
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}在【{$plsinfo[$c]}】移动了全部种火NPC的位置！真是不解风情啊！</span><br>\n";
 		} elseif($news == 'keyuu'){
-			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}在【$plsinfo[$c]】向红暮和蓝凝发起了挑战！</span><br>\n";
+			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，<span class=\"lime\">{$a}在【{$plsinfo[$c]}】向红暮和蓝凝发起了挑战！</span><br>\n";
 		} elseif($news == 'evonpc') {
 			if($a == 'Dark Force幼体'){
 				$nword = "<span class=\"lime\">{$c}击杀了{$a}，却没料到这只是幻影……{$b}的封印已经被破坏了！</span>";

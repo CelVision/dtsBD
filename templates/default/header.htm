@@ -26,7 +26,7 @@ jQuery.noConflict();
 <!--{if (CURSCRIPT == 'game')}-->
 <script type="text/javascript" src="include/record.js"></script>
 <!--{/if}-->
-<!--{loop $plsinfo $places $info}-->
+<!--{loop $mapinfo[0] $places $info}-->
 	<!--{if (CURSCRIPT == 'game' && $sdata['pls']==$places)}-->
 	<!--{eval $bgurl = "img/location/".$places.".jpg"}-->
 	<style>

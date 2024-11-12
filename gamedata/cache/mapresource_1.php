@@ -174,8 +174,15 @@ $maps = Array
         'xyinfo'=>'H-8',
         'areainfo'=>'长长的坂道的尽头是一所学校。<BR>学校规模不小，但总给人寂寥无人之感。<br><span class=\"yellow\">从校内的自动售货机似乎能买到些什么。</span><br>',
         'events'=>Array(),
-        'isindoor' => 0,  
+        'isindoor' => 1,  
          ),
+      1 => Array(
+        'plsinfo'=>'澄空学园',
+        'xyinfo'=>'H-8',
+        'areainfo'=>'整座学园坐落在小山丘上。<BR>学校规模不小，但总给人寂寥无人之感。<br><span class=\"yellow\">从校内的自动售货机似乎能买到些什么。</span><br>',
+        'events'=>Array(),
+        'isindoor' => 1,  
+      )
     ),
     15=>array(
       0 => Array(
@@ -221,6 +228,13 @@ $maps = Array
       'events'=>Array(),
       'isindoor' => 0,  
        ),
+       1=> Array(
+        'plsinfo'=>'雪町',
+        'xyinfo'=>'D-4',
+        'areainfo'=>'白雪覆盖的村庄，到处都有居住过的痕迹。旅馆仍然亮着温暖的灯光，<span class=\"yellow\">睡一觉就可以恢复了吧。/span><br>',
+        'events'=>Array(),
+        'isindoor' => 1,  
+      )
     ),
     20=>array(
       0 => Array(
@@ -293,6 +307,7 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => 0,  
          ),
+
     ),
     28=>array(
       0 => Array(

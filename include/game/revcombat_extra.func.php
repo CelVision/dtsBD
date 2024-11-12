@@ -131,7 +131,7 @@ namespace revcombat
 	# 单次打击结束后（即执行完rev_attack()，执行rev_combat_result()过程中检测到敌人未死亡时）需要判定的事件
 	function attack_result_events(&$pa,&$pd,$active)
 	{
-		global $now,$log,$infinfo,$exdmginf,$plsinfo;
+		global $now,$log,$infinfo,$exdmginf,$mapinfo;
 
 		# 真蓝凝防守事件：
 		if($pd['type'] == 19 && $pd['name'] == '蓝凝')
@@ -313,10 +313,10 @@ namespace revcombat
 				else 
 				{
 					$pd['action'] = 'tpmove';
-					$pd['logsave'] .= "<span class=\"grey\">{$pa['name']}点燃火花，将你传送到了{$plsinfo[$sp_pls]}！</span><br>";
+					$pd['logsave'] .= "<span class=\"grey\">{$pa['name']}点燃火花，将你传送到了{$mapinfo[0][$sp_pls]}！</span><br>";
 				}
-				$log .= "<span class=\"yellow\">你点燃火花，将{$pd['nm']}送到了{$plsinfo[$sp_pls]}！祝他好运吧……</span><br>";
-				addnews($now,'sparklemove',$pa['name'],$pd['name'],$plsinfo[$sp_pls]);
+				$log .= "<span class=\"yellow\">你点燃火花，将{$pd['nm']}送到了{$mapinfo[0][$sp_pls]}！祝他好运吧……</span><br>";
+				addnews($now,'sparklemove',$pa['name'],$pd['name'],$mapinfo[0][$sp_pls]);
 				return;
 			}
 		}

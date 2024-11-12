@@ -60,14 +60,15 @@ if(!empty($llist)){
 }
 //var_dump($_POST);
 if($hp > 0){
+	file_put_contents( GAME_ROOT.'./debug.txt',var_export($mapinfo[0],1),FILE_APPEND);
 	//显示枪声信息
 	if(($now <= $noisetime+$noiselimit)&&$noisemode&&($noiseid!=$pid)&&($noiseid2!=$pid)) {
 		if(($now-$noisetime) < 60) {
 			$noisesec = $now - $noisetime;
-			$log .= "<span class=\"yellow\">{$noisesec}秒前，{$plsinfo[$noisepls]}传来了{$noiseinfo[$noisemode]}。</span><br>";
+			$log .= "<span class=\"yellow\">{$noisesec}秒前，{$mapinfo[0][$noisepls]}传来了{$noiseinfo[$noisemode]}。</span><br>";
 		} else {
 			$noisemin = floor(($now-$noisetime)/60);
-			$log .= "<span class=\"yellow\">{$noisemin}分钟前，{$plsinfo[$noisepls]}传来了{$noiseinfo[$noisemode]}。</span><br>";
+			$log .= "<span class=\"yellow\">{$noisemin}分钟前，{$mapinfo[0][$noisepls]}传来了{$noiseinfo[$noisemode]}。</span><br>";
 		}
 	}
 	
@@ -814,7 +815,7 @@ if($hp <= 0) {
 if(isset($opendialog)){$log.="<span style=\"display:none\" id=\"open-dialog\">{$opendialog}</span>";}
 
 if(isset($url)){$gamedata['url'] = $url;}
-$gamedata['innerHTML']['pls'] = (!isset($plsinfo[$pls]) && isset($hplsinfo[$pgroup])) ? $hplsinfo[$pgroup][$pls] : $plsinfo[$pls];
+$gamedata['innerHTML']['pls'] = (!isset($mapinfo[0][$pls]) && isset($hplsinfo[$pgroup])) ? $hplsinfo[$pgroup][$pls] : $mapinfo[0][$pls];
 $gamedata['innerHTML']['anum'] = $alivenum;
 
 ob_clean();

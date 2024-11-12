@@ -228,11 +228,11 @@ EOT;
 }
 
 function init_mapdata(){
-	global $pls,$plsinfo,$xyinfo,$hack,$arealist,$areanum,$areaadd;
+	global $pls,$mapinfo,$xyinfo,$hack,$arealist,$areanum,$areaadd;
 
 	$mpp = Array();
 	$mapvcoordinate = Array('A','B','C','D','E','F','G','H','I','J');
-	for($i=0;$i<count($plsinfo);$i++)
+	for($i=0;$i<count($mapinfo[0]);$i++)
 	{
 		if($hack || array_search($i,$arealist) > ($areanum + $areaadd)){
 			$plscolor[$i] = 'minimapspanlime';
@@ -259,7 +259,7 @@ function init_mapdata(){
 		for($j=1;$j<=10;$j++){
 			if(isset($mpp[$mapvcoordinate[$i]][$j]))
 			{
-				$mapcontent .="<td width=\"42\" height=\"36\" class=\"map2\" align=\"middle\"><a onclick=\"closeDialog($('terminal'));$('mode').value='command';$('command').value='move';$('moveto').value='{$mpp[$mapvcoordinate[$i]][$j]}';postCmd('gamecmd','command.php');this.disabled=true;\"><span class=\"{$plscolor[$mpp[$mapvcoordinate[$i]][$j]]}\">{$plsinfo[$mpp[$mapvcoordinate[$i]][$j]]}</span></a></td>";
+				$mapcontent .="<td width=\"42\" height=\"36\" class=\"map2\" align=\"middle\"><a onclick=\"closeDialog($('terminal'));$('mode').value='command';$('command').value='move';$('moveto').value='{$mpp[$mapvcoordinate[$i]][$j]}';postCmd('gamecmd','command.php');this.disabled=true;\"><span class=\"{$plscolor[$mpp[$mapvcoordinate[$i]][$j]]}\">{$mapinfo[0][$mpp[$mapvcoordinate[$i]][$j]]}</span></a></td>";
 			}else{
 				$mapcontent .= '<td width="42" height="36" class="map2" align=middle><IMG src="map/blank.gif" width="42" height="36" border=0></td>';
 			}
@@ -534,8 +534,8 @@ function w_save2(&$data){
 function addnoise($wp_kind, $wsk, $ntime, $npls, $nid1, $nid2, $nmode) 
 {
 	//在隐藏地图内不会传出声音信息
-	global $plsinfo;
-	if(!array_key_exists($npls,$plsinfo)) return;
+	global $mapinfo;
+	if(!array_key_exists($npls,$mapinfo[0])) return;
 	
 	if ((($wp_kind == 'G') && (strpos ( $wsk, 'S' ) === false)) || ($wp_kind == 'F')) {
 		global $noisetime, $noisepls, $noiseid, $noiseid2, $noisemode;

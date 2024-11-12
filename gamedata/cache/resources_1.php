@@ -1157,7 +1157,7 @@ $deepzones = Array(0,32,33,34);
 $depots = Array(5,28);
 $shops = Array(0,14,27);
 $hospitals = Array(11,19,32);
-/*$plsinfo = Array(
+/*$mapinfo[0] = Array(
 	0=> '无月之影',
 	1=> '端点',
 	2=> 'RF高校',
@@ -1251,7 +1251,7 @@ $xyinfo = Array(
 	34=>'J-10',
 	'hidden'=>'■-■',
 );
-/*$areainfo = Array
+/*$mapinfo[2] = Array
 	(
 	0=>"充满了灵力的永久禁区，也是整个战场的入口。<br>逗留在这里也许会被时空吞噬……<br><span class=\"yellow\">买完东西就快点离开吧。</span><br>",
 	1=>"蓝白色的大地上仿佛有种令人心悸的波动在回荡。<br>还是快离开吧。<br>",

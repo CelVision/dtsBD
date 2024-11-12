@@ -246,7 +246,7 @@ if ($club==0)
 
 $z=(int)$areanum/$areaadd;
 echo "areanum=".$z."\n";
-$plsnum=sizeof($plsinfo)-1;
+$plsnum=sizeof($mapinfo[0])-1;
 echo "plsnum=$plsnum\n";
 echo "starttime=$starttime\n";
 echo "now=$now\n";

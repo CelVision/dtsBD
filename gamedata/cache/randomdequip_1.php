@@ -1,7 +1,7 @@
 <?php
 if(!defined('IN_GAME')) exit('Access Denied');
 
-$equiplow => <<<EOT
+$equiplow = <<<EOT
 宅男装,DB,40,20,,
 萝莉装,DB,35,10,,
 女仆装,DB,35,10,,

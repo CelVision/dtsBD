@@ -1848,7 +1848,7 @@ namespace revattr
 	//计算最终伤害的定值变化
 	function get_final_dmg_fix(&$pa,&$pd,$active,$fin_dmg)
 	{
-		global $log,$plsinfo,$now,$exp;
+		global $log,$mapinfo,$now,$exp;
 
 		# 「量心」效果判定 手加减：
 		if(isset($pa['askill_c19_dispel']) && $fin_dmg >= $pd['hp'])
@@ -2130,7 +2130,7 @@ namespace revattr
 			$pd['tp_by_sparkle'] = $sp_pls;
 			$log .= "<span class=\"yellow\">千钧一发之际，{$pd['nm']}点燃火花传送到了别处！</span><br>";
 			if(!$pa['type']) $pa['log_save'] .= "{$pd['name']}在千钧一发之际点燃了火花，传送到不知道哪去了！";
-			addnews($now,'sparklerevival',$pd['name'],$pa['name'],$plsinfo[$sp_pls]);
+			addnews($now,'sparklerevival',$pd['name'],$pa['name'],$mapinfo[0][$sp_pls]);
 			$exp -= 1000;
 			return 0;
 		}
