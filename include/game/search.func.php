@@ -20,8 +20,8 @@ function check_can_move($pls,$pgroup,$moveto)
 		$log .= "不能重复移动。<br>";
 		return 0;
 	}
-	$plsnum = sizeof($mapinfo[0]);
-	if(!isset($mapinfo[0][$pls]) && isset($hplsinfo[$pgroup]))
+	$plsnum = sizeof($mapinfo['plsinfo']);
+	if(!isset($mapinfo['plsinfo'][$pls]) && isset($hplsinfo[$pgroup]))
 	{
 		//玩家位于隐藏地点组内，不能通过常规移动方式回到标准地点，也不能移动到其他隐藏地点组
 		if(!array_key_exists($moveto,$hplsinfo[$pgroup]))
@@ -33,14 +33,14 @@ function check_can_move($pls,$pgroup,$moveto)
 	else
 	{
 		//玩家位于标准地点组内
-		if((!array_key_exists($moveto,$mapinfo[0]))||($moveto == 'main')||($moveto < 0 )||($moveto >= $plsnum))
+		if((!array_key_exists($moveto,$mapinfo['plsinfo']))||($moveto == 'main')||($moveto < 0 )||($moveto >= $plsnum))
 		{
 			$log .= '请选择正确的移动地点。<br>';
 			return 0;
 		} 
 		elseif(array_search($moveto,$arealist) <= $areanum && !$hack)
 		{
-			$log .= $mapinfo[0][$moveto].'是禁区，还是离远点吧！<br>';
+			$log .= $mapinfo['plsinfo'][$moveto].'是禁区，还是离远点吧！<br>';
 			return 0;
 		}
 	}
@@ -59,7 +59,7 @@ function move($moveto = 99,&$data=NULL)
 	}
 	extract($data,EXTR_REFS);
 
-	$plsnum = sizeof($mapinfo[0]);
+	$plsnum = sizeof($mapinfo['plsinfo']);
 
 	if($pls == $moveto)
 	{
@@ -67,7 +67,7 @@ function move($moveto = 99,&$data=NULL)
 		return;
 	}
 
-	if(!isset($mapinfo[0][$pls]) && isset($hplsinfo[$pgroup]))
+	if(!isset($mapinfo['plsinfo'][$pls]) && isset($hplsinfo[$pgroup]))
 	{
 		//玩家位于隐藏地点组内，不能通过常规移动方式回到标准地点，也不能移动到其他隐藏地点组
 		if(!array_key_exists($moveto,$hplsinfo[$pgroup]))
@@ -80,14 +80,14 @@ function move($moveto = 99,&$data=NULL)
 	else
 	{
 		//玩家位于标准地点组内
-		if((!array_key_exists($moveto,$mapinfo[0]))||($moveto == 'main')||($moveto < 0 )||($moveto >= $plsnum))
+		if((!array_key_exists($moveto,$mapinfo['plsinfo']))||($moveto == 'main')||($moveto < 0 )||($moveto >= $plsnum))
 		{
 			$log .= '请选择正确的移动地点。<br>';
 			return;
 		} 
 		elseif(array_search($moveto,$arealist) <= $areanum && !$hack)
 		{
-			$log .= $mapinfo[0][$moveto].'是禁区，还是离远点吧！<br>';
+			$log .= $mapinfo['plsinfo'][$moveto].'是禁区，还是离远点吧！<br>';
 			return;
 		}
 		$hpls_flag = false;
@@ -105,11 +105,11 @@ function move($moveto = 99,&$data=NULL)
 	{
 		if(!$hpls_flag) $pgroup = 0;
 		$pls = $moveto;
-		$moveto_info = $hpls_flag ? $hplsinfo[$pgroup][$pls] : $mapinfo[0][$pls];
+		$moveto_info = $hpls_flag ? $hplsinfo[$pgroup][$pls] : $mapinfo['plsinfo'][$pls];
 		$log .= "{$actlog}，移动到了<span class=\"yellow\">{$moveto_info}</span>。<br>";
 	}
 	
-	$log .= $mapinfo[2][$pls].'<br>';	
+	$log .= $mapinfo['areainfo'][$pls].'<br>';	
 
 	# 移动到指定地点，结算移动探索事件
 	move_search_events($data,'move');
@@ -132,7 +132,7 @@ function search(&$data=NULL)
 	}
 	extract($data,EXTR_REFS);
 
-	if(!isset($mapinfo[0][$pls]) && isset($hplsinfo[$pgroup]))
+	if(!isset($mapinfo['plsinfo'][$pls]) && isset($hplsinfo[$pgroup]))
 	{
 		$hpls_flag = true;
 	}
@@ -140,7 +140,7 @@ function search(&$data=NULL)
 	{
 		if(array_search($pls,$arealist) <= $areanum && !$hack)
 		{
-			$log .= $mapinfo[0][$pls].'是禁区，还是赶快逃跑吧！<br>';
+			$log .= $mapinfo['plsinfo'][$pls].'是禁区，还是赶快逃跑吧！<br>';
 			return;
 		}
 		$hpls_flag = false;
@@ -245,7 +245,7 @@ function pre_move_search_events(&$data,$act)
 		{
 			$safepls = get_safe_plslist(0);
 			$pls = $safepls[array_rand($safepls)];
-			$moveto_info = $mapinfo[0][$pls];
+			$moveto_info = $mapinfo['plsinfo'][$pls];
 		}
 		$log = ($log . "龙卷风把你吹到了<span class=\"yellow\">$moveto_info</span>！<br>");
 		$moved = true;
@@ -346,9 +346,9 @@ function pre_move_search_events(&$data,$act)
 			{
 				$safepls = get_safe_plslist(0);
 				$pls = $safepls[array_rand($safepls)];
-				$moveto_info = $mapinfo[0][$pls];
+				$moveto_info = $mapinfo['plsinfo'][$pls];
 			}
-			$meta_act = $act == 'move' ? "走在前往{$mapinfo[0][$moveto]}的路上" : "在附近探索";
+			$meta_act = $act == 'move' ? "走在前往{$mapinfo['plsinfo'][$moveto]}的路上" : "在附近探索";
 			$log .= "<span class='red'>你正哼着小曲{$meta_act}，忽然眼前一黑！<br>回过神来时，你发现自己竟然走到了<span class=\"yellow\">$moveto_info</span>！</span><br>……<br>";
 			$moved = true;
 		}

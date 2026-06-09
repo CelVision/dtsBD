@@ -2130,7 +2130,7 @@ namespace revattr
 			$pd['tp_by_sparkle'] = $sp_pls;
 			$log .= "<span class=\"yellow\">千钧一发之际，{$pd['nm']}点燃火花传送到了别处！</span><br>";
 			if(!$pa['type']) $pa['log_save'] .= "{$pd['name']}在千钧一发之际点燃了火花，传送到不知道哪去了！";
-			addnews($now,'sparklerevival',$pd['name'],$pa['name'],$mapinfo[0][$sp_pls]);
+			addnews($now,'sparklerevival',$pd['name'],$pa['name'],$mapinfo['plsinfo'][$sp_pls]);
 			$exp -= 1000;
 			return 0;
 		}

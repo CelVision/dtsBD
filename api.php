@@ -359,7 +359,7 @@
           // 下次支付工资回合数
           'nextPay' => get_skillvars('c11_merc','mst') - get_skillpara('c11_merc','mms',$clbpara)[$mkey],
           // 佣兵位置
-          'position' => $mapinfo[0][$nowmerc['pls']],
+          'position' => $mapinfo['plsinfo'][$nowmerc['pls']],
           // 佣兵是否可协战
           'canAssist' => $nowmerc['pls'] == $pls,
           // 佣兵出击消耗金钱

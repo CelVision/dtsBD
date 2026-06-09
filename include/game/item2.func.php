@@ -202,7 +202,7 @@ function newradar($m = 0){
 		$npctplist = Array(90,2,5,6,11,14);
 	}
 	$tdheight = 20;
-	$screenheight = count($mapinfo[0])*$tdheight;
+	$screenheight = count($mapinfo['plsinfo'])*$tdheight;
 	if (CURSCRIPT == 'botservice') 
 	{
 		if ($m==2)
@@ -239,8 +239,8 @@ function newradar($m = 0){
 			$radarscreen .= "<td class=b2><div class=nttx>{$typeinfo[$value]}</div></td>";
 		}
 		$radarscreen .= '</tr>';
-		for($i=0;$i<count($mapinfo[0]);$i++) {
-			$radarscreen .= "<tr><td class=b2 height={$tdheight}px><div class=nttx>{$mapinfo[0][$i]}</div></td>";
+		for($i=0;$i<count($mapinfo['plsinfo']);$i++) {
+			$radarscreen .= "<tr><td class=b2 height={$tdheight}px><div class=nttx>{$mapinfo['plsinfo'][$i]}</div></td>";
 			if((array_search($i,$arealist) > $areanum) || $hack) {
 				if($i==$pls) {
 					//$result = $db->query("SELECT pid FROM {$tablepre}players WHERE hp>0 AND type='0' AND pls=$i");

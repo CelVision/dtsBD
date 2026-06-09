@@ -1578,7 +1578,7 @@ function itemuse($itmn,&$data=NULL) {
 				$log .= '你没有需要充电的物品。<br>';
 			}
 			}elseif ($itm == '群青多面体') {
-			//global $mapinfo[0],$nosta,$db,$tablepre;
+			//global $mapinfo['plsinfo'],$nosta,$db,$tablepre;
 			$result = $db->query("SELECT pid,name,pls FROM {$tablepre}players WHERE type = 14 && hp > 0");
 			$ndata = array();
 			while($nd = $db->fetch_array($result)){
@@ -1588,9 +1588,9 @@ function itemuse($itmn,&$data=NULL) {
 				foreach($ndata as $key => &$val){
 					$npls = $val['pls'];
 					while($npls == $val['pls']){
-						$npls = rand(1,count($mapinfo[0])-1);
+						$npls = rand(1,count($mapinfo['plsinfo'])-1);
 					}				
-					$val['pls'] = $npls;$npls = $mapinfo[0][$npls];
+					$val['pls'] = $npls;$npls = $mapinfo['plsinfo'][$npls];
 					$log .= "<span class=\"yellow\">{$key}</span>响应道具号召，移动到了<span class=\"yellow\">{$npls}</span>。<br>";
 					addnews($now,'npcmove',$name,$key,$nick);
 				}
@@ -2461,7 +2461,7 @@ function itemuse($itmn,&$data=NULL) {
 			$itm = $itmk = $itmsk = '';
 			$itme = $itms = 0;
 		} elseif ($itmk =='ZA'){
-			//global $mapinfo[0],$db,$tablepre;
+			//global $mapinfo['plsinfo'],$db,$tablepre;
 			if($itm =='→【单兵撤退按钮】←'){
 				$log .= "你按下了这个按钮。<br>但似乎什么都没有发生。<br>按钮就这样消失了。<br>在你觉得你买到了假冒伪劣产品时，你听到了来自红暮的广播。<br>";
 				//销毁物品
@@ -2473,15 +2473,15 @@ function itemuse($itmn,&$data=NULL) {
 				$kitm1="［ＩＮＮＯＣＥＮＣＥ］";
 				$kitm2="［ＤＩＬＩＧＥＮＣＥ］";
 				$kitm3="［ＣＯＮＳＣＩＥＮＣＥ］";
-				$rndpls1= rand(1,count($mapinfo[0])-2);
-				$rndpls2= rand(1,count($mapinfo[0])-2);
-				$rndpls3= rand(1,count($mapinfo[0])-2);
+				$rndpls1= rand(1,count($mapinfo['plsinfo'])-2);
+				$rndpls2= rand(1,count($mapinfo['plsinfo'])-2);
+				$rndpls3= rand(1,count($mapinfo['plsinfo'])-2);
 				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm1', 'XA', '1', '1', '', '$rndpls1')");
 				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm2', 'XA', '1', '1', '', '$rndpls2')");
 				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm3', 'XA', '1', '1', '', '$rndpls3')");
-				$plsname1 = $mapinfo[0][$rndpls1];
-				$plsname2 = $mapinfo[0][$rndpls2];
-				$plsname3 = $mapinfo[0][$rndpls3];
+				$plsname1 = $mapinfo['plsinfo'][$rndpls1];
+				$plsname2 = $mapinfo['plsinfo'][$rndpls2];
+				$plsname3 = $mapinfo['plsinfo'][$rndpls3];
 				$log .= "然后，你听到了来自蓝凝的私聊——<br><span class=\"clan\">【蓝凝】就给你一些提示吧，你需要找到三个代码断片进行合成：{$kitm1}，{$kitm2}与{$kitm3}，它们分别位于{$plsname1}，{$plsname2}与{$plsname3}。<br>【蓝凝】别谢我，问就是我免贵姓雷了。祝你好运！</span>";
 				$log .= "<br>看起来，在脱出幻境之前，你需要玩一把寻宝游戏了……";
 			}elseif($itm == '→【神器任意门】←'){
@@ -2495,15 +2495,15 @@ function itemuse($itmn,&$data=NULL) {
 				$kitm1="［ΨТОВХ］";
 				$kitm2="［ЫΑИЙВХΨ］";
 				$kitm3="［ΩЙΑТΨ］";
-				$rndpls1= rand(1,count($mapinfo[0])-2);
-				$rndpls2= rand(1,count($mapinfo[0])-2);
-				$rndpls3= rand(1,count($mapinfo[0])-2);
+				$rndpls1= rand(1,count($mapinfo['plsinfo'])-2);
+				$rndpls2= rand(1,count($mapinfo['plsinfo'])-2);
+				$rndpls3= rand(1,count($mapinfo['plsinfo'])-2);
 				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm1', 'XB', '1', '1', '', '$rndpls1')");
 				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm2', 'XB', '1', '1', '', '$rndpls2')");
 				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm3', 'XB', '1', '1', '', '$rndpls3')");
-				$plsname1 = $mapinfo[0][$rndpls1];
-				$plsname2 = $mapinfo[0][$rndpls2];
-				$plsname3 = $mapinfo[0][$rndpls3];
+				$plsname1 = $mapinfo['plsinfo'][$rndpls1];
+				$plsname2 = $mapinfo['plsinfo'][$rndpls2];
+				$plsname3 = $mapinfo['plsinfo'][$rndpls3];
 				$log .= "然后，你听到了来自不明人士的私聊——<br><span class=\"lime\">【？？？】就给你一些提示吧，你需要找到三个代码断片进行合成：{$kitm1}，{$kitm2}与{$kitm3}，它们分别位于{$plsname1}，{$plsname2}与{$plsname3}。<br>【？？？】祝你好运！</span>";
 				$log .= "<br>看起来，在脱出幻境之前，你需要玩一把寻宝游戏了……";
 			}else{
@@ -2517,15 +2517,15 @@ function itemuse($itmn,&$data=NULL) {
 				$kitm1="［ｒｍ］";
 				$kitm2="［－ｒ］";
 				$kitm3="［－ｆ］";
-				$rndpls1= rand(1,count($mapinfo[0])-2);
-				$rndpls2= rand(1,count($mapinfo[0])-2);
-				$rndpls3= rand(1,count($mapinfo[0])-2);
+				$rndpls1= rand(1,count($mapinfo['plsinfo'])-2);
+				$rndpls2= rand(1,count($mapinfo['plsinfo'])-2);
+				$rndpls3= rand(1,count($mapinfo['plsinfo'])-2);
 				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm1', 'XC', '1', '1', '', '$rndpls1')");
 				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm2', 'XC', '1', '1', '', '$rndpls2')");
 				$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$kitm3', 'XC', '1', '1', '', '$rndpls3')");
-				$plsname1 = $mapinfo[0][$rndpls1];
-				$plsname2 = $mapinfo[0][$rndpls2];
-				$plsname3 = $mapinfo[0][$rndpls3];
+				$plsname1 = $mapinfo['plsinfo'][$rndpls1];
+				$plsname2 = $mapinfo['plsinfo'][$rndpls2];
+				$plsname3 = $mapinfo['plsinfo'][$rndpls3];
 				$log .= "然后，你听到了来自不明人士的私聊——<br><span class=\"lime\">【？？？】就给你一些提示吧，你需要找到三个代码断片进行合成：{$kitm1}，{$kitm2}与{$kitm3}，它们分别位于{$plsname1}，{$plsname2}与{$plsname3}。<br>【？？？】祝你好运！</span>";
 				$log .= "<br>看起来，在脱出幻境之前，你需要玩一把寻宝游戏了……";
 			}
@@ -2937,14 +2937,14 @@ function itemuse($itmn,&$data=NULL) {
 				}
 
 				# Producing a valid arealist
-				$rndhappypls= rand(1,count($mapinfo[0])-2);
+				$rndhappypls= rand(1,count($mapinfo['plsinfo'])-2);
 
 				# Process the item insertation process.
 				# But, before that, a special treatment for map traps:
 				if ($selfdestructdice2 == 6){
 					# Insert traps into maptrap table.
 					for ($i = 0; $i < $happyitemnumber; $i++){
-						$rndhappypls= rand(1,count($mapinfo[0])-2);
+						$rndhappypls= rand(1,count($mapinfo['plsinfo'])-2);
 						$db->query("INSERT INTO {$tablepre}maptrap (itm, itmk, itme, itms, itmsk, pls) VALUES ('$happyitemname', '$happyitemkind', '$happyitemeffect', '1', '$pid', '$rndhappypls')");
 					}
 					$log .= "你的身体在高空中炸出了一片烟花。<br>
@@ -2953,7 +2953,7 @@ function itemuse($itmn,&$data=NULL) {
 				}else{
 					# Insert items into mapitem table.
 					for ($i = 0; $i < $happyitemnumber; $i++){
-						$rndhappypls= rand(1,count($mapinfo[0])-2);
+						$rndhappypls= rand(1,count($mapinfo['plsinfo'])-2);
 						$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk, pls) VALUES ('$happyitemname', '$happyitemkind', '$happyitemeffect', '1', '$pid', '$rndhappypls')");
 					}
 					$log .= "你的身体在高空中炸出了一片烟花。<br>

@@ -47,6 +47,8 @@ $gamedata = array();
 init_playerdata();
 
 
+
+
 //读取玩家互动信息
 $result = $db->query("SELECT lid,time,log FROM {$tablepre}log WHERE toid = '$pid' AND prcsd = 0 ORDER BY time,lid");
 $llist = '';
@@ -60,15 +62,21 @@ if(!empty($llist)){
 }
 //var_dump($_POST);
 if($hp > 0){
-	file_put_contents( GAME_ROOT.'./debug.txt',var_export($mapinfo[0],1),FILE_APPEND);
+
+	// 胶冻（mapinfo导入
+	$gameresult = $db->query("SELECT * FROM {$gtablepre}game WHERE groomid = {$groomid}");
+    $gameinfo = $db->fetch_array($gameresult);
+    extract($gameinfo);
+    $mapinfo = strip_tags($mapinfo);
+    $mapinfo = json_decode($mapinfo, true);
 	//显示枪声信息
 	if(($now <= $noisetime+$noiselimit)&&$noisemode&&($noiseid!=$pid)&&($noiseid2!=$pid)) {
 		if(($now-$noisetime) < 60) {
 			$noisesec = $now - $noisetime;
-			$log .= "<span class=\"yellow\">{$noisesec}秒前，{$mapinfo[0][$noisepls]}传来了{$noiseinfo[$noisemode]}。</span><br>";
+			$log .= "<span class=\"yellow\">{$noisesec}秒前，{$mapinfo['plsinfo'][$noisepls]}传来了{$noiseinfo[$noisemode]}。</span><br>";
 		} else {
 			$noisemin = floor(($now-$noisetime)/60);
-			$log .= "<span class=\"yellow\">{$noisemin}分钟前，{$mapinfo[0][$noisepls]}传来了{$noiseinfo[$noisemode]}。</span><br>";
+			$log .= "<span class=\"yellow\">{$noisemin}分钟前，{$mapinfo['plsinfo'][$noisepls]}传来了{$noiseinfo[$noisemode]}。</span><br>";
 		}
 	}
 	
@@ -813,9 +821,13 @@ if($hp <= 0) {
 
 //存在 $opendialog 时 尝试打开id为 $opendialog 值的悬浮窗口
 if(isset($opendialog)){$log.="<span style=\"display:none\" id=\"open-dialog\">{$opendialog}</span>";}
-
+$gameresult = $db->query("SELECT * FROM {$gtablepre}game WHERE groomid = {$groomid}");
+$gameinfo = $db->fetch_array($gameresult);
+extract($gameinfo);
+$mapinfo = strip_tags($mapinfo);
+$mapinfo = json_decode($mapinfo, true);
 if(isset($url)){$gamedata['url'] = $url;}
-$gamedata['innerHTML']['pls'] = (!isset($mapinfo[0][$pls]) && isset($hplsinfo[$pgroup])) ? $hplsinfo[$pgroup][$pls] : $mapinfo[0][$pls];
+$gamedata['innerHTML']['pls'] = (!isset($mapinfo['plsinfo'][$pls]) && isset($hplsinfo[$pgroup])) ? $hplsinfo[$pgroup][$pls] : $mapinfo['plsinfo'][$pls];
 $gamedata['innerHTML']['anum'] = $alivenum;
 
 ob_clean();

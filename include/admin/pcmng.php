@@ -164,7 +164,7 @@ include template('admin_pcmng');
 function dbsearch($start,$checkmode,$checkinfo){
 	global $showlimit,$db,$tablepre,$resultinfo,$cmd_info,$mapinfo,$hplsinfo;
 	//登记非功能性地点信息时合并隐藏地点
-	$plsinfo = $mapinfo[0];
+	$plsinfo = $mapinfo['plsinfo'];
 	foreach($hplsinfo as $hgroup=>$hpls) $plsinfo = array_merge($plsinfo,$hpls);
 	$limitstr = " LIMIT $start,$showlimit";
 	if(($checkmode == 'name')&&($checkinfo)) {

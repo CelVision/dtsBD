@@ -570,7 +570,7 @@
 			$money -= $mpaid; 
 			$mdata['pls'] = $moveto;
 			addnews($now,'mercmove',$name,$mdata['name'],$moveto);
-			$log .= "花费了{$mpaid}元，你将{$mdata['name']}叫到了{$mapinfo[0][$moveto]}！<br>";
+			$log .= "花费了{$mpaid}元，你将{$mdata['name']}叫到了{$mapinfo['plsinfo'][$moveto]}！<br>";
 			// 移动后佣兵失去追击焦点
 			if(!empty($mdata['clbpara']['mercchase'])) $mdata['clbpara']['mercchase'] = 0;
 			# 检查下工资情况

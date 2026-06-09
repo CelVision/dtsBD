@@ -59,7 +59,7 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 		}
 
 		//登记非功能性地点信息时合并隐藏地点 为什么会有两个news.func.php？？？
-		$plsinfo = $mapinfo[0];
+		$plsinfo = $mapinfo['plsinfo'];
 		foreach($hplsinfo as $hgroup=>$hpls) $plsinfo = array_merge($plsinfo,$hpls);
 		//死法（除DN外）：道具名登记在$d上；
 		if(strpos($news,'death')!==false && $news!=='death28' && isset($d)) $d = parse_nameinfo_desc($d);
@@ -103,7 +103,7 @@ function  nparse_news($start = 0, $range = 0  ){//$type = '') {
 			$newsinfo .= "<li>{$hour}时{$min}分{$sec}秒，增加禁区：";
 			$alist = explode('_',$a);
 			foreach($alist as $ar) {
-				$newsinfo .= $mapinfo[0][$ar] ;
+				$newsinfo .= $mapinfo['plsinfo'][$ar] ;
 			}
 			$newsinfo .= "<span class=\"yellow\">【天气：{$wthinfo[$b]}】</span><br>\n";
 		} elseif($news == 'hack') {

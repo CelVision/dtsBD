@@ -313,10 +313,10 @@ namespace revcombat
 				else 
 				{
 					$pd['action'] = 'tpmove';
-					$pd['logsave'] .= "<span class=\"grey\">{$pa['name']}点燃火花，将你传送到了{$mapinfo[0][$sp_pls]}！</span><br>";
+					$pd['logsave'] .= "<span class=\"grey\">{$pa['name']}点燃火花，将你传送到了{$mapinfo['plsinfo'][$sp_pls]}！</span><br>";
 				}
-				$log .= "<span class=\"yellow\">你点燃火花，将{$pd['nm']}送到了{$mapinfo[0][$sp_pls]}！祝他好运吧……</span><br>";
-				addnews($now,'sparklemove',$pa['name'],$pd['name'],$mapinfo[0][$sp_pls]);
+				$log .= "<span class=\"yellow\">你点燃火花，将{$pd['nm']}送到了{$mapinfo['plsinfo'][$sp_pls]}！祝他好运吧……</span><br>";
+				addnews($now,'sparklemove',$pa['name'],$pd['name'],$mapinfo['plsinfo'][$sp_pls]);
 				return;
 			}
 		}

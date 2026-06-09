@@ -4,14 +4,14 @@
 //plsinfo还是暂时先用着吧
 function get_plsinfo()
 {
-    global $mapinfo, $mapinfo[0];
-    $mapinfo[0] = Array();
+    global $mapinfo, $mapinfo['plsinfo'];
+    $mapinfo['plsinfo'] = Array();
     foreach( $mapinfo as $mkey => $mlist )
     {
-       $mapinfo[0][$key] = $mlist[$mkey]['plsinfo'];
+       $mapinfo['plsinfo'][$key] = $mlist[$mkey]['plsinfo'];
        unset($mlist);
     }
-    return $mapinfo[0];
+    return $mapinfo['plsinfo'];
 }
 
 ?>

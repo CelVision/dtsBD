@@ -114,7 +114,7 @@
 				}
 				foreach($sparr as $spls => $snums)
 				{
-					$log .="·于<span class='yellow'>【{$mapinfo[0][$spls]}】</span>检索到<span class='yellow'>【{$snums}】</span>名目标对象；<br>";
+					$log .="·于<span class='yellow'>【{$mapinfo['plsinfo'][$spls]}】</span>检索到<span class='yellow'>【{$snums}】</span>名目标对象；<br>";
 				}
 			}
 			else 
@@ -122,7 +122,7 @@
 				$spdata = $db->fetch_array($result);
 				$snm = $typeinfo[$spdata['type']].' '.$spdata['name']; $spls = $spdata['pls'];
 				if($spdata['hp'] < $spdata['mhp']*0.5){$shp = ($spdata['hp'] < $spdata['mhp']*0.2) ? 2 : 1;} else{$shp = 0;}
-				$log .="·于<span class='yellow'>【{$mapinfo[0][$spls]}】</span>检索到目标【{$snm}】<br>目标当前状态：【{$hpinfo[$shp]}】<br>";
+				$log .="·于<span class='yellow'>【{$mapinfo['plsinfo'][$spls]}】</span>检索到目标【{$snm}】<br>目标当前状态：【{$hpinfo[$shp]}】<br>";
 			}
 		}
 		elseif($skind[$kind] == 'itm' || $skind[$kind] == 'trap')
@@ -151,7 +151,7 @@
 			foreach($sumidata as $ipls => $inums)
 			{
 				$log .="
-				<span class='yellow'>【{$inums}】</span>份{$nm}{$tipdesc}<span class='yellow'>【{$mapinfo[0][$ipls]}】</span>；<br>";
+				<span class='yellow'>【{$inums}】</span>份{$nm}{$tipdesc}<span class='yellow'>【{$mapinfo['plsinfo'][$ipls]}】</span>；<br>";
 			}
 		}
 		$log .= "<br>{$console_tips[2]}<br><br>";

@@ -46,10 +46,10 @@
 				<tr>
 					<td height="20" class="b1">
 						<div>
-							<!--{if !isset($mapinfo[0][$pls]) && isset($hplsinfo[$pgroup])}-->
+							<!--{if !isset($mapinfo['plsinfo'][$pls]) && isset($hplsinfo[$pgroup])}-->
 								<span class="yellow" id="pls">$hplsinfo[$pgroup][$pls]</span>
 							<!--{else}--> 
-								<span class="yellow" id="pls">$mapinfo[0][$pls]</span>
+								<span class="yellow" id="pls">$mapinfo['plsinfo'][$pls]</span>
 							<!--{/if}-->
 							【<span class="red">剩余：<span id="anum">$alivenum</span>人</span>】
 						</div>

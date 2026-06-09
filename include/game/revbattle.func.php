@@ -46,7 +46,7 @@ namespace revbattle
 		# 检查敌人是否处于当前位置
 		if ($edata['pls'] != $pls) 
 		{
-			$log .= "<span class=\"yellow\">" . $edata ['name'] . "</span>已经离开了<span class=\"yellow\">'".$mapinfo[0][$pls]."</span>。<br>";
+			$log .= "<span class=\"yellow\">" . $edata ['name'] . "</span>已经离开了<span class=\"yellow\">'".$mapinfo['plsinfo'][$pls]."</span>。<br>";
 			$action = ''; $bid = 0;
 			$mode = 'command';
 			return;

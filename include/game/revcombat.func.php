@@ -74,7 +74,7 @@ namespace revcombat
 		global $infinfo,$mapinfo,$hplsinfo,$nosta,$chase_obbs,$dfight_obbs;
 
 		# 登记非功能性地点信息时合并隐藏地点
-		$plsinfo = $mapinfo[0];
+		$plsinfo = $mapinfo['plsinfo'];
 	    foreach($hplsinfo as $hgroup=>$hpls) $$plsinfo = array_merge($plsinfo,$hpls);
 		
 		# 正式进入rev_combat战斗状态后，在判定伤害、反击流程前的事件执行阶段；

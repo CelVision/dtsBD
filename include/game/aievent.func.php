@@ -27,7 +27,7 @@ function aievent($rate){
 		//echo "成功获得$minionHP";
 		if ($minionHP ['hp'] > 0){
 			//echo "我是黄金小兵，我还活着。";
-			//$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','【AIDEBUG】','$mapinfo[0]','我是黄金小兵，我还活着。')");
+			//$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','【AIDEBUG】','$mapinfo['plsinfo']','我是黄金小兵，我还活着。')");
 		}else{
 			//echo "我是黄金小兵，我死了！放一只静流。";
 			$cht = $sanmachat['showup']; shuffle($cht); $cht = $cht[0]; 
@@ -153,7 +153,7 @@ function aievent($rate){
 						$pvallist = Array();
 						foreach($ipls as $pval){
 							if(!in_array($pval,$pvallist)){
-								$plss .= $mapinfo[0][$pval].',';
+								$plss .= $mapinfo['plsinfo'][$pval].',';
 								$pvallist[] = $pval;
 							}							
 						}
@@ -237,7 +237,7 @@ function aievent($rate){
 					//$sdata['l']
 					$updflag = true;
 					//$db->array_update("{$tablepre}players", $sdata, " pid = '$spid'");//先更为敬，虽然其实可以巧妙构筑流程减少这一次更新
-					$splsinfo = $mapinfo[0][$sdata['pls']];
+					$splsinfo = $mapinfo['plsinfo'][$sdata['pls']];
 					$cht = $sanmachat['move']; shuffle($cht); $cht = $cht[0]; $cht = str_replace('[pls]',$splsinfo,$cht);
 					$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【SANMA_TK】','','{$cht}')");
 				}
@@ -256,7 +256,7 @@ function aievent($rate){
 					$sdata['pose'] = 0;$sdata['tactic'] = 4;//静流姿态变为普通+躲避
 					if(rand(0,99) < 50){//50%概率移动到别的位置
 						while($sdata['pls'] == $pls){
-							$sdata['pls'] = rand(1,count($mapinfo[0])-1);
+							$sdata['pls'] = rand(1,count($mapinfo['plsinfo'])-1);
 						}
 						$newsflag = true;
 					}
@@ -264,7 +264,7 @@ function aievent($rate){
 				}
 				
 				if($newsflag){
-					$splsinfo = $mapinfo[0][$sdata['pls']];
+					$splsinfo = $mapinfo['plsinfo'][$sdata['pls']];
 					$cht = $sanmachat['move2']; shuffle($cht); $cht = $cht[0]; $cht = str_replace('[pls]',$splsinfo,$cht);
 					$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('2','$now','【SANMA_TK】','','{$cht}')");
 				}

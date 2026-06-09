@@ -113,10 +113,10 @@ $col = 0;
 $areaarr = array_slice($arealist,0,$areanum+1);
 foreach($areaarr as $val){
 	if($col == 4){
-		$arealiststr .= $mapinfo[0][$val].'<br>';
+		$arealiststr .= $mapinfo['plsinfo'][$val].'<br>';
 		$col = 0;
 	}else{
-		$arealiststr .= $mapinfo[0][$val].' ';
+		$arealiststr .= $mapinfo['plsinfo'][$val].' ';
 		$col ++;
 	}	
 }
@@ -124,10 +124,10 @@ $col = 0;
 $nareaarr = array_slice($arealist,0,$areanum+$areaadd);
 foreach($nareaarr as $val){
 	if($col == 4){
-		$nextarealiststr .= $mapinfo[0][$val].'<br>';
+		$nextarealiststr .= $mapinfo['plsinfo'][$val].'<br>';
 		$col = 0;
 	}else{
-		$nextarealiststr .= $mapinfo[0][$val].' ';
+		$nextarealiststr .= $mapinfo['plsinfo'][$val].' ';
 		$col ++;
 	}	
 }

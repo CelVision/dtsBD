@@ -5,7 +5,7 @@ if(!defined('IN_GAME')) {
 }
 
 function rs_game($mode = 0) {
-	global $db,$gtablepre,$tablepre,$groomid,$gamecfg,$now,$gamestate,$mapinfo,$typeinfo,$areanum,$areaadd,$afktime,$combonum,$deathlimit,$mapinfo;
+	global $db,$gtablepre,$tablepre,$groomid,$gamecfg,$now,$gamestate,$typeinfo,$areanum,$areaadd,$afktime,$combonum,$deathlimit;
 //	$stime=getmicrotime();
 	$dir = GAME_ROOT.'./gamedata/';
 	$sqldir = GAME_ROOT.'./gamedata/sql/'; 
@@ -61,8 +61,13 @@ function rs_game($mode = 0) {
 		$mapid[34] = 0;
 		for($id=1 ; $id<33 ; $id++)
 			{
-				$dice = rand(0,1);
-				$mapid[$id] = $dice;
+				$dice = rand(0,99);
+				if($dice > 50){
+					$mapid[$id] = 1;
+				}else{
+					$mapid[$id] = 0;
+				} ;
+				
 			}
 		//tada!地图序号表
 		/*$mapinfo = Array();
@@ -81,12 +86,12 @@ function rs_game($mode = 0) {
 				{//32个地图我还没有构思好,有替代就用，没有就用0
 					$mapid[$id] = 0;
 				}
-				// 0plsinfo 1xyinfo 
-				$mapinfo[0][$id] = $maps[$id][$mapid[$id]]['plsinfo'];
-				$mapinfo[1][$id] = $maps[$id][$mapid[$id]]['xyinfo'];
-				$mapinfo[2][$id] = $maps[$id][$mapid[$id]]['areainfo'];
-				$mapinfo[3][$id] = $maps[$id][$mapid[$id]]['events'];
-				$mapinfo[4][$id] = $maps[$id][$mapid[$id]]['isindoor'];
+				// 
+				$mapinfo['plsinfo'][$id] = $maps[$id][$mapid[$id]]['plsinfo'];
+				$mapinfo['xyinfo'][$id] = $maps[$id][$mapid[$id]]['xyinfo'];
+				$mapinfo['areainfo'][$id] = $maps[$id][$mapid[$id]]['areainfo'];
+				$mapinfo['events'][$id] = $maps[$id][$mapid[$id]]['events'];
+				$mapinfo['isindoor'][$id] = $maps[$id][$mapid[$id]]['isindoor'];
 			}
 		save_gameinfo();
 //地图生成部分结束
@@ -98,7 +103,7 @@ function rs_game($mode = 0) {
 		//-------------------------------------------
     
 //plsinfo起手
-		file_put_contents( GAME_ROOT.'./gamedata/maps_1.php','<?php'.PHP_EOL.'$mapinfo[0] = Array('.PHP_EOL,);
+		file_put_contents( GAME_ROOT.'./gamedata/maps_1.php','<?php'.PHP_EOL.'$mapinfo['plsinfo'] = Array('.PHP_EOL,);
         for($i=0 ; $i<35 ;$i++)
        {
 		//file_put_contents( GAME_ROOT.'./debug.txt',var_export($mapinfo[$i]['plsinfo'],1),FILE_APPEND);
@@ -107,7 +112,7 @@ function rs_game($mode = 0) {
 		file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',','.PHP_EOL,FILE_APPEND);
        }
 //areainfo部分
-	   file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',');'.PHP_EOL.'$mapinfo[2] = Array('.PHP_EOL,FILE_APPEND);
+	   file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',');'.PHP_EOL.'$mapinfo['areainfo'] = Array('.PHP_EOL,FILE_APPEND);
 	   for($i=0 ; $i<35 ;$i++)
 	   {
 	
@@ -141,10 +146,11 @@ function rs_game($mode = 0) {
 		global $rswtharr,$arealist,$areanum,$weather,$hack,$areatime,$starttime,$startmin,$areaadd,$areahour;
 		list($sec,$min,$hour,$day,$month,$year,$wday,$yday,$isdst) = localtime($starttime);
 		$areatime = (ceil(($starttime + $areahour*60)/600))*600;//$areahour已改为按分钟计算，ceil是为了让禁区分钟为10的倍数
-		$plsnum = sizeof($mapinfo[0]);
+		$plsnum = sizeof($mapinfo['plsinfo']);
 		$arealist = range(1,$plsnum-1);
 		shuffle($arealist);
 		array_unshift($arealist,0);
+		//file_put_contents( GAME_ROOT.'./debug.txt',var_export($arealist,1),FILE_APPEND);
 		$areanum = 0;
 		$weather = $rswtharr[array_rand($rswtharr)];
 		$hack = 0;
@@ -167,7 +173,7 @@ function rs_game($mode = 0) {
 		include_once config('npc',$gamecfg);
 		include_once GAME_ROOT."./include/game/clubslct.func.php";
 		//$typenum = sizeof($typeinfo);
-		$plsnum = sizeof($mapinfo[0]);
+		$plsnum = sizeof($mapinfo['plsinfo']);
 		$npcqry = '';
 		
 		//for($i = 1; $i < $typenum; $i++) {
@@ -252,7 +258,7 @@ function rs_game($mode = 0) {
 	if ($mode & 16) {
 		//echo " - 地图道具/陷阱初始化 - ";
 		//感谢 Martin1994 提供地图道具数据库化的源代码
-		$plsnum = sizeof($mapinfo[0]);
+		$plsnum = sizeof($mapinfo['plsinfo']);
 		$iqry = $tqry = '';
 //		if($gamestate == 0){
 //			global $checkstr;
@@ -268,7 +274,7 @@ function rs_game($mode = 0) {
 //这里是胶冻，终于也要对这一部分下手了
 //原理是通过之前的mapid部分生成物品
         global $mapid;
-
+//结束
 		$file = config('mapitem',$gamecfg);
 		$itemlist = openfile($file);
 		$in = sizeof($itemlist);
@@ -422,7 +428,7 @@ function add_once_area($atime) {
 	global $gamevars,$deepzones,$sentinel_typelist,$npc_away_from_deepzones;
 	
 	if (($gamestate > 10)&&($now > $atime)) {
-		$plsnum = sizeof($mapinfo[0]) - 1;
+		$plsnum = sizeof($mapinfo['plsinfo']) - 1;
 		if(($areanum >= $arealimit*$areaadd)&&($validnum<=0)) {//无人参加GAMEOVER不是因为这里，这里只是保险。
 			gameover($atime,'end4');
 			return;
@@ -697,7 +703,7 @@ function movehtm($atime = 0) {
 	/*$movehtm = GAME_ROOT.TPLDIR.'/move.htm';
 	$movedata = '<option value="main">■ 移动 ■<br />';
 
-	foreach($mapinfo[0] as $key => $value) {
+	foreach($mapinfo['plsinfo'] as $key => $value) {
 		if(array_search($key,$arealist) > $areanum || $hack){
 		$movedata .= "<option value=\"$key\"><!--{if \$pls == $key}--><--现在位置--><!--{else}-->$value($xyinfo[$key])<!--{/if}--><br />";
 		}
@@ -707,7 +713,7 @@ function movehtm($atime = 0) {
 	/*$areahtm = GAME_ROOT.TPLDIR.'/areainfo.htm';
 	$areadata = '<span class="evergreen"><b>现在的禁区是：</b></span>';
 	for($i=0;$i<=$areanum;$i++){
-		$areadata .= '&nbsp;'.$mapinfo[0][$arealist[$i]];
+		$areadata .= '&nbsp;'.$mapinfo['plsinfo'][$arealist[$i]];
 	}
 	$areadata .= '<br><span class="evergreen"><b>下回的禁区是：</b></span>';*/
 	
@@ -716,7 +722,7 @@ function movehtm($atime = 0) {
 		global $areatime;
 		$atime = $areatime;
 	}
-	if($areanum < count($mapinfo[0])) {
+	if($areanum < count($mapinfo['plsinfo'])) {
 		$at= getdate($atime);
 		$nexthour = $at['hours'];$nextmin = $at['minutes'];
 		while($nextmin >= 60){
@@ -725,10 +731,10 @@ function movehtm($atime = 0) {
 		if($nexthour >= 24){$nexthour-=24;}
 		$areadata .= "<b>{$nexthour}时{$nextmin}分：</b> ";
 		for($i=1;$i<=$areaadd;$i++) {
-			$areadata .= '&nbsp;'.$mapinfo[0][$arealist[$areanum+$i]].'&nbsp;';
+			$areadata .= '&nbsp;'.$mapinfo['plsinfo'][$arealist[$areanum+$i]].'&nbsp;';
 		}
 	}
-	if($areanum+$areaadd < count($mapinfo[0])) {
+	if($areanum+$areaadd < count($mapinfo['plsinfo'])) {
 		$at2= getdate($atime + $areahour*60);
 		$nexthour2 = $at2['hours'];$nextmin2 = $at2['minutes'];
 		while($nextmin2 >= 60){
@@ -737,10 +743,10 @@ function movehtm($atime = 0) {
 		if($nexthour2 >= 24){$nexthour2-=24;}
 		$areadata .= "；<b>{$nexthour2}时{$nextmin2}分：</b> ";
 		for($i=1;$i<=$areaadd;$i++) {
-			$areadata .= '&nbsp;'.$mapinfo[0][$arealist[$areanum+$areaadd+$i]].'&nbsp;';
+			$areadata .= '&nbsp;'.$mapinfo['plsinfo'][$arealist[$areanum+$areaadd+$i]].'&nbsp;';
 		}
 	}
-	if($areanum+$areaadd*2 < count($mapinfo[0])) {
+	if($areanum+$areaadd*2 < count($mapinfo['plsinfo'])) {
 		$at3= getdate($atime + $areahour*120);
 		$nexthour3 = $at3['hours'];$nextmin3 = $at3['minutes'];
 		while($nextmin3 >= 60){
@@ -749,7 +755,7 @@ function movehtm($atime = 0) {
 		if($nexthour3 >= 24){$nexthour3-=24;}
 		$areadata .= "；<b>{$nexthour3}时{$nextmin3}分：</b> ";
 		for($i=1;$i<=$areaadd;$i++) {
-			$areadata .= '&nbsp;'.$mapinfo[0][$arealist[$areanum+$areaadd*2+$i]].'&nbsp;';
+			$areadata .= '&nbsp;'.$mapinfo['plsinfo'][$arealist[$areanum+$areaadd*2+$i]].'&nbsp;';
 		}
 	}
 	return $areadata;
@@ -763,7 +769,7 @@ function addnpc($type,$sub,$num,$time = 0,$anpcdata = NULL) {
 	include_once GAME_ROOT."./include/game/clubslct.func.php";
 
 	$time = $time == 0 ? $now : $time;
-	$plsnum = sizeof($mapinfo[0]);
+	$plsnum = sizeof($mapinfo['plsinfo']);
 	/*if(empty($anpcinfo) || empty($npcinit)){
 		include_once config('addnpc',$gamecfg);
 	}*/

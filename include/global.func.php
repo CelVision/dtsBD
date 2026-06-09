@@ -253,6 +253,7 @@ function load_gameinfo() {
 	$gameinfo = $db->fetch_array($result);
 	if(!empty($gameinfo)) extract($gameinfo);
 	$arealist = explode(',',$gameinfo['arealist']);
+	
 	$gamevars = json_decode($gamevars,true);
 	$mapinfo = json_decode($mapinfo,true);
 	$noisevars = json_decode($noisevars,true);
@@ -302,11 +303,17 @@ function save_gameinfo()
 	$gameinfo['weather'] = $weather;
 	//$gamevars0 = ($gamevars['sanmaact'] ? 1 : 0) + ($gamevars['sanmadead'] ? 2 : 0);
 	$gameinfo['gamevars'] = json_encode($gamevars,JSON_UNESCAPED_UNICODE);
+
+	/*$mapinfot =$mapinfo;
+	for($i=0; $i<count($mapinfo['areainfo']);$i++ ){
+		$mapinfot['areainfo'][$i] = str_replace('\"','"',$mapinfot['areainfo'][$i]);
+
+	}*/
 	$gameinfo['mapinfo'] = json_encode($mapinfo,JSON_UNESCAPED_UNICODE);
 	$gameinfo['hack'] = $hack;
 	$gameinfo['combonum'] = $combonum;
     //用来debug
-	//file_put_contents( GAME_ROOT.'./debug.txt',var_export($mapinfo,1),FILE_APPEND);
+	//file_put_contents( GAME_ROOT.'./debug.txt',var_export($gameinfo['mapinfo'],1),FILE_APPEND);
 	$db->array_update("{$gtablepre}game",$gameinfo,"groomid = {$groomid}");
 	return;
 }
@@ -338,7 +345,7 @@ function save_combatinfo(){
 }
 
 function getchat($last,$team='',$limit=0) {
-	include_once  GAME_ROOT.'./gamedata/maps_1.php';
+	//include_once  GAME_ROOT.'./gamedata/maps_1.php';
 	global $db,$tablepre,$chatlimit,$chatinfo,$mapinfo,$hplsinfo;
 	$limit = $limit ? $limit : $chatlimit;
 	$result = $db->query("SELECT * FROM {$tablepre}chat WHERE cid>'$last' AND (type!='1' OR (type='1' AND recv='$team')) ORDER BY cid desc LIMIT $limit");
@@ -346,8 +353,9 @@ function getchat($last,$team='',$limit=0) {
 	if(!$db->num_rows($result)){$chatdata = array('lastcid' => $last, 'msg' => '');return $chatdata;}
 
 	//登记非功能性地点信息时合并隐藏地点
-	$tplsinfo = $mapinfo[0];
-	//file_put_contents( GAME_ROOT.'./debug.txt',PHP_EOL.var_export($mapinfo[0],1),);
+	$tplsinfo = $mapinfo['plsinfo'];
+	file_put_contents( GAME_ROOT.'./debug.txt',PHP_EOL.var_export("tplsinfo:" + $tplsinfo,1),FILE_APPEND);
+	//file_put_contents( GAME_ROOT.'./debug.txt',PHP_EOL.var_export($mapinfo['plsinfo'],1),FILE_APPEND);
 	foreach($hplsinfo as $hgroup=>$hpls) $tplsinfo = array_merge($tplsinfo, $hpls);
 	
 	while($chat = $db->fetch_array($result)) {
@@ -448,7 +456,7 @@ function systemputchat($time,$type,$msg = ''){
 		$msg = '';
 		global $mapinfo;
 		foreach($alist as $ar) {
-			$msg .= $mapinfo[0][$ar] ;
+			$msg .= $mapinfo['plsinfo'][$ar] ;
 		}
 		if($type == 'areaadd'){
 			$msg = '增加禁区：'.$msg;
