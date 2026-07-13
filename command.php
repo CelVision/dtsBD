@@ -634,9 +634,9 @@ if($hp > 0){
 				$log .= '<span class="yellow">你所在的地区没有商店。</span><br />';
 				$mode = 'command';
 			}
-		}elseif($mode == 'commands'){
-			include_once GAME_ROOT.'./include/game/commands.func.php';
-			command_input($in_commands);
+		}elseif($mode == 'control'){
+			include_once GAME_ROOT.'./include/game/control.func.php';
+			control_input($in_control);
 			}
 		elseif($mode == 'depot') {
 			include_once GAME_ROOT.'./include/game/depot.func.php';
@@ -835,6 +835,7 @@ if(!empty($noisevars)) extract($noisevars);
 if(isset($url)){$gamedata['url'] = $url;}
 $gamedata['innerHTML']['pls'] = (!isset($mapinfo['plsinfo'][$pls]) && isset($hplsinfo[$pgroup])) ? $hplsinfo[$pgroup][$pls] : $mapinfo['plsinfo'][$pls];
 $gamedata['innerHTML']['anum'] = $alivenum;
+$gamedata['bgpls'] = $pls;
 
 ob_clean();
 $main ? include template($main) : include template('profile');

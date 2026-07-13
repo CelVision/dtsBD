@@ -360,6 +360,9 @@ function showData(sdata){
 	if(shwData['timer'] && typeof(timerid)=='undefined'){
 		demiSecTimerStarter(shwData['timer']);
 	}
+	if(shwData['bgpls'] != null){
+		document.body.style.backgroundImage = 'url("img/location/' + shwData['bgpls'] + '.jpg")';
+	}
 	if ($('HsUipfcGhU'))	//ˢ��ҳ����
 	{
 		window.location.reload();

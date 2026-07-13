@@ -129,15 +129,15 @@ function rs_game($mode = 0) {
 
 
 		//控制台初始化(这里也是一开始循环调用了！)
-		include GAME_ROOT. './gamedata/commandscfg.php';
+		include GAME_ROOT. './gamedata/controlcfg.php';
 		global $gamevars,$log;
-		$gamevars['rand_commands'] = Array();
-		foreach($commands as $ckey => $clist)
+		$gamevars['rand_controls'] = Array();
+		foreach($controls as $ckey => $clist)
 		{
 			$c_temp = $clist[0];
 			$c_code = explode('-',substr($clist[1],1));
 			$c_temp .= rand($c_code[0],$c_code[1]);
-			$gamevars['rand_commands'][$ckey] = Array($c_temp,$clist[2]);
+			$gamevars['rand_controls'][$ckey] = Array($c_temp,$clist[2]);
 			unset($clist);
 		}
 		save_gameinfo();
