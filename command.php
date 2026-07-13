@@ -67,8 +67,11 @@ if($hp > 0){
 	$gameresult = $db->query("SELECT * FROM {$gtablepre}game WHERE groomid = {$groomid}");
     $gameinfo = $db->fetch_array($gameresult);
     extract($gameinfo);
-    $mapinfo = strip_tags($mapinfo);
+    $arealist = explode(',', $gameinfo['arealist']);
+    $gamevars = json_decode($gamevars, true);
     $mapinfo = json_decode($mapinfo, true);
+    $noisevars = json_decode($noisevars, true);
+    if(!empty($noisevars)) extract($noisevars);
 	//显示枪声信息
 	if(($now <= $noisetime+$noiselimit)&&$noisemode&&($noiseid!=$pid)&&($noiseid2!=$pid)) {
 		if(($now-$noisetime) < 60) {
@@ -824,8 +827,11 @@ if(isset($opendialog)){$log.="<span style=\"display:none\" id=\"open-dialog\">{$
 $gameresult = $db->query("SELECT * FROM {$gtablepre}game WHERE groomid = {$groomid}");
 $gameinfo = $db->fetch_array($gameresult);
 extract($gameinfo);
-$mapinfo = strip_tags($mapinfo);
+$arealist = explode(',', $gameinfo['arealist']);
+$gamevars = json_decode($gamevars, true);
 $mapinfo = json_decode($mapinfo, true);
+$noisevars = json_decode($noisevars, true);
+if(!empty($noisevars)) extract($noisevars);
 if(isset($url)){$gamedata['url'] = $url;}
 $gamedata['innerHTML']['pls'] = (!isset($mapinfo['plsinfo'][$pls]) && isset($hplsinfo[$pgroup])) ? $hplsinfo[$pgroup][$pls] : $mapinfo['plsinfo'][$pls];
 $gamedata['innerHTML']['anum'] = $alivenum;
