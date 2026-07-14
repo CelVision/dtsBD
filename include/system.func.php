@@ -43,9 +43,6 @@ function rs_game($mode = 0) {
 		$combonum = $deathlimit;
 		//重设游戏剧情开关
 		$gamevars = Array();
-		//清空地图
-		$mapinfo = Array();
-		save_gameinfo();
 		
 	}
 	if ($mode & 2) {

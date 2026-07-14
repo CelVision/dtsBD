@@ -55,12 +55,23 @@ if($command == 'wthedit'){
 	}elseif($igamestate == 20){
 		$cmd_info = '游戏立即开始！请访问任意游戏页面以刷新游戏状态。';
 		$starttime = $now;
+		if($gamestate < 10){
+			$gamenum++;
+			$gamestate = 10;
+			include_once GAME_ROOT.'./include/system.func.php';
+			rs_game(1+2+4+8+16+32);
+		}
+		$gamestate = 20;
 		save_gameinfo();
 		adminlog('gsedit',$igamestate);
 		addnews($now,'sysgschg',$igamestate);	
 	}elseif($igamestate == 10){
 		$cmd_info = '游戏立即进入准备状态！请访问任意游戏页面以刷新游戏状态。';
 		$starttime = $now + $startmin * 60;
+		$gamenum++;
+		$gamestate = 10;
+		include_once GAME_ROOT.'./include/system.func.php';
+		rs_game(1+2+4+8+16+32);
 		save_gameinfo();
 		adminlog('gsedit',$igamestate);
 	}else{

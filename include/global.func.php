@@ -302,14 +302,14 @@ function save_gameinfo()
 	$gameinfo['optime'] = $optime;
 	$gameinfo['weather'] = $weather;
 	//$gamevars0 = ($gamevars['sanmaact'] ? 1 : 0) + ($gamevars['sanmadead'] ? 2 : 0);
-	$gameinfo['gamevars'] = json_encode($gamevars,JSON_UNESCAPED_UNICODE);
+	$gameinfo['gamevars'] = addslashes(json_encode($gamevars,JSON_UNESCAPED_UNICODE));
 
 	/*$mapinfot =$mapinfo;
 	for($i=0; $i<count($mapinfo['areainfo']);$i++ ){
 		$mapinfot['areainfo'][$i] = str_replace('\"','"',$mapinfot['areainfo'][$i]);
 
 	}*/
-	$gameinfo['mapinfo'] = json_encode($mapinfo,JSON_UNESCAPED_UNICODE);
+	$gameinfo['mapinfo'] = addslashes(json_encode($mapinfo,JSON_UNESCAPED_UNICODE));
 	$gameinfo['hack'] = $hack;
 	$gameinfo['combonum'] = $combonum;
     //用来debug
