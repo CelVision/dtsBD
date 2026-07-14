@@ -33,13 +33,13 @@ CREATE TABLE bra_game (
 
   PRIMARY KEY (`groomid`)
 
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 --
 -- 插入初始数据 `bra_game`
 --
 
-INSERT INTO bra_game (gamenum) VALUES (0);
+INSERT INTO bra_game (gamenum, mapinfo, gamevars, noisevars) VALUES (0, '', '', '');
 
 --
 -- 表的结构 `bra_users`
@@ -57,12 +57,12 @@ CREATE TABLE bra_users (
   `ip` char(15) NOT NULL DEFAULT '',
   `credits` int(10) NOT NULL DEFAULT '0',
   `credits2` mediumint(9) NOT NULL DEFAULT '0',
-  `achievement` text NOT NULL default '',
-  `achrev` text NOT NULL default '',
+  `achievement` text NOT NULL,
+  `achrev` text NOT NULL,
   `daily` varchar(255) NOT NULL DEFAULT '',
-  `nick` text NOT NULL default '',
-  `nicks` text NOT NULL default '',
-  `nicksrev` text NOT NULL default '',
+  `nick` text NOT NULL,
+  `nicks` text NOT NULL,
+  `nicksrev` text NOT NULL,
   `validgames` smallint(5) unsigned NOT NULL DEFAULT '0',
   `wingames` smallint(5) unsigned NOT NULL DEFAULT '0',
   `gender` char(1) NOT NULL DEFAULT '0',
@@ -75,7 +75,7 @@ CREATE TABLE bra_users (
   PRIMARY KEY  (uid),
   UNIQUE KEY username (username)
 
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 --
 -- 插入初始数据 `bra_users`
@@ -208,7 +208,7 @@ CREATE TABLE bra_winners (
   `hkp` char(15) NOT NULL DEFAULT '',
   
   UNIQUE KEY (gid)
-) TYPE=MyISAM;
+) ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS bra_vnmixitem;
 CREATE TABLE bra_vnmixitem (
@@ -239,8 +239,8 @@ CREATE TABLE bra_messages (
   `receiver` char(15) NOT NULL DEFAULT '',
   `sender` char(15) NOT NULL DEFAULT '',
   `title` varchar(255) NOT NULL DEFAULT '',
-  `content` text NOT NULL DEFAULT '',
-  `enclosure` text NOT NULL DEFAULT '',
+  `content` text NOT NULL,
+  `enclosure` text NOT NULL,
   PRIMARY KEY (`mid`),
   INDEX `RECEIVER` (`receiver`),
   INDEX `SENDER` (`sender`)
@@ -257,10 +257,11 @@ CREATE TABLE `bra_del_messages` (
   `receiver` char(15) NOT NULL DEFAULT '',
   `sender` char(15) NOT NULL DEFAULT '',
   `title` varchar(255) NOT NULL DEFAULT '',
-  `content` text NOT NULL DEFAULT '',
-  `enclosure` text NOT NULL DEFAULT '',
+  `content` text NOT NULL,
+  `enclosure` text NOT NULL,
   PRIMARY KEY (`mid`),
   INDEX `RECEIVER` (`receiver`),
   INDEX `SENDER` (`sender`)
   
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+

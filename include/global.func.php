@@ -354,7 +354,7 @@ function getchat($last,$team='',$limit=0) {
 
 	//登记非功能性地点信息时合并隐藏地点
 	$tplsinfo = $mapinfo['plsinfo'];
-	file_put_contents( GAME_ROOT.'./debug.txt',PHP_EOL.var_export("tplsinfo:" + $tplsinfo,1),FILE_APPEND);
+	file_put_contents( GAME_ROOT.'./debug.txt',PHP_EOL.var_export("tplsinfo:".var_export($tplsinfo,true),1),FILE_APPEND);
 	//file_put_contents( GAME_ROOT.'./debug.txt',PHP_EOL.var_export($mapinfo['plsinfo'],1),FILE_APPEND);
 	foreach($hplsinfo as $hgroup=>$hpls) $tplsinfo = array_merge($tplsinfo, $hpls);
 	
