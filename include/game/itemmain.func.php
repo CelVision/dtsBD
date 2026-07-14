@@ -593,7 +593,8 @@ function itemdrop($item,&$data=NULL) {
 		$db->query("INSERT INTO {$tablepre}mapitem (itm, itmk, itme, itms, itmsk ,pls) VALUES ('$itm', '$itmk', '$itme', '$itms', '$itmsk', '$pls')");
 		$drop_iid = $db->insert_id();
 		$log .= "你丢弃了<span class=\"red\">$itm</span>。<br>";
-		check_add_searchmemory($drop_iid,'itm',$itm,$data);
+		include_once GAME_ROOT.'./include/game/search_queue.func.php';
+		insert_item_queue($drop_iid,$data);
 	}
 	if($item == 'wep'){
 		$itm = '拳头';

@@ -159,12 +159,16 @@ if($hp > 0){
 				$log .= "你的双手都已经抓满了东西。为了完成所想，你集中意念召唤幻肢……<br>什么都没有发生，除了你的脑壳痛了起来。<br><br>";
 				$mode = 'command';
 			}	elseif($command == 'move') {
-				include_once GAME_ROOT.'./include/game/search.func.php';
-				move($moveto);
+				include_once GAME_ROOT.'./include/game/search_queue.func.php';
+				move_queue($moveto);
 				if($coldtimeon){$cmdcdtime=$movecoldtime;}
 			} elseif($command == 'search') {
-				include_once GAME_ROOT.'./include/game/search.func.php';
-				search();
+				include_once GAME_ROOT.'./include/game/search_queue.func.php';
+				search_forward();
+				if($coldtimeon){$cmdcdtime=$searchcoldtime;}
+			} elseif($command == 'searchback') {
+				include_once GAME_ROOT.'./include/game/search_queue.func.php';
+				search_backward();
 				if($coldtimeon){$cmdcdtime=$searchcoldtime;}
 			} elseif(strpos($command,'itm') === 0) {
 				include_once GAME_ROOT.'./include/game/item.func.php';

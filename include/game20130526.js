@@ -24,7 +24,12 @@ function hotkey(evt)
 			if (ms>0) flag=0;
 		}	
 		//双字母id=冷却时间内不可执行的操作 单字母可以执行
-		if(!evt.ctrlKey && !evt.altKey && !evt.shiftKey){
+		if(evt.shiftKey && !evt.ctrlKey && !evt.altKey){
+			if(ky==90){
+				hotkey_click('zb');
+			}
+		}
+		else if(!evt.ctrlKey && !evt.altKey && !evt.shiftKey){
 			if(ky==90){
 				flag==1 ? hotkey_click('zz') : hotkey_click('z');
 			}

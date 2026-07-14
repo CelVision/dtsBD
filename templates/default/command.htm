@@ -4,28 +4,11 @@
 <input type="hidden" id="subcmd2" name="subcmd2" value="">
 现在想要做什么？<br /><br />
 
-<input type="button" class="cmdbutton" id="zz" name="search" value="[Z]搜寻" onclick="$('command').value='search';postCmd('gamecmd','command.php');this.disabled=true;" <!--{if (array_search($pls,$arealist) <= $areanum && !$hack) && (isset($mapinfo['plsinfo'][$pls]) && !isset($hplsinfo[$pgroup]))}-->disabled<!--{/if}-->>
+<input type="button" class="cmdbutton" id="zz" name="search" value="[Z]向前搜寻" onclick="$('command').value='search';postCmd('gamecmd','command.php');this.disabled=true;" <!--{if (array_search($pls,$arealist) <= $areanum && !$hack) && (isset($mapinfo['plsinfo'][$pls]) && !isset($hplsinfo[$pgroup]))}-->disabled<!--{/if}-->>
+<input type="button" class="cmdbutton" id="zb" name="searchback" value="[Shift+Z]向后搜寻" onclick="$('command').value='searchback';postCmd('gamecmd','command.php');this.disabled=true;" <!--{if (array_search($pls,$arealist) <= $areanum && !$hack) && (isset($mapinfo['plsinfo'][$pls]) && !isset($hplsinfo[$pgroup]))}-->disabled<!--{/if}-->>
 <select id="moveto" name="moveto" id="d" onchange="$('command').value='move';postCmd('gamecmd','command.php');this.disabled=true;">
 {template move}
 </select>
-	<!-- 探索记忆栏 -->
-	<!--{if !empty($clbpara['smeo'])}-->
-			<br>
-			<!--{loop $clbpara['smeo'] $smkey $sm}-->
-			<input type="button" class="cmdbutton" style="padding: 0px; margin-top: 15px;"
-				<!--{eval $sm_nm = parse_itmname_words($sm[2],1,10); }-->
-				<!--{if $sm[1] == 'itm'}-->
-					value="获取 {$sm_nm}"
-				<!--{elseif $sm[1] == 'enemy'}-->
-						value="迎战 {$sm_nm}"
-				<!--{elseif $sm[1] == 'corpse'}-->
-						value="检查 {$sm_nm} 的尸体"
-				<!--{elseif $sm[1] == 'corpse'}-->
-						value="和 {$sm_nm} 打招呼"
-				<!--{/if}-->
-				onclick="$('mode').value='command';$('command').value='memory{$smkey}';postCmd('gamecmd','command.php');this.disabled=true;">
-			<!--{/loop}-->
-	<!--{/if}-->
 	<br />
 	<!-- 背包栏 -->
 	<br />
