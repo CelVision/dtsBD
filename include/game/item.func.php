@@ -2188,12 +2188,18 @@ function itemuse($itmn,&$data=NULL) {
 			include_once GAME_ROOT . './include/system.func.php';
 			$log .= '在你唱出那单一的旋律的霎那，<br>整个虚拟世界起了翻天覆地的变化……<br>';
 			addnpc ( 4, 0,1);
+			//移除自动托管的红暮，召唤真正的红暮
+			$db->query("DELETE FROM {$tablepre}players WHERE name='红暮-自动托管' AND type>0");
+			addnpc ( 1, 0,1);
 			include_once GAME_ROOT . './include/game/item2.func.php';
 			$log .= '世界响应着这旋律，产生了异变……<br>';
 			wthchange( $itm,$itmsk);
 			addnews ($now,'thiphase',$name,$nick);
 			$hack = 1;
 			$gamevars['apis'] = $gamevars['api'] = 3;
+			//清除无月之影的煤气罐，并禁止后续刷新
+			$db->query("DELETE FROM {$tablepre}mapitem WHERE itm='煤气罐' AND pls='0'");
+			$gamevars['nocoal'] = 1;
 			$log .= '因为破灭之歌的作用，全部锁定被打破了！<br>';
 			movehtm();
 			addnews($now,'hack2',$name,$nick);

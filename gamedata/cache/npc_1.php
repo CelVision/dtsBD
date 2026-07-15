@@ -27,7 +27,7 @@
 	$npcinfo = array
 	( 
 	//1 = 红暮
-	/*1 => array
+	1 => array
 		(
 		'mode' => 1,
 		'num' => 1,
@@ -51,7 +51,7 @@
 		'skills' => 66,
 		'bid' => 0,
 		'inf' => '',
-		'rage' => 255,
+		'rage' => 0,
 		'pose'=> 2,
 		'tactic' => 3,
 		'killnum' => 0,
@@ -59,10 +59,10 @@
 		'teamPass' => '',
 		'gd' => 'f',
 		'pls' => 0,
-		'mhp' => 75000,
+		'mhp' => 7500,
 		'msp' => 4000,
 		'att' => 750,
-		'def' => 7500,
+		'def' => 750,
 		'lvl' => 75,
 		'skill' => 777,
 		'wg' => 1420,
@@ -94,28 +94,24 @@
 		(
 			0 => array
 			(
-			'name' => '红暮',
+			'name' => '红暮-自动托管',
 			'icon' => 7,
 			'wep' => '燃素加农炮『爆炎』MK-II',
 			'wepk' => 'WG',
-			'wepe' => 1750,
+			'wepe' => 1280,
 			'weps' => 9999,
 			'wepsk' => 'rfn',
 			'itm1' => '挑战者之印',
 			'itmk1' => 'Y',
 			'itme1' => 1,
 			'itms1' => 1,
-			'itm2' => '黑色碎片',
-			'itmk2' => 'Y',
-			'itme2' => 1,
-			'itms2' => 1,
 			'itm3' => '【我想要领略真正的红杀之力】',
 			'itmk3' => 'Y',
 			'itme3' => 1,
 			'itms3' => 1,
 			),
 		),
-	),*/
+	),
 
 	14 => array(
 		'mode' => 1,

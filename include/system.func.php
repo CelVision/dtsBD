@@ -255,6 +255,7 @@ function rs_game($mode = 0) {
 	if ($mode & 16) {
 		//echo " - 地图道具/陷阱初始化 - ";
 		//感谢 Martin1994 提供地图道具数据库化的源代码
+		global $gamevars;
 		$plsnum = sizeof($mapinfo['plsinfo']);
 		$iqry = $tqry = '';
 //		if($gamestate == 0){
@@ -282,6 +283,8 @@ function rs_game($mode = 0) {
 			if(!empty($itemlist[$i]) && strpos($itemlist[$i],',')!==false){
 				list($iarea,$imap,$inum,$iname,$ikind,$ieff,$ista,$iskind) = explode(',',$itemlist[$i]);
 				if(($iarea == $an)||($iarea == 99)) {
+					//破灭之诗使用后不再刷新无月之影的煤气罐
+					if($iname == '煤气罐' && $imap == 0 && !empty($gamevars['nocoal'])) continue;
 					for($j = $inum; $j>0; $j--) {
 						if($imap == 99) {
 							$rmap = rand(1,$plsnum-1);

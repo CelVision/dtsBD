@@ -953,6 +953,8 @@ function check_battle_achievement_rev($pa,$pd)
 	$nn = $pa['name'];
 	$killname = $pd['name'];
 	$wp = isset($pa['wep_name']) ? $pa['wep_name'] : $pa['wep'];
+	//自动托管的红暮不计入击杀成就
+	if($killname == '红暮-自动托管') $is_npc = 0;
 	// 判断是否为活跃玩家：暂时只要IP不一样就算活跃玩家
 	$is_tplayer = $pa['ip'] == $pd['ip'] ? 0 : 1;
 	// 获取pa当前的每日任务列表
