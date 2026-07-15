@@ -53,9 +53,81 @@ input[type="text"]{width:200px}
 <div class="container">
 <h1>⚔️ DTS 战斗伤害计算器</h1>
 <div class="preset-bar">
-<select id="preset_pa" onchange="loadPreset('pa',this.value)"><option value="">攻击方预设...</option><option value="yuban">御坂美琴</option><option value="banchi">坂持金发</option><option value="yukari">风见幽香</option><option value="hongmu">红暮</option><option value="hank">Hank</option></select>
-<select id="preset_pd" onchange="loadPreset('pd',this.value)"><option value="">防守方预设...</option><option value="yuban">御坂美琴</option><option value="banchi">坂持金发</option><option value="yukari">风见幽香</option><option value="hongmu">红暮</option><option value="hank">Hank</option></select>
+<select id="preset_pa" onchange="loadPreset('pa',this.value)">
+<option value="">攻击方预设...</option>
+<optgroup label="执行官">
+<option value="yuban">电击使 御坂美琴</option>
+<option value="banchi">班主任 坂持金发</option>
+<option value="yukari">花之领主 风见幽香</option>
+</optgroup>
+<optgroup label="BOSS">
+<option value="hongmu">红暮</option>
+<option value="hongmu_s">红暮(强化)</option>
+<option value="lanning">蓝凝</option>
+<option value="lanning_s">思念体-蓝凝</option>
+<option value="sazuki">冴月麟</option>
+<option value="black">■</option>
+<option value="sanma">【SANMA_TK】</option>
+</optgroup>
+<optgroup label="电掣组织">
+<option value="mina">电掣部长米娜</option>
+<option value="tserof">是TSEROF啦！</option>
+<option value="cagebird">笼中鸟</option>
+<option value="ram">坚韧之子·拉姆</option>
+<option value="shirakami">高中生·白神</option>
+<option value="amour">诚心使魔·阿摩尔</option>
+<option value="flame">✦繁花的烈火</option>
+</optgroup>
+<optgroup label="全息幻象">
+<option value="minase">水濑名雪-改</option>
+<option value="tachibana">立华奏-改</option>
+<option value="kaiba">思念体-海马濑人</option>
+<option value="tentacle">思念体-触手众</option>
+</optgroup>
+<optgroup label="其他">
+<option value="hank">Hank</option>
+<option value="xilin">Acg_Xilin</option>
+</optgroup>
+</select>
+<select id="preset_pd" onchange="loadPreset('pd',this.value)">
+<option value="">防守方预设...</option>
+<optgroup label="执行官">
+<option value="yuban">电击使 御坂美琴</option>
+<option value="banchi">班主任 坂持金发</option>
+<option value="yukari">花之领主 风见幽香</option>
+</optgroup>
+<optgroup label="BOSS">
+<option value="hongmu">红暮</option>
+<option value="hongmu_s">红暮(强化)</option>
+<option value="lanning">蓝凝</option>
+<option value="lanning_s">思念体-蓝凝</option>
+<option value="sazuki">冴月麟</option>
+<option value="black">■</option>
+<option value="sanma">【SANMA_TK】</option>
+</optgroup>
+<optgroup label="电掣组织">
+<option value="mina">电掣部长米娜</option>
+<option value="tserof">是TSEROF啦！</option>
+<option value="cagebird">笼中鸟</option>
+<option value="ram">坚韧之子·拉姆</option>
+<option value="shirakami">高中生·白神</option>
+<option value="amour">诚心使魔·阿摩尔</option>
+<option value="flame">✦繁花的烈火</option>
+</optgroup>
+<optgroup label="全息幻象">
+<option value="minase">水濑名雪-改</option>
+<option value="tachibana">立华奏-改</option>
+<option value="kaiba">思念体-海马濑人</option>
+<option value="tentacle">思念体-触手众</option>
+</optgroup>
+<optgroup label="其他">
+<option value="hank">Hank</option>
+<option value="xilin">Acg_Xilin</option>
+</optgroup>
+</select>
+<button onclick="toggleChart()" style="background:var(--input);color:var(--text);border:1px solid var(--border);padding:4px 12px;border-radius:4px;cursor:pointer;font-size:13px">📋 属性对照表</button>
 </div>
+<div id="attr_chart" style="display:none;margin-bottom:12px"></div>
 <div class="grid">
 <div class="card" id="pa_card"></div>
 <div class="card" id="pd_card"></div>

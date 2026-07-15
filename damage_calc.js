@@ -44,11 +44,50 @@ const CFG = {
 
 // ======================== PRESETS ========================
 const PRESETS = {
-  yuban:{name:'御坂美琴',type:1,att:1500,def:7500,lvl:75,hp:25500,mhp:25500,sp:4000,msp:4000,club:9,pose:1,tactic:3,inf:'',wepk:'WG',wepe:1777,weps:999,wepsk:'eeeeeyc',wp:777,wk:777,wg:2500,wc:777,wd:777,wf:777,artsk:'H',arbsk:'',arhsk:'',arask:'',arfsk:'',arbe:3000,arhe:1444,arae:0,arfe:0,arbs:3000,arhs:1444,aras:0,arfs:0,skills:{}},
-  banchi:{name:'坂持金发',type:1,att:1500,def:7500,lvl:75,hp:25500,mhp:25500,sp:4000,msp:4000,club:9,pose:1,tactic:3,inf:'',wepk:'WG',wepe:1777,weps:999,wepsk:'iiiiiyc',wp:777,wk:777,wg:2500,wc:777,wd:777,wf:777,artsk:'H',arbsk:'',arhsk:'',arask:'',arfsk:'',arbe:3000,arhe:1444,arae:0,arfe:0,arbs:3000,arhs:1444,aras:0,arfs:0,skills:{}},
-  yukari:{name:'风见幽香',type:1,att:1500,def:7500,lvl:75,hp:25500,mhp:25500,sp:4000,msp:4000,club:9,pose:1,tactic:3,inf:'',wepk:'WF',wepe:777,weps:999,wepsk:'pppppyc',wp:777,wk:777,wg:777,wc:777,wd:777,wf:2500,artsk:'H',arbsk:'',arhsk:'',arask:'',arfsk:'',arbe:3000,arhe:1444,arae:0,arfe:0,arbs:3000,arhs:1444,aras:0,arfs:0,skills:{}},
-  hongmu:{name:'红暮',type:1,att:750,def:7500,lvl:75,hp:75000,mhp:75000,sp:4000,msp:4000,club:0,pose:2,tactic:3,inf:'',wepk:'WG',wepe:1750,weps:300,wepsk:'fc',wp:777,wk:777,wg:1420,wc:777,wd:777,wf:777,artsk:'',arbsk:'Ab',arhsk:'',arask:'',arfsk:'',arbe:3000,arhe:1444,arae:0,arfe:0,arbs:3000,arhs:1444,aras:0,arfs:0,skills:{sk_c4_roar:1}},
-  hank:{name:'Hank',type:0,att:88,def:88,lvl:1,hp:2888,mhp:2888,sp:999,msp:999,club:0,pose:1,tactic:3,inf:'',wepk:'WP',wepe:88,weps:999,wepsk:'rc',wp:100,wk:100,wg:100,wc:100,wd:100,wf:100,artsk:'H',arbsk:'Aa',arhsk:'',arask:'',arfsk:'',arbe:3000,arhe:552,arae:0,arfe:0,arbs:3000,arhs:552,aras:0,arfs:0,skills:{}},
+  // === 执行官 subs (ID 7) ===
+  yuban:{name:'电击使 御坂美琴',type:1,att:1500,def:7500,lvl:160,hp:25500,mhp:25500,sp:400,msp:400,club:9,pose:1,tactic:3,inf:'',wepk:'WG',wepe:1777,weps:999,wepsk:'eeeeeyc',wp:777,wk:777,wg:2500,wc:777,wd:777,wf:777,artsk:'H',arbsk:'Aa',arhsk:'',arask:'c',arfsk:'',arbe:2700,arhe:1500,arae:1480,arfe:1480,arbs:120,arhs:120,aras:120,arfs:120,skills:{}},
+  banchi:{name:'班主任 坂持金发',type:1,att:1500,def:7500,lvl:160,hp:25500,mhp:25500,sp:400,msp:400,club:9,pose:1,tactic:3,inf:'',wepk:'WG',wepe:1777,weps:999,wepsk:'iiiiiyc',wp:777,wk:777,wg:2500,wc:777,wd:777,wf:777,artsk:'H',arbsk:'Aa',arhsk:'',arask:'c',arfsk:'',arbe:2700,arhe:1500,arae:1480,arfe:1480,arbs:120,arhs:120,aras:120,arfs:120,skills:{}},
+  yukari:{name:'花之领主 风见幽香',type:1,att:1500,def:7500,lvl:160,hp:25500,mhp:25500,sp:400,msp:400,club:9,pose:1,tactic:3,inf:'',wepk:'WF',wepe:777,weps:999,wepsk:'pppppyc',wp:777,wk:777,wg:777,wc:777,wd:777,wf:2500,artsk:'H',arbsk:'Aa',arhsk:'',arask:'c',arfsk:'',arbe:2700,arhe:1500,arae:1480,arfe:1480,arbs:120,arhs:120,aras:120,arfs:120,skills:{}},
+  // === 红暮 (ID 1, original) ===
+  hongmu:{name:'红暮',type:1,att:750,def:7500,lvl:75,hp:75000,mhp:75000,sp:4000,msp:4000,club:4,pose:2,tactic:3,inf:'',wepk:'WG',wepe:1750,weps:9999,wepsk:'rfn',wp:777,wk:777,wg:1420,wc:777,wd:777,wf:777,artsk:'H',arbsk:'Ab',arhsk:'',arask:'',arfsk:'',arbe:3000,arhe:1444,arae:0,arfe:0,arbs:3000,arhs:1444,aras:0,arfs:0,skills:{sk_c4_roar:1}},
+  // === 红暮 (ID 19, 强化) ===
+  hongmu_s:{name:'红暮(强化)',type:1,att:3300,def:2500,lvl:251,hp:20800,mhp:20800,sp:2800,msp:2800,club:98,pose:2,tactic:3,inf:'',wepk:'WK',wepe:1107,weps:9999,wepsk:'rfnv',wp:1888,wk:1888,wg:1888,wc:1888,wd:1888,wf:1888,artsk:'Z',arbsk:'Aa',arhsk:'m',arask:'H',arfsk:'b',arbe:4000,arhe:4000,arae:4000,arfe:4000,arbs:3300,arhs:3300,aras:3300,arfs:3300,skills:{}},
+  // === 蓝凝 (ID 19 sub1) ===
+  lanning:{name:'蓝凝',type:1,att:1999,def:2800,lvl:251,hp:9999998,mhp:9999998,sp:1600,msp:1600,club:10,pose:1,tactic:3,inf:'',wepk:'WF',wepe:1999,weps:9999,wepsk:'rknv',wp:1888,wk:1888,wg:1888,wc:1888,wd:1888,wf:1888,artsk:'Z',arbsk:'Aa',arhsk:'m',arask:'H',arfsk:'b',arbe:4000,arhe:4000,arae:4000,arfe:4000,arbs:3300,arhs:3300,aras:3300,arfs:3300,skills:{}},
+  // === 思念体-蓝凝 (ID 9) ===
+  lanning_s:{name:'思念体-蓝凝',type:1,att:9999,def:9999,lvl:97,hp:9999,mhp:9999,sp:9999,msp:9999,club:0,pose:1,tactic:3,inf:'',wepk:'WK',wepe:4000,weps:360,wepsk:'rkd',wp:777,wk:777,wg:777,wc:777,wd:777,wf:777,artsk:'Hc',arbsk:'Aa',arhsk:'',arask:'',arfsk:'',arbe:3000,arhe:1444,arae:1444,arfe:1444,arbs:3000,arhs:3000,aras:3000,arfs:3000,skills:{}},
+  // === Hank (ID 11) ===
+  hank:{name:'Hank',type:0,att:88,def:88,lvl:30,hp:2888,mhp:2888,sp:888,msp:888,club:0,pose:1,tactic:3,inf:'',wepk:'WD',wepe:88,weps:888,wepsk:'ewuip',wp:100,wk:100,wg:100,wc:100,wd:100,wf:100,artsk:'c',arbsk:'a',arhsk:'F',arask:'H',arfsk:'m',arbe:888,arhe:888,arae:888,arfe:888,arbs:888,arhs:888,aras:888,arfs:888,skills:{}},
+  // === 冴月 麟 (ID 5) ===
+  sazuki:{name:'冴月麟',type:1,att:333,def:333,lvl:33,hp:3333,mhp:3333,sp:333,msp:333,club:9,pose:1,tactic:3,inf:'',wepk:'WK',wepe:133,weps:333,wepsk:'dr',wp:233,wk:233,wg:233,wc:233,wd:233,wf:233,artsk:'H',arbsk:'A',arhsk:'cW',arask:'UI',arfsk:'qE',arbe:333,arhe:333,arae:333,arfe:333,arbs:333,arhs:333,aras:333,arfs:333,skills:{}},
+  // === ■ (ID 4) ===
+  black:{name:'■',type:1,att:1000,def:1000,lvl:45,hp:3000,mhp:3000,sp:200,msp:200,club:0,pose:1,tactic:2,inf:'',wepk:'WP',wepe:800,weps:20,wepsk:'fcr',wp:175,wk:175,wg:175,wc:175,wd:175,wf:175,artsk:'c',arbsk:'',arhsk:'',arask:'',arfsk:'',arbe:0,arhe:0,arae:0,arfe:0,arbs:0,arhs:0,aras:0,arfs:0,skills:{}},
+  // === Acg_Xilin (ID 6) ===
+  xilin:{name:'Acg_Xilin',type:1,att:750,def:550,lvl:45,hp:2800,mhp:2800,sp:200,msp:200,club:4,pose:1,tactic:2,inf:'',wepk:'WG',wepe:360,weps:600,wepsk:'rew',wp:175,wk:175,wg:175,wc:175,wd:175,wf:175,artsk:'c',arbsk:'',arhsk:'',arask:'',arfsk:'',arbe:150,arhe:75,arae:75,arfe:75,arbs:100,arhs:100,aras:100,arfs:100,skills:{sk_c4_roar:1}},
+  // === SANMA_TK (ID 18) ===
+  sanma:{name:'【SANMA_TK】',type:1,att:1000,def:1000,lvl:45,hp:3000,mhp:3000,sp:200,msp:200,club:0,pose:1,tactic:2,inf:'',wepk:'WG',wepe:400,weps:9999,wepsk:'peNn',wp:175,wk:175,wg:175,wc:175,wd:175,wf:175,artsk:'Z',arbsk:'',arhsk:'',arask:'',arfsk:'',arbe:0,arhe:0,arae:0,arfe:0,arbs:0,arhs:0,aras:0,arfs:0,skills:{}},
+  // === 电掣部长 米娜 (ID 20 sub0) ===
+  mina:{name:'电掣部长米娜',type:1,att:150,def:888,lvl:55,hp:3888,mhp:3888,sp:3888,msp:3888,club:98,pose:1,tactic:3,inf:'',wepk:'WG',wepe:400,weps:9999,wepsk:'v',wp:300,wk:300,wg:300,wc:300,wd:300,wf:300,artsk:'H',arbsk:'Z',arhsk:'Z',arask:'',arfsk:'Z',arbe:400,arhe:360,arae:360,arfe:360,arbs:220,arhs:220,aras:220,arfs:220,skills:{}},
+  // === 是TSEROF啦！ (ID 20 sub1) ===
+  tserof:{name:'是TSEROF啦！',type:1,att:107,def:422,lvl:1,hp:4201,mhp:4201,sp:4201,msp:4201,club:99,pose:1,tactic:3,inf:'',wepk:'WK',wepe:400,weps:9999,wepsk:'p',wp:300,wk:300,wg:300,wc:300,wd:300,wf:300,artsk:'',arbsk:'Z',arhsk:'Z',arask:'',arfsk:'Z',arbe:500,arhe:480,arae:640,arfe:320,arbs:350,arhs:440,aras:70,arfs:200,skills:{}},
+  // === 笼中鸟 (ID 20 sub2) ===
+  cagebird:{name:'笼中鸟',type:1,att:77,def:522,lvl:1,hp:4444,mhp:4444,sp:3333,msp:3333,club:9,pose:1,tactic:3,inf:'',wepk:'WF',wepe:40,weps:9999,wepsk:'',wp:100,wk:100,wg:100,wc:100,wd:100,wf:100,artsk:'H',arbsk:'Z',arhsk:'Z',arask:'',arfsk:'Z',arbe:200,arhe:480,arae:0,arfe:320,arbs:17,arhs:60,aras:0,arfs:600,skills:{}},
+  // === 坚韧之子·拉姆 (ID 20 sub3) ===
+  ram:{name:'坚韧之子·拉姆',type:1,att:201,def:305,lvl:60,hp:2904,mhp:2904,sp:2233,msp:2233,club:13,pose:1,tactic:3,inf:'',wepk:'WN',wepe:333,weps:9999,wepsk:'N',wp:300,wk:300,wg:300,wc:300,wd:300,wf:300,artsk:'',arbsk:'Z',arhsk:'Z',arask:'',arfsk:'Z',arbe:500,arhe:480,arae:220,arfe:320,arbs:350,arhs:440,aras:100,arfs:200,skills:{}},
+  // === 高中生·白神 (ID 20 sub4) ===
+  shirakami:{name:'高中生·白神',type:1,att:1,def:8848,lvl:1,hp:800,mhp:800,sp:600,msp:600,club:99,pose:1,tactic:3,inf:'',wepk:'WP',wepe:5,weps:5,wepsk:'',wp:2,wk:2,wg:0,wc:1,wd:3,wf:5,artsk:'',arbsk:'Z',arhsk:'Z',arask:'',arfsk:'Z',arbe:20,arhe:60,arae:0,arfe:20,arbs:20,arhs:20,aras:0,arfs:20,skills:{}},
+  // === 诚心使魔·阿摩尔 (ID 20 sub5) ===
+  amour:{name:'诚心使魔·阿摩尔',type:1,att:251,def:311,lvl:50,hp:2608,mhp:2608,sp:1978,msp:1978,club:19,pose:1,tactic:3,inf:'',wepk:'WF',wepe:9900,weps:9999,wepsk:'',wp:56,wk:178,wg:2,wc:7,wd:30,wf:9900,artsk:'',arbsk:'Z',arhsk:'Z',arask:'',arfsk:'Z',arbe:300,arhe:300,arae:0,arfe:300,arbs:350,arhs:350,aras:0,arfs:350,skills:{}},
+  // === 繁花的烈火 (ID 20 sub6) ===
+  flame:{name:'✦繁花的烈火',type:1,att:251,def:311,lvl:50,hp:307,mhp:307,sp:1978,msp:1978,club:19,pose:1,tactic:3,inf:'',wepk:'WF',wepe:9900,weps:9999,wepsk:'',wp:56,wk:178,wg:2,wc:7,wd:30,wf:9900,artsk:'',arbsk:'Z',arhsk:'Z',arask:'',arfsk:'Z',arbe:300,arhe:300,arae:0,arfe:300,arbs:350,arhs:350,aras:0,arfs:350,skills:{}},
+  // === 水濑 名雪-改 (ID 2 sub0) ===
+  minase:{name:'水濑名雪-改',type:1,att:750,def:550,lvl:45,hp:2800,mhp:2800,sp:200,msp:200,club:0,pose:1,tactic:2,inf:'',wepk:'WD',wepe:300,weps:500,wepsk:'dNne',wp:175,wk:175,wg:175,wc:175,wd:175,wf:175,artsk:'c',arbsk:'',arhsk:'',arask:'',arfsk:'',arbe:150,arhe:75,arae:75,arfe:75,arbs:100,arhs:100,aras:100,arfs:100,skills:{}},
+  // === 立华 奏-改 (ID 2 sub1) ===
+  tachibana:{name:'立华奏-改',type:1,att:750,def:550,lvl:45,hp:2800,mhp:2800,sp:200,msp:200,club:0,pose:1,tactic:2,inf:'',wepk:'WP',wepe:300,weps:500,wepsk:'uNne',wp:175,wk:175,wg:175,wc:175,wd:175,wf:175,artsk:'c',arbsk:'',arhsk:'',arask:'',arfsk:'',arbe:150,arhe:75,arae:75,arfe:75,arbs:100,arhs:100,aras:100,arfs:100,skills:{}},
+  // === 思念体-海马 濑人 (ID 2 sub2) ===
+  kaiba:{name:'思念体-海马濑人',type:1,att:750,def:550,lvl:45,hp:2800,mhp:2800,sp:200,msp:200,club:0,pose:1,tactic:2,inf:'',wepk:'WK',wepe:300,weps:500,wepsk:'dNne',wp:175,wk:175,wg:175,wc:175,wd:175,wf:175,artsk:'c',arbsk:'',arhsk:'',arask:'',arfsk:'',arbe:150,arhe:75,arae:75,arfe:75,arbs:100,arhs:100,aras:100,arfs:100,skills:{}},
+  // === 思念体-触手众 (ID 2 sub3) ===
+  tentacle:{name:'思念体-触手众',type:1,att:750,def:550,lvl:45,hp:2800,mhp:2800,sp:200,msp:200,club:0,pose:1,tactic:2,inf:'',wepk:'WF',wepe:300,weps:500,wepsk:'wNne',wp:175,wk:175,wg:175,wc:175,wd:175,wf:175,artsk:'c',arbsk:'',arhsk:'',arask:'',arfsk:'',arbe:150,arhe:75,arae:75,arfe:75,arbs:100,arhs:100,aras:100,arfs:100,skills:{}},
 };
 
 // ======================== UTILITIES ========================
@@ -600,6 +639,37 @@ function loadPreset(side,name){
 buildAttackerUI();
 buildDefenderUI();
 buildEnvUI();
+
+// Attribute chart
+function toggleChart(){
+  const el=$('attr_chart');
+  if(el.style.display==='none'){
+    let html='<div class="card" style="border:1px solid var(--border)"><h2>📋 武器/防具属性对照表</h2>';
+    html+='<table style="width:100%;border-collapse:collapse;font-size:12px">';
+    html+='<tr style="border-bottom:1px solid var(--border)"><th style="text-align:left;padding:4px;color:var(--yellow)">代码</th><th style="text-align:left;padding:4px;color:var(--yellow)">中文名</th><th style="text-align:left;padding:4px;color:var(--yellow)">类型</th><th style="text-align:left;padding:4px;color:var(--yellow)">说明</th></tr>';
+    const descs={
+      A:'物理防御(全系)',a:'属性防御(半减)',B:'物理抹消(免疫)',b:'属性抹消(免疫)',C:'防投',c:'重击辅助(猛击)',
+      D:'防爆',d:'爆炸',E:'绝缘(防电)',e:'电击(属性攻击)',F:'防符(灵力半减)',f:'灼焰(属性攻击)',
+      G:'防弹(射击半减)',g:'同志(互不伤害)',H:'HP制御(反噬÷10)',h:'伤害制御(最终伤害半减)',
+      I:'防冻',i:'冻气(属性攻击)',J:'超量素材',j:'多重',K:'防斩',k:'冰华(属性攻击)',
+      L:'致残',l:'热恋(伤害半减)',M:'陷阱探测',m:'陷阱迎击',N:'冲击(防具半减)',n:'贯穿(防具半减)',
+      o:'一发',P:'防殴',p:'带毒(属性攻击)',q:'防毒',R:'混沌',r:'连击',
+      S:'消音',s:'调整',U:'防火',u:'火焰(属性攻击)',V:'诅咒',v:'灵魂绑定',
+      W:'隔音',w:'音波(属性攻击)',X:'直死(NPC专用)',x:'奇迹',y:'破格(属穿)',Z:'菁英',z:'天然'
+    };
+    const types={A:'防具',a:'防具',B:'防具',b:'防具',C:'防具',c:'武器/饰品',D:'防具',d:'武器',E:'防具',e:'武器',F:'防具',f:'武器',G:'防具',g:'防具',H:'饰品',h:'防具',I:'防具',i:'武器',J:'武器',j:'武器',K:'防具',k:'武器',L:'武器',l:'防具',M:'防具',m:'防具',N:'武器',n:'武器',o:'武器',P:'防具',p:'武器',q:'防具',R:'武器',r:'武器',S:'武器',s:'武器',U:'防具',u:'武器',V:'武器',v:'武器',W:'防具',w:'武器',X:'武器',x:'武器',y:'武器',Z:'防具/饰品',z:'防具'};
+    Object.entries(CFG.itemspkinfo).forEach(([k,v])=>{
+      html+=`<tr style="border-bottom:1px solid #222"><td style="padding:3px 8px;color:var(--cyan);font-weight:bold;font-family:monospace">${k}</td><td style="padding:3px 8px">${v}</td><td style="padding:3px 8px;color:var(--muted)">${types[k]||''}</td><td style="padding:3px 8px;color:var(--muted)">${descs[k]||''}</td></tr>`;
+    });
+    html+='</table>';
+    html+='<div style="margin-top:8px;color:var(--muted);font-size:11px">大写=防具属性(防御系) 小写=武器属性(攻击系) 部分属性可出现在武器或防具上</div>';
+    html+='</div>';
+    el.innerHTML=html;
+    el.style.display='block';
+  }else{
+    el.style.display='none';
+  }
+}
 
 // Register live attribute name displays
 const skFields=[
