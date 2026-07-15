@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTS 战斗伤害计算器</title>
+<style>
+:root{--bg:#1a1a2e;--card:#16213e;--input:#0f3460;--accent:#e94560;--text:#eee;--muted:#888;--border:#333;--green:#4ecca3;--yellow:#f9d56e;--cyan:#48cae4;--red:#e94560;--purple:#b388eb;--orange:#f4a261}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',sans-serif;font-size:14px;padding:10px}
+h1{text-align:center;color:var(--accent);margin:10px 0;font-size:22px}
+h2{color:var(--yellow);font-size:16px;margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:4px}
+h3{color:var(--cyan);font-size:14px;margin:8px 0 4px}
+.container{max-width:1400px;margin:0 auto}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:var(--card);border-radius:8px;padding:12px;border:1px solid var(--border)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:4px}
+label{min-width:80px;color:var(--muted);font-size:12px}
+input,select{background:var(--input);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:4px;font-size:13px;width:100px}
+input[type="checkbox"]{width:auto}
+input[type="text"]{width:200px}
+.checks{display:flex;flex-wrap:wrap;gap:6px}
+.checks label{min-width:auto;color:var(--text);background:var(--input);padding:2px 8px;border-radius:4px;cursor:pointer;font-size:12px}
+.checks label:hover{background:var(--accent)}
+.checks input{display:none}
+.checks input:checked + span{color:var(--green);font-weight:bold}
+.btn{background:var(--accent);color:#fff;border:none;padding:10px 24px;border-radius:6px;font-size:16px;cursor:pointer;margin:10px auto;display:block}
+.btn:hover{background:#c73e54}
+.section{margin-bottom:8px}
+.collapsible{cursor:pointer;user-select:none}
+.collapsible::after{content:'▼';float:right;color:var(--muted);font-size:10px}
+.collapsible.collapsed::after{content:'▶'}
+.collapsible.collapsed + .content{display:none}
+.content{margin-top:8px}
+#results{margin-top:12px}
+.step{background:var(--card);border-radius:6px;padding:8px 12px;margin-bottom:4px;border-left:3px solid var(--border)}
+.step.phy{border-left-color:var(--yellow)}
+.step.ele{border-left-color:var(--cyan)}
+.step.fin{border-left-color:var(--red)}
+.step.bsh{border-left-color:var(--purple)}
+.step.sum{border-left-color:var(--green)}
+.step .lb{color:var(--muted);font-size:12px}
+.step .vl{color:var(--text);font-weight:bold}
+.step .fm{color:var(--muted);font-size:11px;font-family:monospace}
+.step .rs{color:var(--yellow);font-weight:bold;font-size:16px}
+.total{font-size:20px;color:var(--green);font-weight:bold;text-align:center;padding:10px}
+.mini{font-size:11px;color:var(--muted)}
+.preset-bar{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.preset-bar select{width:auto;flex:1;min-width:150px}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>⚔️ DTS 战斗伤害计算器</h1>
+<div class="preset-bar">
+<select id="preset_pa" onchange="loadPreset('pa',this.value)"><option value="">攻击方预设...</option><option value="yuban">御坂美琴</option><option value="banchi">坂持金发</option><option value="yukari">风见幽香</option><option value="hongmu">红暮</option><option value="hank">Hank</option></select>
+<select id="preset_pd" onchange="loadPreset('pd',this.value)"><option value="">防守方预设...</option><option value="yuban">御坂美琴</option><option value="banchi">坂持金发</option><option value="yukari">风见幽香</option><option value="hongmu">红暮</option><option value="hank">Hank</option></select>
+</div>
+<div class="grid">
+<div class="card" id="pa_card"></div>
+<div class="card" id="pd_card"></div>
+</div>
+<div class="card" id="env_card" style="margin-top:12px"></div>
+<button class="btn" onclick="calculate()">⚔️ 计算伤害</button>
+<div id="results"></div>
+</div>
+<script src="damage_calc.js"></script>
+</body>
+</html>
