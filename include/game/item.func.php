@@ -368,6 +368,7 @@ function itemuse($itmn,&$data=NULL) {
 		$log .= "设置了陷阱<span class=\"red\">$itm</span>。<br>小心，自己也很难发现。<br>";
 		
 		if($club == 5){$exp += 2;$wd+=2;}
+		elseif($club == 20){$wd++;}
 		else{$exp++;$wd++;}
 		
 		if ($exp >= $upexp) {

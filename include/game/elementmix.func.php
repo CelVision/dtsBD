@@ -589,7 +589,7 @@
 			addnews($now,'emix_failed',$name);
 		}
 		# 只要不是大失败，每次进行元素合成都能获得一定的经验
-		if($emix_flag > 0) $exp += rand(1,$emix_flag);
+		if($emix_flag > 0 && $club != 20) $exp += rand(1,$emix_flag);
 		return;
 	}
 

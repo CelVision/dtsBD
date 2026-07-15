@@ -97,12 +97,22 @@
 			$clbpara['elements']['info']['hd']['h'.$erkey]['s'.$eskey] = 1;
 		}
 
-		// 判断物品名称是否为 卡片
+		// 分解秘钥道具时获得额外元素能量（EXP），这些道具均为通向游戏结局的关键素材
+		// 三女主歌词卡：+750 EXP
         if ($edata['itm'] == '歌词卡片【海洋】'||$edata['itm'] == '歌词卡片【大地】'||$edata['itm'] == '歌词卡片【星空】') {
-	    // 增加 $exp 的值
-	    $exp += 1000;
+	    $exp += 750;
 	    $log .= "<span class='lime'>你似乎听到了一段若有若无的旋律...当你回过神时，它已经消失了</span><br><span class='rainbow'>你浑身充满了元素能量！</span><br>";
         }
+		// 黑色碎片、十字发卡：+1000 EXP（用于合成黑色发卡，即C.H.A.O.S的ventus判定条件）
+	if ($edata['itm'] == '黑色碎片' || $edata['itm'] == '十字发卡') {
+	    $exp += 1000;
+	    $log .= "<span class='rainbow'>其中蕴含的力量令你浑身充满了元素能量！</span><br>";
+	}
+		// 武神之魂：+1500 EXP（与武神尸体同为C.H.A.O.S的素材来源，配方_5的第0条）
+	if ($edata['itm'] == '武神之魂') {
+	    $exp += 1500;
+	    $log .= "<span class='rainbow'>武神的意志化作元素能量涌入了你的体内！</span><br>";
+	}
   
 		$ev_arr[$esid] += $esnum;
 		return $ev_arr;

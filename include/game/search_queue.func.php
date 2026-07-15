@@ -281,41 +281,68 @@ function discover_queue($schmode = 0,&$data=NULL,$direction = 'forward')
 			$mode = 'command';
 			return;
 		}
+
+		$enemynum = $db->num_rows($result);
+		$enemyarray = range(0, $enemynum - 1);
+		shuffle($enemyarray);
+
 		$meetman_flag = 0;
-		$edata = array();
-		while($edata = $db->fetch_array($result))
+		foreach($enemyarray as $enum)
 		{
-			if($edata['hp'] <= 0)
+			$db->data_seek($result, $enum);
+			$edata = $db->fetch_array($result);
+			$eid = $edata['pid'];
+			# 使用fetch_playerdata_by_pid重新获取敌人数据，以应用各种在载入玩家数据时进行的判定
+			$edata = fetch_playerdata_by_pid($eid);
+
+			# 不管是活人还是死人，都只会在处于相同视界的情况下遭遇
+			# 死斗模式无视视界限制
+			if($horizon == $edata['horizon'] || (!$edata['type'] && $gamestate == 50))
 			{
-				if($corpse_obbs && diceroll(99) < $corpse_obbs)
+				if($edata['hp'] <= 0)
 				{
-					$action = 'corpse'; $bid = $edata['pid'];
-					findcorpse($edata);
-					return;
+					//直接略过无效尸体
+					if($gamestate>=40) continue;
+					$ret = false;
+					# 略过无效尸体的条件是……全身装备/道具存在耐久不为0的部分
+					# 但是空手和内衣又属于特例……这两个部位就只能判断效果不为0了
+					foreach(array('wepe','wep2e','money','arhs','arbe','aras','arfs','arts','itms1','itms2','itms3','itms4','itms5','itms6') as $chkval)
+					{
+						if($edata[$chkval])
+						{
+							$ret = true;
+							break;
+						}
+					}
+					if(!$ret) continue;
+					//计算尸体发现率
+					$corpse_dice = rand(0,99);
+					//击杀女主后，对女主尸体发现率大幅提升
+					if($edata['type'] == 14 && isset($data['clbpara']['achvars']['kill_n14'])) $corpse_dice = 100;
+					if($corpse_dice > $corpse_obbs)
+					{
+						$meetman_flag = 1;
+						break;
+					}
 				}
-				continue;
-			}
-			if($edata['type'] == 0)
-			{
-				if($gamestate == 50)
+				else
 				{
-					$meetman_flag = 1;
+					# 略过决斗者
+					if ((!$edata['type'])&&($artk=='XX')&&(($edata['artk']!='XX')||($edata['art']!=$name))&&($gamestate<50)) continue;
+					if (($artk!='XX')&&($edata['artk']=='XX')&&($gamestate<50)) continue;
+					# 暂时直接略过盟友单位
+					if(!empty($edata['clbpara']['mate']) && in_array($pid,$edata['clbpara']['mate'])) continue;
+
+					# 「量心」技能效果判定（不会遭遇HP为1的敌人）：
+					if(!check_skill_unlock('c19_dispel',$data) && !empty(get_skillpara('c19_dispel','active',$clbpara)) && $edata['hp'] == 1) continue;
+
+					# 计算活人发现率
+					$hide_r = \revbattle\calc_hide_rate($data,$edata);
+					$enemy_dice = diceroll(99);
+					# 把find_r杀了，现在技能都是用躲避率去判断的了，躲避率为负就等于发现率增幅了
+					$meetman_flag = $enemy_dice < ($enemy_obbs - $hide_r) ? 1 : -1;
 					break;
 				}
-				if($teamID && $teamID == $edata['teamID'] && $gamestate < 40) continue;
-				if($gamestate >= 40 && $art != $edata['art']) continue;
-			}
-			if($edata['type'] == 0 || $edata['type'] == 1)
-			{
-				if ((!$edata['type'])&&($artk=='XX')&&(($edata['artk']!='XX')||($edata['art']!=$name))&&($gamestate<50)) continue;
-				if (($artk!='XX')&&($edata['artk']=='XX')&&($gamestate<50)) continue;
-				if(!empty($edata['clbpara']['mate']) && in_array($pid,$edata['clbpara']['mate'])) continue;
-				if(!check_skill_unlock('c19_dispel',$data) && !empty(get_skillpara('c19_dispel','active',$clbpara)) && $edata['hp'] == 1) continue;
-
-				$hide_r = \revbattle\calc_hide_rate($data,$edata);
-				$enemy_dice = diceroll(99);
-				$meetman_flag = $enemy_dice < ($enemy_obbs - $hide_r) ? 1 : -1;
-				break;
 			}
 		}
 		if($meetman_flag>0)

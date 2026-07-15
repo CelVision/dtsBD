@@ -39,7 +39,7 @@
 					♪施展魔法　為了不再失去　我不會說再見♪<br>
 					♪再次踏出腳步之時　將在某一天到來♪<br>";
 					
-		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name',`$mapinfo['plsinfo']`,'♪你說過在哭泣之後應該可以破涕而笑♪')");
+		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','{$mapinfo['plsinfo'][$pls]}','♪你說過在哭泣之後應該可以破涕而笑♪')");
 		
 		//$result = $db->query("select * from {$tablepre}players where `pls`={$pls} and hp>0 and type=0");
 		$db->query ( "UPDATE {$tablepre}players SET def=def+30 WHERE `pls` ={$pls} AND hp>0 AND type=0 ");
@@ -55,7 +55,7 @@
 					♪盯紧遥远的彼方♪<br>
 					♪在这个连呼吸都难以为继的都市中♪<br>";
 					
-		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name',`$mapinfo['plsinfo']`,'♪从这里找一条路♪')");
+		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','{$mapinfo['plsinfo'][$pls]}','♪从这里找一条路♪')");
 		
 		//$result = $db->query("select * from {$tablepre}players where pls='$pls' and hp>0 and type=0");
 		$db->query ("UPDATE {$tablepre}players SET att=att+30 WHERE `pls`={$pls} AND hp>0 AND type=0");
@@ -72,7 +72,7 @@
 					♪la la la la la♪<br>
 					♪la la la ... ...♪<br>";
 					
-		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name',`$mapinfo['plsinfo']`,'♪♪la la la la♪♪...')");
+		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','{$mapinfo['plsinfo'][$pls]}','♪♪la la la la♪♪...')");
 		
 		//$result = $db->query("select * from {$tablepre}players where pls='$pls' and hp>0 and type=0");
 		$ss+=20;
@@ -90,7 +90,7 @@
 					♪ありがとう　感謝の言葉♪<br>
 					♪あなたは教えてくれたよ　鶏肉♪<br>";
 					
-		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name',`$mapinfo['plsinfo']`,'♪♪la la la la♪♪...')");
+		$db->query("INSERT INTO {$tablepre}chat (type,`time`,send,recv,msg) VALUES ('0','$now','$name','{$mapinfo['plsinfo'][$pls]}','♪♪la la la la♪♪...')");
 		
 		//$result = $db->query("select * from {$tablepre}players where pls='$pls' and hp>0 and type=0");
 		$db->query ( "UPDATE {$tablepre}players SET wep='鸡肉' WHERE `pls` ={$pls} AND hp>0 AND type=0 ");
