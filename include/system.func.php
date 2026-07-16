@@ -270,9 +270,8 @@ function rs_game($mode = 0) {
 
 
 //通过mapid分支选择对应地图的物品列表
-		global $mapid;
+		global $mapid, $mapitems;
 		include config('mapitemresource',$gamecfg);
-		global $mapitems;
 		$an = $areanum ? ceil($areanum/$areaadd) : 0;
 		//遍历每个地图ID，根据$mapid选择分支
 		for($imap = 0; $imap < $plsnum; $imap++) {

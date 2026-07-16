@@ -8,8 +8,8 @@ function print_itm_namelist()
 	{
 		$iarr=Array();
 		//获取所有地图刷新道具道具名
-		include config('mapitemresource',$gamecfg);
 		global $mapitems;
+		include config('mapitemresource',$gamecfg);
 		foreach($mapitems as $imap => $branches)
 		{
 			foreach($branches as $ibranch => $itemlist)

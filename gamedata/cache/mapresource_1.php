@@ -41,7 +41,7 @@ $maps = Array
         'plsinfo'=>'RF高校',
         'xyinfo'=>'H-3',
         'areainfo'=>'这是一所位于郊区的高校。<br>之前毕业旅行的学生似乎遇到了惨烈的交通事故，幸存的学生们大概接受心理疏导去了吧。',
-        'events'=>Array(),
+        'events'=>Array('mask_stranger'),
         'isindoor' => '0', 
          ),
 
@@ -58,7 +58,7 @@ $maps = Array
         'plsinfo'=>'雪之镇',
         'xyinfo'=>'B-6',
         'areainfo'=>'飘着雪花的北国小镇，俄罗斯风格的建筑使人愈发感到寒冷。<br>',
-        'events'=>Array(),
+        'events'=>Array('crash_girl'),
         'isindoor' => '1',  
          ),
       1 => Array(
@@ -123,7 +123,7 @@ $maps = Array
         'plsinfo'=>'清水池',
         'xyinfo'=>'F-3',
         'areainfo'=>'各种各样的雕像环绕着一个欧式的大水池。<br>池水十分清澈，也许可以直接饮用。<br>',
-        'events'=>Array(),
+        'events'=>Array('slip_pool'),
         'isindoor' => '1',  
          ),
       1 => Array(
@@ -188,7 +188,7 @@ $maps = Array
         'plsinfo'=>'对天使用作战本部',
         'xyinfo'=>'D-8',
         'areainfo'=>'充满了各种夸张的陷阱的房间，似乎是某所高校的校长室。<br><span class=\"yellow\">在这里，似乎不管受到怎样的伤害也会很快回复。</span><br>',
-        'events'=>Array(),
+        'events'=>Array('hammer'),
         'isindoor' => '1',  
          ),
       1 => Array(
@@ -204,7 +204,7 @@ $maps = Array
         'plsinfo'=>'夏之镇',
         'xyinfo'=>'F-9',
         'areainfo'=>'洒满了阳光的靠海的村庄，青色的天空吸引人久久凝望、不能罢怀。<br>',
-        'events'=>Array(),
+        'events'=>Array('crows'),
         'isindoor' => '0',  
          ),
       1 => Array(
@@ -252,7 +252,7 @@ $maps = Array
         'plsinfo'=>'守矢神社',
         'xyinfo'=>'G-1',
         'areainfo'=>'高大的御柱环绕在山中湖泊周围。尽管景色美丽，却找不见本应在此的巫女。<br>',
-        'events'=>Array(),
+        'events'=>Array('youkai'),
         'isindoor' => '1',  
          ),
       1 => Array(
@@ -268,7 +268,7 @@ $maps = Array
         'plsinfo'=>'常磐森林',
         'xyinfo'=>'I-2',
         'areainfo'=>'浓郁的树叶遮住了阳光，是容易被袭击的地方啊……<br>林间不时还有奇怪的生物出没……<br>听说这附近每隔十年都会有超能力者诞生。<br>',
-        'events'=>Array(),
+        'events'=>Array('pikachu'),
         'isindoor' => '1',  
          ),
       1 => Array(
@@ -300,7 +300,7 @@ $maps = Array
         'plsinfo'=>'秋之镇',
         'xyinfo'=>'G-4',
         'areainfo'=>'与其他住宅区相比，这里的商店特别多。<BR>虽然如此，整个城市弥漫着一种莫名的悲伤的气氛……<br>',
-        'events'=>Array(),
+        'events'=>Array('crows'),
         'isindoor' => '1',  
          ),
       1 => Array(
@@ -348,7 +348,7 @@ $maps = Array
         'plsinfo'=>'圣Gradius学园',
         'xyinfo'=>'F-7',
         'areainfo'=>'表面上看去像是标准的贵族女校，<br>有着与学校不相称的停机坪和地下仓库。',
-        'events'=>Array(),
+        'events'=>Array('angel_barrage'),
         'isindoor' => '1',  
          ),
       1 => Array(
@@ -428,7 +428,7 @@ $maps = Array
         'plsinfo'=>'键刃墓场',
         'xyinfo'=>'A-1',
         'areainfo'=>'代表火与血的牺牲的曾经的战场。<BR>冰封的力量已经不在。<br><span class=\"yellow\">你仍然感觉到一股苍凉的杀气！是你的错觉么！</span><br>',
-        'events'=>Array(),
+        'events'=>Array('kagari_graveyard'),
         'isindoor' => '1',  
          ),
       1 => Array(
@@ -541,7 +541,7 @@ $maps = Array
         'plsinfo'=>'雏菊之丘',
         'xyinfo'=>'F-4',
         'areainfo'=>'风祭森林的最深处。<BR>被盛开的雏菊花覆盖着的山丘。<BR>山丘上貌似有个身影坐着，<BR>还是离她远一点为妙。<BR>',
-        'events'=>Array(),
+        'events'=>Array('kagari_hill'),
         'isindoor' => '1',  
          ),
     ),
@@ -550,7 +550,7 @@ $maps = Array
         'plsinfo'=>'英灵殿',
         'xyinfo'=>'J-10',
         'areainfo'=>'总而言之这里就是英灵殿了。<BR>',
-        'events'=>Array(),
+        'events'=>Array('valhalla_gate'),
         'isindoor' => '0',  
          ),
     ),

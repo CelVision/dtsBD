@@ -194,6 +194,7 @@ function discover_queue($schmode = 0,&$data=NULL,$direction = 'forward')
 	global $now,$log,$mode,$command,$cmd;
 	global $db,$tablepre,$gamestate,$aidata,$pls_bgm,$weather;
 	global $event_obbs,$item_obbs,$enemy_obbs,$trap_min_obbs,$trap_max_obbs,$corpse_obbs,$corpseprotect;
+	global $mapinfo;
 
 	if(!isset($data))
 	{
@@ -226,7 +227,8 @@ function discover_queue($schmode = 0,&$data=NULL,$direction = 'forward')
 	# 地图事件
 	$event_dice = rand(0,99);
 	if($data['pass'] == 'bot') $event_obbs = -1;
-	if(($event_dice < $event_obbs)||(($art!="Untainted Glory")&&($pls==34)&&($gamestate != 50))){
+	$always_event = ($art!="Untainted Glory") && isset($mapinfo['events'][$pls]) && !empty($mapinfo['events'][$pls]) && ($gamestate != 50) && in_array('valhalla_gate', $mapinfo['events'][$pls]);
+	if(($event_dice < $event_obbs) || $always_event){
 		include_once GAME_ROOT.'./include/game/event.func.php';
 		$event_flag = event();
 		if($event_flag)

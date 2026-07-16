@@ -259,6 +259,33 @@ function load_gameinfo() {
 	$noisevars = json_decode($noisevars,true);
 	if(!empty($noisevars)) extract($noisevars);
 	if(isset($gamevars['sanmaact']) && isset($gamevars['sanmadead'])) unset($gamevars['sanmaact']);
+	
+	// Migration: populate $mapinfo['events'] if missing (game started before events refactor)
+	if(!empty($mapinfo) && !isset($mapinfo['events']) && isset($mapinfo['plsinfo'])){
+		file_put_contents(GAME_ROOT.'./debug.txt', "Migration: populating events\n", FILE_APPEND);
+		global $gamecfg;
+		$cfgfile = file_exists(GAME_ROOT."./gamedata/cache/mapresource_{$gamecfg}.php") ? GAME_ROOT."./gamedata/cache/mapresource_{$gamecfg}.php" : GAME_ROOT."./gamedata/cache/mapresource_1.php";
+		include $cfgfile;
+		$mapinfo['events'] = Array();
+		foreach($mapinfo['plsinfo'] as $id => $plsname){
+			$mapinfo['events'][$id] = Array();
+			if(isset($maps[$id])){
+				foreach($maps[$id] as $branch){
+					if(isset($branch['plsinfo']) && $branch['plsinfo'] === $plsname && isset($branch['events'])){
+						$mapinfo['events'][$id] = $branch['events'];
+						break;
+					}
+				}
+			}
+		}
+		file_put_contents(GAME_ROOT.'./debug.txt', "Migration: events=" . json_encode($mapinfo['events'], JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND);
+		// Save updated mapinfo to database
+		$gameinfo_update = Array();
+		$gameinfo_update['mapinfo'] = addslashes(json_encode($mapinfo,JSON_UNESCAPED_UNICODE));
+		$db->array_update("{$gtablepre}game",$gameinfo_update,"groomid = {$groomid}");
+		file_put_contents(GAME_ROOT.'./debug.txt', "Migration: saved to DB\n", FILE_APPEND);
+	}
+	
 	return Array($gamestate,$gamevars);
 }
 

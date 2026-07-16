@@ -4,16 +4,31 @@ if(!defined('IN_GAME')) {
 }
 
 function event(){
-	global $mode,$log,$hp,$sp,$inf,$pls,$rage,$money;
-	global $mhp,$msp,$wp,$wk,$wg,$wc,$wd,$wf;
-	global $rp,$killnum,$state;
-	//没有事件的地图返回默认值0，有事件的地图返回1。地图内没有事件会继续推进探索判定。
+	global $log,$hp,$sp,$inf,$pls,$state;
+	global $mapinfo;
+
 	$event = 0;
+
+	$event_keys = isset($mapinfo['events'][$pls]) ? $mapinfo['events'][$pls] : Array();
+	if(empty($event_keys)) return 0;
+
+	$event_key = $event_keys[array_rand($event_keys)];
+	$event_func = 'event_' . $event_key;
+	if(function_exists($event_func)) {
+		$event = $event_func();
+	}
+
+	if($hp<=0 && $state < 10){
+		include_once GAME_ROOT . './include/state.func.php';
+		death('event');
+	}
+	return $event;
+}
+
+function event_mask_stranger(){
+	global $log,$hp,$inf,$rp,$money;
 	$dice1 = rand(0,5);
-	$dice2 = rand(20,40);//原为rand(5,10)
-	if($pls == 0) { //无月之影
-	} elseif($pls == 1) { //端点
-	} elseif($pls == 2) { //现RF高校
+	$dice2 = rand(20,40);
 		$log = ($log . "突然，一个戴着面具的怪人出现了！<BR>");
 		if($dice1 == 2){
 			$log = ($log . "“呜嘛呜——！”<br>被怪人<span class=\"red\">打中了头</span>！<BR>");
@@ -30,8 +45,13 @@ function event(){
 		}else{
 			$log = ($log . "呼，总算逃脱了。<BR>");
 		}
-		$event = 1;
-	} elseif($pls == 3) { //雪之镇
+	return 1;
+}
+
+function event_crash_girl(){
+	global $log,$hp,$sp,$inf,$rp,$mhp,$msp;
+	$dice1 = rand(0,5);
+	$dice2 = rand(20,40);
 		if($rp <=70){
 			$log = ($log . "突然，一位拿着纸袋的少女向你撞来！<BR>");
 			if($dice1 == 2){
@@ -64,11 +84,13 @@ function event(){
 				//$rp = $rp - 5;
 			}
 		}	
-		$event = 1;	
-	} elseif($pls == 4) { //索拉利斯
-	} elseif($pls == 5) { //指挥中心
-	} elseif($pls == 6) { //梦幻馆
-	} elseif($pls == 7) { //清水池
+	return 1;
+}
+
+function event_slip_pool(){
+	global $log,$sp;
+	$dice1 = rand(0,5);
+	$dice2 = rand(20,40);
 		$log = ($log . "糟糕，脚下滑了一下！<BR>");
 		if($dice1 <= 3){
 			$dice2 += 10;
@@ -80,11 +102,13 @@ function event(){
 		}else{
 			$log = ($log . "万幸，你没跌进池中。<BR>");
 		}
-		$event = 1;
-	} elseif($pls == 8) { //白穗神社
-	} elseif($pls == 9) { //墓地
-	} elseif($pls == 10) { //麦斯克林
-	} elseif($pls == 11) { //央中电视台 - 现对天使用作战本部
+	return 1;
+}
+
+function event_hammer(){
+	global $log,$hp,$inf;
+	$dice1 = rand(0,5);
+	$dice2 = rand(20,40);
 		$log = ($log . "哇！一个大锤向你锤来！<BR>");
 		if($dice1 == 2){
 			$log = ($log . "大锤重重地<span class=\"red\">砸到了腿上</span>，好疼！<BR>");
@@ -96,8 +120,13 @@ function event(){
 		}else{
 			$log = ($log . "你勉强躲过了大锤的攻击。<BR>");
 		}
-		$event = 1;
-	} elseif($pls == 12) { //夏之镇
+	return 1;
+}
+
+function event_crows(){
+	global $log,$hp,$inf;
+	$dice1 = rand(0,5);
+	$dice2 = rand(20,40);
 		$log = ($log . "突然，天空出现一大群乌鸦！<BR>");
 		if($dice1 == 2){
 			$log = ($log . "被乌鸦袭击，<span class=\"red\">头部受了伤</span>！<BR>");
@@ -109,10 +138,13 @@ function event(){
 		}else{
 			$log = ($log . "呼，总算击退了。<BR>");
 		}
-		$event = 1;
-	} elseif($pls == 13) { //三体星
-	} elseif($pls == 14) { //光坂高校
-	} elseif($pls == 15) { //守矢神社
+	return 1;
+}
+
+function event_youkai(){
+	global $log,$hp,$inf;
+	$dice1 = rand(0,5);
+	$dice2 = rand(20,40);
 		$log = ($log . "突然有妖怪袭击你！<BR>");
 		if($dice1 == 2){
 			$log = ($log . "被妖怪吓着了！你惊慌中<span class=\"red\">撞伤了自己的头部</span>！<BR>");
@@ -124,8 +156,13 @@ function event(){
 		}else{
 			$log = ($log . "呼，所谓妖怪不过是个撑着紫伞的少女而已，没什么可害怕的。<BR>");
 		}
-		$event = 1;
-	} elseif($pls == 16) { //常磐森林
+	return 1;
+}
+
+function event_pikachu(){
+	global $log,$hp,$inf;
+	$dice1 = rand(0,5);
+	$dice2 = rand(20,40);
 		$log = ($log . "野生的皮卡丘从草丛中钻出来了！<BR>");
 		if($dice1 == 2){
 			$log = ($log . "皮卡丘使用了电击！<span class=\"red\">手臂被击伤了</span>！<BR>");
@@ -137,24 +174,14 @@ function event(){
 		}else{
 			$log = ($log . "成功地逃跑了。<BR>");
 		}
-		$event = 1;
-	} elseif($pls == 17) { //常磐台中学
-	} elseif($pls == 18) { //秋之镇
-		$log = ($log . "突然，天空出现一大群乌鸦！<BR>");
-		if($dice1 == 2){
-			$log = ($log . "被乌鸦袭击，<span class=\"red\">头部受了伤</span>！<BR>");
-			$inf = str_replace('h','',$inf);
-			$inf = ($inf . 'h');
-		}elseif($dice1 == 3){
-			$log = ($log . "被乌鸦袭击，<span class=\"red\">受到{$dice2}点伤害</span>！<BR>");
-			$hp-=$dice2;
-		}else{
-			$log = ($log . "呼，总算击退了。<BR>");
-		}
-		$event = 1;
-	} elseif($pls == 19) { //精灵中心
-	} elseif($pls == 20) { //春之镇
-	} elseif($pls == 21) { //圣Gradius学园
+	return 1;
+}
+
+function event_angel_barrage(){
+	global $log,$hp,$inf,$rp,$killnum,$money,$gamestate;
+	global $infwords;
+	$dice1 = rand(0,5);
+	$dice2 = rand(20,40);
 		global $gamestate;
 		if($gamestate < 50){
 			$log = ($log . "隶属于时空部门G的特殊部队『天使』正在实弹演习！<BR>你被卷入了弹幕中！<BR>");
@@ -229,13 +256,14 @@ function event(){
 		} else {
 			$log = ($log . "特殊部队『天使』的少女们不知道去了哪里。<BR>");
 		}
-		$event = 1;
-	} elseif($pls == 22) { //初始之树
-	} elseif($pls == 23) { //幻想世界
-	} elseif($pls == 24) { //永恒的世界
-	} elseif($pls == 25) { //妖精驿站
-	} elseif($pls == 26) { //键刃墓场
-		global $gamestate,$db,$tablepre;
+	return 1;
+}
+
+function event_kagari_graveyard(){
+	global $log,$hp,$sp,$inf,$rp,$killnum,$mhp,$msp,$wp,$wk,$wg,$wc,$wd,$wf;
+	global $gamestate,$db,$tablepre;
+	$dice1 = rand(0,5);
+	$dice2 = rand(20,40);
 		$result = $db->query("SELECT pid,hp FROM {$tablepre}players WHERE type=4");
 		if(!$db->num_rows($result)){$flag = 0;}//篝未加入战场，正常处理事件；
 		else{$flag = 1;}//篝加入战场
@@ -412,16 +440,14 @@ function event(){
 		{
 			$log .= '你环顾四周，在断壁残垣间找寻着那个熟悉的身影……<br>但她似乎已经离开了。<br>';
 		}
-		$event = 1;
-		//echo $rp;
-	} elseif($pls == 27) { //花菱商厦
-	} elseif($pls == 28) { //FARGO前基地
-	} elseif($pls == 29) { //风祭森林
-	} elseif($pls == 30) { //移动机库
-	} elseif($pls == 31) { //太鼓实验室
-	} elseif($pls == 32) { //SCP实验室
-	} elseif($pls == 33) { //雏菊之丘
-		global $gamestate,$db,$tablepre;
+	return 1;
+}
+
+function event_kagari_hill(){
+	global $log,$hp,$sp,$inf,$rp,$killnum,$mhp,$msp,$wp,$wk,$wg,$wc,$wd,$wf;
+	global $gamestate,$db,$tablepre;
+	$dice1 = rand(0,5);
+	$dice2 = rand(20,40);
 		$result = $db->query("SELECT pid,hp FROM {$tablepre}players WHERE type=4");
 		if(!$db->num_rows($result)) $flag = 0;//篝未加入战场，正常处理事件；
 		else{
@@ -610,9 +636,13 @@ function event(){
 		{
 			$log .= '在雏菊盛开的山丘上，那个熟悉的身影已消失不见。<br>目光所及之处，徒留野花随风摇曳……<br>';
 		}
-		$event = 1;
-		//echo $rp;
-	}elseif ($pls==34){//英灵殿
+	return 1;
+}
+
+function event_valhalla_gate(){
+	global $log,$pls,$art,$mapinfo,$gamestate,$hack,$arealist,$areanum;
+	$dice1 = rand(0,5);
+	$dice2 = rand(20,40);
 		global $art,$mapinfo,$gamestate,$hack,$arealist,$areanum;
 		if (($art!='Untainted Glory')&&($gamestate != 50)){
 			$rpls=-1;
@@ -624,25 +654,8 @@ function event(){
 			$log.="殿堂的深处传来一个声音：<span class=\"evergreen\">“你还没有进入这里的资格”。</span><br>一股未知的力量包围了你，当你反应过来的时候，发现自己正身处<span class=\"yellow\">{$mapinfo['plsinfo'][$pls]}</span>。<br>";
 			//if (CURSCRIPT !== 'botservice') $log.="<span id=\"HsUipfcGhU\"></span>";
 		}
-		$event = 1;
-	}else {
-	}
-
-	if($hp<=0 && $state < 10){
-//		global $now,$alivenum,$deathnum,$name,$state;
-//		$hp = 0;
-//		$state = 13;
-//		addnews($now,'death13',$name,0);
-//		$alivenum--;
-//		$deathnum++;
-//		//include_once GAME_ROOT.'./include/system.func.php';
-//		save_gameinfo();
-		include_once GAME_ROOT . './include/state.func.php';
-		death('event');
-	}
-	return $event;
+	return 1;
 }
-
 
 function death_kagari($type){
 	global $log,$hp,$inf,$gamestate;

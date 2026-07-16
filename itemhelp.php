@@ -20,8 +20,8 @@ if(filemtime($mapitemfile) > filemtime($writefile))
 			<td class=\"b1\"><span>刷新时间与数量</span></td>
 		</tr>
 		";
-	include $mapitemfile;
 	global $mapitems;
+	include $mapitemfile;
 	//登记非功能性地点信息时合并隐藏地点
 	foreach($hplsinfo as $hgroup=>$hpls) $mapinfo['plsinfo'] += $hpls;
 	//遍历所有地图和分支，显示全部可能出现的物品
