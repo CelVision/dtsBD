@@ -79,7 +79,7 @@ function rs_game($mode = 0) {
 			}*/
 		for($id=0 ; $id<35 ; $id++)
 			{
-				if (!isset($maps[$id][$mapid[$id]]))
+				if (!isset($maps[$id][$mapid[$id]]) || empty($maps[$id][$mapid[$id]]['plsinfo']))
 				{//32个地图我还没有构思好,有替代就用，没有就用0
 					$mapid[$id] = 0;
 				}
@@ -269,48 +269,43 @@ function rs_game($mode = 0) {
 
 
 
-//这里是胶冻，终于也要对这一部分下手了
-//原理是通过之前的mapid部分生成物品
-        global $mapid;
-//结束
-		$file = config('mapitem',$gamecfg);
-		$itemlist = openfile($file);
-		$in = sizeof($itemlist);
+//通过mapid分支选择对应地图的物品列表
+		global $mapid;
+		include config('mapitemresource',$gamecfg);
+		global $mapitems;
 		$an = $areanum ? ceil($areanum/$areaadd) : 0;
-		//$mapitem = array();
-		//$ifqry = $iqry = 'INSERT INTO '.$tablepre.'mapitem (itm,itmk,itme,itms,itmsk,map) VALUES ';
-		for($i = 1; $i < $in; $i++) {
-			if(!empty($itemlist[$i]) && strpos($itemlist[$i],',')!==false){
-				list($iarea,$imap,$inum,$iname,$ikind,$ieff,$ista,$iskind) = explode(',',$itemlist[$i]);
+		//遍历每个地图ID，根据$mapid选择分支
+		for($imap = 0; $imap < $plsnum; $imap++) {
+			$ibranch = isset($mapid[$imap]) ? $mapid[$imap] : 0;
+			if(!isset($mapitems[$imap][$ibranch])) continue;
+			foreach($mapitems[$imap][$ibranch] as $item) {
+				list($iarea,$inum,$iname,$ikind,$ieff,$ista,$iskind) = $item;
 				if(($iarea == $an)||($iarea == 99)) {
 					//破灭之诗使用后不再刷新无月之影的煤气罐
 					if($iname == '煤气罐' && $imap == 0 && !empty($gamevars['nocoal'])) continue;
 					for($j = $inum; $j>0; $j--) {
-						if($imap == 99) {
-							$rmap = rand(1,$plsnum-1);
-							while ($rmap==34){$rmap = rand(1,$plsnum-1);}
-							if(strpos($ikind ,'TO')===0){
-								$tqry .= "('$iname', '$ikind','$ieff','$ista','$iskind','$rmap'),";
-							}else{
-								$iqry .= "('$iname', '$ikind','$ieff','$ista','$iskind','$rmap'),";
-							}
-							//$iqry[$rmap] .= "('$iname', '$ikind','$ieff','$ista','$iskind'),";
-							//$db->query("INSERT INTO {$tablepre}{$rmap}mapitem (itm,itmk,itme,itms,itmsk) VALUES ('$iname', '$ikind','$ieff','$ista','$iskind')");
+						if(strpos($ikind,'TO')===0){
+							$tqry .= "('$iname', '$ikind','$ieff','$ista','$iskind','$imap'),";
 						}else{
-							if(strpos($ikind ,'TO')===0){
-								$tqry .= "('$iname', '$ikind','$ieff','$ista','$iskind','$imap'),";
-							}else{
-								$iqry .= "('$iname', '$ikind','$ieff','$ista','$iskind','$imap'),";
-							}
-							//$db->query("INSERT INTO {$tablepre}{$imap}mapitem (itm,itmk,itme,itms,itmsk) VALUES ('$iname', '$ikind','$ieff','$ista','$iskind')");
+							$iqry .= "('$iname', '$ikind','$ieff','$ista','$iskind','$imap'),";
 						}
-						
-						//if($imap == 99) {
-						//	$imap = rand(1,$plsnum-1);
-							//$mapitem[$rmap] .= "$iname,$ikind,$ieff,$ista,$iskind,\n";
-						//} else {
-							//$mapitem[$imap] .= "$iname,$ikind,$ieff,$ista,$iskind,\n"; 
-						//}
+					}
+				}
+			}
+		}
+		//处理全图随机掉落物品 (imap=99)
+		if(isset($mapitems[99][0])) {
+			foreach($mapitems[99][0] as $item) {
+				list($iarea,$inum,$iname,$ikind,$ieff,$ista,$iskind) = $item;
+				if(($iarea == $an)||($iarea == 99)) {
+					for($j = $inum; $j>0; $j--) {
+						$rmap = rand(1,$plsnum-1);
+						while ($rmap==34){$rmap = rand(1,$plsnum-1);}
+						if(strpos($ikind,'TO')===0){
+							$tqry .= "('$iname', '$ikind','$ieff','$ista','$iskind','$rmap'),";
+						}else{
+							$iqry .= "('$iname', '$ikind','$ieff','$ista','$iskind','$rmap'),";
+						}
 					}
 				}
 			}

@@ -8,7 +8,7 @@ include_once GAME_ROOT.'./include/game/itemplace.func.php';
 
 $mixfile = config('mixitem',$gamecfg);
 $shopfile = config('shopitem',$gamecfg);
-$mapitemfile = config('mapitem',$gamecfg);
+$mapitemfile = config('mapitemresource',$gamecfg);
 $synfile = config('synitem',$gamecfg);
 $ovlfile = config('overlay',$gamecfg);
 $presentfile = config('present',$gamecfg);

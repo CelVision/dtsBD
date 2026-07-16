@@ -45,7 +45,7 @@ $maps = Array
         'isindoor' => '0', 
          ),
 
-      0 => Array(
+      1 => Array(
         'plsinfo'=>'空无一人的高校',
         'xyinfo'=>'H-3',
         'areainfo'=>'这是一所空无一人的高校。<br>学生们大概都放暑假去了吧。',
@@ -61,6 +61,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '1',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
         ),
     4=> array(
       0 => Array(
@@ -69,6 +76,13 @@ $maps = Array
         'areainfo'=>'柔软的大地不断变化，在人眼前生长成巨大而诡异的形状，然后在海水的冲刷下四散崩溃。<br>这究竟是什么地方？<br>',
         'events'=>Array(),
         'isindoor' => '1',  
+      ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
       ),
     ),
     5=> array(
@@ -95,7 +109,7 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '0', 
          ),
-      0 => Array(
+      1 => Array(
           'plsinfo'=>'红魔馆',
           'xyinfo'=>'H-6',
           'areainfo'=>'坐落于雾之湖湖畔的洋馆。建筑内阴暗逼仄，大雾弥漫，是恶魔居住的地方。<br><span class=\"yellow\">自动防御系统还在忠实地工作着，看来需要随时保持警惕。</span><br>',
@@ -112,6 +126,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '1',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     8=> array(
       0 => Array(
@@ -121,6 +142,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '0',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     9=> array(
       0 => Array(
@@ -130,6 +158,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '1',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
         ),
 
     10 => array(
@@ -140,6 +175,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '1',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     11=>array(
       0 => Array(
@@ -149,6 +191,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '1',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     12=>array(
       0 => Array(
@@ -158,6 +207,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '0',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     13=>array(
       0 => Array(
@@ -167,6 +223,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '0',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     14=>array(
       0 => Array(
@@ -192,6 +255,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '1',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     16=>array(
       0 => Array(
@@ -201,6 +271,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '1',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     17=>array(
       0 => Array(
@@ -210,6 +287,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '1',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     18=>array(
       0 => Array(
@@ -219,6 +303,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '1',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     19=>array(
       0 => Array(
@@ -244,6 +335,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '1',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     21=>array(
       0 => Array(
@@ -253,6 +351,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '1',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     22=>array(
       0 => Array(
@@ -262,6 +367,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '1',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     23=>array(
       0 => Array(
@@ -271,6 +383,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' =>'1',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     24=>array(
       0 => Array(
@@ -280,6 +399,13 @@ $maps = Array
         'events'=>Array(),
        'isindoor' => '1',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     25=>array(
       0 => Array(
@@ -289,6 +415,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '0',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     26=>array(
       0 => Array(
@@ -298,6 +431,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '1',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     27=>array(
       0 => Array(
@@ -307,6 +447,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '0',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
 
     ),
     28=>array(
@@ -317,6 +464,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '1',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     29=>array(
       0 => Array(
@@ -326,6 +480,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '1',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     30=>array(
       0 => Array(
@@ -335,6 +496,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '0',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     31=>array(
       0 => Array(
@@ -344,6 +512,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '1',  
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     32=>array(
       0 => Array(
@@ -353,6 +528,13 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '0', 
          ),
+      1 => Array(
+        'plsinfo'=>'',
+        'xyinfo'=>'',
+        'areainfo'=>'',
+        'events'=>Array(),
+        'isindoor' => '',
+      ),
     ),
     33=>array(
       0 => Array(

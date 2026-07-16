@@ -8,15 +8,17 @@ function print_itm_namelist()
 	{
 		$iarr=Array();
 		//获取所有地图刷新道具道具名
-		$file = config('mapitem',$gamecfg);
-		$itemlist = openfile($file);
-		$in = sizeof($itemlist);
-		for($i = 1; $i < $in; $i++) 
+		include config('mapitemresource',$gamecfg);
+		global $mapitems;
+		foreach($mapitems as $imap => $branches)
 		{
-			if(!empty($itemlist[$i]) && strpos($itemlist[$i],',')!==false)
+			foreach($branches as $ibranch => $itemlist)
 			{
-				list($iarea,$imap,$inum,$iname) = explode(',',$itemlist[$i]);
-				if(!in_array($iname,$iarr)) $iarr[] = $iname;
+				foreach($itemlist as $item)
+				{
+					$iname = $item[2];
+					if(!in_array($iname,$iarr)) $iarr[] = $iname;
+				}
 			}
 		}
 		//获取所有商店出售道具道具名

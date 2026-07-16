@@ -88,6 +88,14 @@ const PRESETS = {
   kaiba:{name:'思念体-海马濑人',type:1,att:750,def:550,lvl:45,hp:2800,mhp:2800,sp:200,msp:200,club:0,pose:1,tactic:2,inf:'',wepk:'WK',wepe:300,weps:500,wepsk:'dNne',wp:175,wk:175,wg:175,wc:175,wd:175,wf:175,artsk:'c',arbsk:'',arhsk:'',arask:'',arfsk:'',arbe:150,arhe:75,arae:75,arfe:75,arbs:100,arhs:100,aras:100,arfs:100,skills:{}},
   // === 思念体-触手众 (ID 2 sub3) ===
   tentacle:{name:'思念体-触手众',type:1,att:750,def:550,lvl:45,hp:2800,mhp:2800,sp:200,msp:200,club:0,pose:1,tactic:2,inf:'',wepk:'WF',wepe:300,weps:500,wepsk:'wNne',wp:175,wk:175,wg:175,wc:175,wd:175,wf:175,artsk:'c',arbsk:'',arhsk:'',arask:'',arfsk:'',arbe:150,arhe:75,arae:75,arfe:75,arbs:100,arhs:100,aras:100,arfs:100,skills:{}},
+  // === 数据碎片 基础形态 ===
+  yumei_b:{name:'讲解员 梦美',type:1,att:75,def:75,lvl:20,hp:2800,mhp:2800,sp:400,msp:400,club:4,pose:1,tactic:3,inf:'',wepk:'WP',wepe:175,weps:36,wepsk:'c',wp:25,wk:25,wg:25,wc:25,wd:25,wf:25,artsk:'H',arbsk:'a',arhsk:'',arask:'',arfsk:'',arbe:75,arhe:640,arae:640,arfe:640,arbs:50,arhs:50,aras:50,arfs:50,skills:{}},
+  haruka_b:{name:'喧哗少女 叶留佳',type:1,att:75,def:75,lvl:20,hp:2800,mhp:2800,sp:400,msp:400,club:4,pose:1,tactic:3,inf:'',wepk:'WC',wepe:160,weps:36,wepsk:'ec',wp:25,wk:25,wg:25,wc:25,wd:25,wf:25,artsk:'H',arbsk:'a',arhsk:'',arask:'',arfsk:'',arbe:75,arhe:640,arae:640,arfe:640,arbs:50,arhs:50,aras:50,arfs:50,skills:{}},
+  shizuru_b:{name:'风纪委员 静流',type:1,att:75,def:75,lvl:20,hp:2800,mhp:2800,sp:400,msp:400,club:98,pose:1,tactic:3,inf:'',wepk:'WF',wepe:175,weps:200,wepsk:'c',wp:25,wk:25,wg:25,wc:25,wd:25,wf:25,artsk:'H',arbsk:'',arhsk:'',arask:'',arfsk:'',arbe:75,arhe:640,arae:640,arfe:640,arbs:50,arhs:50,aras:50,arfs:50,skills:{}},
+  // === 数据碎片 进化形态 (evonpc_1.php) ===
+  yumei_e:{name:'战斗模式 梦美',type:1,att:2840,def:1800,lvl:69,hp:3700,mhp:3700,sp:500,msp:500,club:4,pose:2,tactic:3,inf:'',wepk:'WG',wepe:900,weps:1460,wepsk:'redN',wp:300,wk:300,wg:300,wc:300,wd:300,wf:300,artsk:'H',arbsk:'A',arhsk:'b',arask:'ac',arfsk:'M',arbe:3200,arhe:1800,arae:1800,arfe:1800,arbs:270,arhs:150,aras:150,arfs:150,skills:{sk_c4_sniper:1}},
+  haruka_e:{name:'本気(?) 叶留佳',type:1,att:1717,def:1591,lvl:74,hp:5200,mhp:5200,sp:500,msp:500,club:4,pose:2,tactic:3,inf:'',wepk:'WG',wepe:1400,weps:810,wepsk:'ndo',wp:500,wk:500,wg:500,wc:500,wd:500,wf:500,artsk:'H',arbsk:'Aa',arhsk:'b',arask:'c',arfsk:'m',arbe:4500,arhe:2000,arae:2000,arfe:2000,arbs:200,arhs:150,aras:150,arfs:150,skills:{sk_c4_roar:1}},
+  shizuru_e:{name:'守卫者 静流',type:1,att:1470,def:830,lvl:80,hp:2200,mhp:2200,sp:500,msp:500,club:98,pose:2,tactic:3,inf:'',wepk:'WK',wepe:900,weps:1800,wepsk:'rnp',wp:500,wk:500,wg:500,wc:500,wd:500,wf:500,artsk:'H',arbsk:'aA',arhsk:'',arask:'bc',arfsk:'M',arbe:2700,arhe:0,arae:1200,arfe:1200,arbs:200,arhs:0,aras:150,arfs:150,skills:{}},
 };
 
 // ======================== UTILITIES ========================

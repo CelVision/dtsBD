@@ -322,20 +322,25 @@ function get_item_place($which)
 	foreach($hplsinfo as $hgroup=>$hpls) $$plsinfo = array_merge($plsinfo,$hpls);
 	//获取某物品的获取方式，如刷新地点或商店是否有卖等
 	$result="";
-	$file = config('mapitem',$gamecfg);
-	$itemlist = openfile($file);
-	$in = sizeof($itemlist);
-	for($i = 1; $i < $in; $i++) 
-		if(!empty($itemlist[$i]) && strpos($itemlist[$i],',')!==false)
+	include config('mapitemresource',$gamecfg);
+	global $mapitems;
+	//遍历所有地图和分支查找物品
+	foreach($mapitems as $imap => $branches)
+	{
+		foreach($branches as $ibranch => $itemlist)
 		{
-			list($iarea,$imap,$inum,$iname,$ikind,$ieff,$ista,$iskind) = explode(',',$itemlist[$i]);
-			if ($iname==$which)
+			foreach($itemlist as $item)
 			{
-				if ($iarea==99) $result.="每禁"; else $result.="{$iarea}禁";
-				if ($imap==99) $result.="全图随机"; else $result.="于{$plsinfo[$imap]}";
-				$result.="刷新{$inum}个 \r";
+				list($iarea,$inum,$iname,$ikind,$ieff,$ista,$iskind) = $item;
+				if ($iname==$which)
+				{
+					if ($iarea==99) $result.="每禁"; else $result.="{$iarea}禁";
+					if ($imap==99) $result.="全图随机"; else $result.="于{$plsinfo[$imap]}";
+					$result.="刷新{$inum}个 \r";
+				}
 			}
 		}
+	}
 	$file = config('shopitem',$gamecfg);
 	$shoplist = openfile($file);
 	foreach($shoplist as $lst)
