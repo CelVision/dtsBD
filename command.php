@@ -839,7 +839,7 @@ if(!empty($noisevars)) extract($noisevars);
 if(isset($url)){$gamedata['url'] = $url;}
 $gamedata['innerHTML']['pls'] = (!isset($mapinfo['plsinfo'][$pls]) && isset($hplsinfo[$pgroup])) ? $hplsinfo[$pgroup][$pls] : $mapinfo['plsinfo'][$pls];
 $gamedata['innerHTML']['anum'] = $alivenum;
-$gamedata['bgpls'] = $pls;
+$gamedata['bgpls'] = isset($mapinfo['bg'][$pls]) ? $mapinfo['bg'][$pls] : $pls;
 
 ob_clean();
 $main ? include template($main) : include template('profile');

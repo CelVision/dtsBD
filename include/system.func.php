@@ -88,6 +88,7 @@ function rs_game($mode = 0) {
 				$mapinfo['xyinfo'][$id] = $maps[$id][$mapid[$id]]['xyinfo'];
 				$mapinfo['areainfo'][$id] = $maps[$id][$mapid[$id]]['areainfo'];
 				$mapinfo['events'][$id] = $maps[$id][$mapid[$id]]['events'];
+			$mapinfo['bg'][$id] = $maps[$id][$mapid[$id]]['bg'];
 				$mapinfo['isindoor'][$id] = $maps[$id][$mapid[$id]]['isindoor'];
 			}
 		save_gameinfo();
