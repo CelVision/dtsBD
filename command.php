@@ -63,16 +63,7 @@ if(!empty($llist)){
 //var_dump($_POST);
 if($hp > 0){
 
-	// 胶冻（mapinfo导入
-	$gameresult = $db->query("SELECT * FROM {$gtablepre}game WHERE groomid = {$groomid}");
-    $gameinfo = $db->fetch_array($gameresult);
-    extract($gameinfo);
-    $arealist = explode(',', $gameinfo['arealist']);
-    $gamevars = json_decode($gamevars, true);
-    $mapinfo = json_decode($mapinfo, true);
-    $noisevars = json_decode($noisevars, true);
-    if(!empty($noisevars)) extract($noisevars);
-	//显示枪声信息
+	//显示枪声信息（mapinfo/noisevars 等已由 load_gameinfo() 在 common.inc.php 中解码到全局变量）
 	if(($now <= $noisetime+$noiselimit)&&$noisemode&&($noiseid!=$pid)&&($noiseid2!=$pid)) {
 		if(($now-$noisetime) < 60) {
 			$noisesec = $now - $noisetime;
@@ -797,28 +788,28 @@ if($hp <= 0) {
 		$result = $db->query("SELECT name FROM {$tablepre}players WHERE pid='$bid'");
 		if($db->num_rows($result)) { $kname = $db->result($result,0); }
 	}
-	ob_clean();
+	ob_start();
 	include template('death');
-	$gamedata['innerHTML']['cmd'] = ob_get_contents();
+	$gamedata['innerHTML']['cmd'] = ob_get_clean();
 	$mode = 'death';
 } elseif($cmd){	
 	$gamedata['innerHTML']['cmd'] = $cmd;
 } elseif($itms0){
-	ob_clean();
+	ob_start();
 	include template('itemfind');
-	$gamedata['innerHTML']['cmd'] = ob_get_contents();
+	$gamedata['innerHTML']['cmd'] = ob_get_clean();
 } elseif($state == 1 || $state == 2 || $state ==3) {
-	ob_clean();
+	ob_start();
 	include template('rest');
-	$gamedata['innerHTML']['cmd'] = ob_get_contents();
+	$gamedata['innerHTML']['cmd'] = ob_get_clean();
 } elseif(!$cmd) {
-	ob_clean();
+	ob_start();
 	if($mode&&file_exists(GAME_ROOT.TPLDIR.'/'.$mode.'.htm')) {
 		include template($mode);
 	} else {
 		include template('command');
 	}
-	$gamedata['innerHTML']['cmd'] = ob_get_contents();
+	$gamedata['innerHTML']['cmd'] = ob_get_clean();
 	//$gamedata['cmd'] .= '<br><br><input type="button" id="submit" onClick="postCommand();return false;" value="提交">';
 } else {
 	$log .= '游戏流程故障，请联系管理员<br>';
@@ -828,22 +819,15 @@ if($hp <= 0) {
 
 //存在 $opendialog 时 尝试打开id为 $opendialog 值的悬浮窗口
 if(isset($opendialog)){$log.="<span style=\"display:none\" id=\"open-dialog\">{$opendialog}</span>";}
-$gameresult = $db->query("SELECT * FROM {$gtablepre}game WHERE groomid = {$groomid}");
-$gameinfo = $db->fetch_array($gameresult);
-extract($gameinfo);
-$arealist = explode(',', $gameinfo['arealist']);
-$gamevars = json_decode($gamevars, true);
-$mapinfo = json_decode($mapinfo, true);
-$noisevars = json_decode($noisevars, true);
-if(!empty($noisevars)) extract($noisevars);
+//无需重新读取 game 表：$alivenum、$mapinfo、$url 等全局变量在指令执行过程中已被正确维护
 if(isset($url)){$gamedata['url'] = $url;}
 $gamedata['innerHTML']['pls'] = (!isset($mapinfo['plsinfo'][$pls]) && isset($hplsinfo[$pgroup])) ? $hplsinfo[$pgroup][$pls] : $mapinfo['plsinfo'][$pls];
 $gamedata['innerHTML']['anum'] = $alivenum;
 $gamedata['bgpls'] = isset($mapinfo['bg'][$pls]) ? $mapinfo['bg'][$pls] : $pls;
 
-ob_clean();
+ob_start();
 $main ? include template($main) : include template('profile');
-$gamedata['innerHTML']['main'] = ob_get_contents();
+$gamedata['innerHTML']['main'] = ob_get_clean();
 $gamedata['innerHTML']['log'] = $log;
 if(isset($error)){$gamedata['innerHTML']['error'] = $error;}
 $gamedata['value']['teamID'] = $teamID;

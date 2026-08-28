@@ -70,14 +70,14 @@ function get_overlaymixinfo()
 function get_addnpcinfo()
 {
 	global $gamecfg;
-	include config("addnpc",$gamecfg);
+	include config("npctemplate",$gamecfg);
 	return $anpcinfo;
 }
 
 function get_npcinit()
 {
 	global $gamecfg;
-	include config("npc",$gamecfg);
+	include config("npctemplate",$gamecfg);
 	return $npcinit;
 }
 

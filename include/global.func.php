@@ -103,6 +103,12 @@ function template($file, $templateid = 0, $tpldir = '') {
 	return $objfile;
 }
 
+function template_render($file) {
+	ob_start();
+	include template($file);
+	return ob_get_clean();
+}
+
 function content($file = '') {
 	ob_clean();
 	include template($file);

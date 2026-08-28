@@ -4,7 +4,7 @@
 	<!--{eval $bgm = init_bgm(1)}-->
 	$bgm
 </div>
-<!--{eval $bgurl = "img/location/".$pls.".jpg";}-->
+<!--{eval $bgpls = isset($mapinfo['bg'][$pls]) ? $mapinfo['bg'][$pls] : $pls; $bgurl = "img/location/".$bgpls.".jpg";}-->
 <!--{if $horizon}-->
 	<style>
 		body {background-image: url("$bgurl");background-position: center;filter: hue-rotate(5deg);}

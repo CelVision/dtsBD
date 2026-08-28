@@ -122,7 +122,113 @@ function rs_game($mode = 0) {
 		file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',','.PHP_EOL,FILE_APPEND);
        }
 //结尾，写东西在这行前面写就行
-	   file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',');'.PHP_EOL.'?>',FILE_APPEND);
+	   file_put_contents( GAME_ROOT.'./gamedata/maps_1.php',');'.PHP_EOL.'function advance_gamestate() {
+global $db,$gtablepre,$tablepre,$groomid,$now,$gamestate,$starttime,$startmin,$gamenum,$gamevars,$rsgame_bots;
+global $areatime,$areahour,$areawarntime,$areawarn,$areanum,$arealimit,$areaadd,$validnum,$validlimit;
+global $alivenum,$deathnum,$afktime,$antiAFKertime,$combolimit,$combonum,$deathlimit,$deathdeno,$deathnume;
+global $hdamage,$hplayer,$noisemode,$weather,$hack,$optime,$mapinfo;
+$ginfochange = false;
+
+//判定游戏准备
+if(!$gamestate)
+{
+if(($starttime)&&($now > $starttime - $startmin*60)) {
+$gamenum++;
+$gamestate = 10;
+$hdamage = 0;
+$hplayer = '';
+$noisemode = '';
+rs_game(1+2+4+8+16+32);
+$ginfochange = true;
+}
+}
+//判定游戏开始
+if($gamestate == 10)
+{
+if($now >= $starttime) {
+$gamestate = 20;
+
+# 小房间开始游戏
+if(!empty($groomid))
+{
+addnews($starttime,'newroomgame',$gamenum,$groomid);
+}
+# 大房间开始游戏
+else
+{
+addnews($starttime,'newgame',$gamenum);
+# 是否部署BOT -> 数量;  只有大房间会部署bot
+$gamevars['botplayer'] = $rsgame_bots;
+}
+
+systemputchat($starttime,'newgame');
+$ginfochange = true;
+}
+}
+//判定增加禁区
+if (($gamestate > 10)&&($now > $areatime)) {
+while($now>$areatime){
+$o_areatime = $areatime;
+$areatime += $areahour*60;
+add_once_area($o_areatime);
+$areawarn = 0;
+$ginfochange = true;
+}
+//判定警告增加禁区
+}elseif(($gamestate > 10)&&($now > $areatime - $areawarntime)&&(!$areawarn)){
+areawarn();
+$ginfochange = true;
+}
+
+if($gamestate == 20) {
+$arealimit = $arealimit > 0 ? $arealimit : 1;
+if(($validnum <= 0)&&($areanum >= $arealimit*$areaadd)) {//判定无人参加并结束游戏
+gameover($areatime-3599,'end4');
+} elseif(($areanum >= $arealimit*$areaadd) || ($validnum >= $validlimit)) {//判定游戏停止激活
+$gamestate = 30;
+$ginfochange = true;
+}
+}
+
+if($gamestate < 40 && $gamestate > 20 && $alivenum <= $combolimit) {//判定进入连斗条件1：停止激活时玩家数少于特定值
+$gamestate = 40;
+addnews($now,'combo');
+systemputchat($now,'combo');
+$ginfochange = true;
+}elseif($gamestate < 40 && $gamestate >= 20 && $combonum && $deathnum >= $combonum){//判定进入连斗条件2：死亡人数超过特定公式计算出的值
+$real_combonum = $deathlimit + ceil($validnum/$deathdeno) * $deathnume;
+if($deathnum >= $real_combonum){
+$gamestate = 40;
+addnews($now,'combo');
+systemputchat($now,'combo');
+}else{
+$combonum = $real_combonum;
+addnews($now,'comboupdate',$combonum,$deathnum);
+systemputchat($now,'comboupdate',$combonum);
+}
+$ginfochange = true;
+}
+
+if (($gamestate >= 40)&&($now > $afktime + $antiAFKertime * 60)) {//判定自动反挂机
+antiAFK();
+$afktime = $now;
+$ginfochange = true;
+}
+
+if($gamestate >= 40) {
+$result = $db->query("SELECT pid FROM {$tablepre}players WHERE hp>0 AND type=0");
+$alivenum = $db->num_rows($result);
+save_gameinfo();
+if($alivenum <= 1) {
+gameover();
+}
+}
+
+if($ginfochange){
+save_gameinfo();
+}
+}
+?>',FILE_APPEND);
 	   */
 
 
@@ -168,7 +274,7 @@ function rs_game($mode = 0) {
 	if ($mode & 8) {
 		//echo " - NPC初始化 - ";
 		$db->query("DELETE FROM {$tablepre}players WHERE type>0 ");
-		include_once config('npc',$gamecfg);
+		include config('npctemplate',$gamecfg);
 		include_once GAME_ROOT."./include/game/clubslct.func.php";
 		//$typenum = sizeof($typeinfo);
 		$plsnum = sizeof($mapinfo['plsinfo']);
@@ -766,7 +872,7 @@ function addnpc($type,$sub,$num,$time = 0,$anpcdata = NULL) {
 	$time = $time == 0 ? $now : $time;
 	$plsnum = sizeof($mapinfo['plsinfo']);
 	/*if(empty($anpcinfo) || empty($npcinit)){
-		include_once config('addnpc',$gamecfg);
+		include config('npc',$gamecfg);
 	}*/
 	$npcinit = get_npcinit();
 	$anpcinfo = get_addnpcinfo();
@@ -885,7 +991,7 @@ function evonpc($type,$name){
 	global $now,$db,$gtablepre,$tablepre,$log,$mapinfo,$typeinfo,$enpcinfo,$gamecfg;
 	if(!$type || !$name){return false;}
 	if(empty($enpcinfo)){
-		include_once config('evonpc',$gamecfg);
+		include config('npctemplate',$gamecfg);
 	}
 	if(!isset($enpcinfo[$type])){return false;}
 	$result = $db->query("SELECT * FROM {$tablepre}players WHERE type = '$type' AND name = '$name'");
@@ -1197,5 +1303,111 @@ function get_gambling_result($clist, $winner='',$winmode=''){
 //	ob_end_clean();
 //	writeover($gbfile,$gbresult);
 	return $updatelist;
+}
+function advance_gamestate() {
+global $db,$gtablepre,$tablepre,$groomid,$now,$gamestate,$starttime,$startmin,$gamenum,$gamevars,$rsgame_bots;
+global $areatime,$areahour,$areawarntime,$areawarn,$areanum,$arealimit,$areaadd,$validnum,$validlimit;
+global $alivenum,$deathnum,$afktime,$antiAFKertime,$combolimit,$combonum,$deathlimit,$deathdeno,$deathnume;
+global $hdamage,$hplayer,$noisemode,$weather,$hack,$optime,$mapinfo;
+$ginfochange = false;
+
+//判定游戏准备
+if(!$gamestate)
+{
+if(($starttime)&&($now > $starttime - $startmin*60)) {
+$gamenum++;
+$gamestate = 10;
+$hdamage = 0;
+$hplayer = '';
+$noisemode = '';
+rs_game(1+2+4+8+16+32);
+$ginfochange = true;
+}
+}
+//判定游戏开始
+if($gamestate == 10)
+{
+if($now >= $starttime) {
+$gamestate = 20;
+
+# 小房间开始游戏
+if(!empty($groomid))
+{
+addnews($starttime,'newroomgame',$gamenum,$groomid);
+}
+# 大房间开始游戏
+else
+{
+addnews($starttime,'newgame',$gamenum);
+# 是否部署BOT -> 数量;  只有大房间会部署bot
+$gamevars['botplayer'] = $rsgame_bots;
+}
+
+systemputchat($starttime,'newgame');
+$ginfochange = true;
+}
+}
+//判定增加禁区
+if (($gamestate > 10)&&($now > $areatime)) {
+while($now>$areatime){
+$o_areatime = $areatime;
+$areatime += $areahour*60;
+add_once_area($o_areatime);
+$areawarn = 0;
+$ginfochange = true;
+}
+//判定警告增加禁区
+}elseif(($gamestate > 10)&&($now > $areatime - $areawarntime)&&(!$areawarn)){
+areawarn();
+$ginfochange = true;
+}
+
+if($gamestate == 20) {
+$arealimit = $arealimit > 0 ? $arealimit : 1;
+if(($validnum <= 0)&&($areanum >= $arealimit*$areaadd)) {//判定无人参加并结束游戏
+gameover($areatime-3599,'end4');
+} elseif(($areanum >= $arealimit*$areaadd) || ($validnum >= $validlimit)) {//判定游戏停止激活
+$gamestate = 30;
+$ginfochange = true;
+}
+}
+
+if($gamestate < 40 && $gamestate > 20 && $alivenum <= $combolimit) {//判定进入连斗条件1：停止激活时玩家数少于特定值
+$gamestate = 40;
+addnews($now,'combo');
+systemputchat($now,'combo');
+$ginfochange = true;
+}elseif($gamestate < 40 && $gamestate >= 20 && $combonum && $deathnum >= $combonum){//判定进入连斗条件2：死亡人数超过特定公式计算出的值
+$real_combonum = $deathlimit + ceil($validnum/$deathdeno) * $deathnume;
+if($deathnum >= $real_combonum){
+$gamestate = 40;
+addnews($now,'combo');
+systemputchat($now,'combo');
+}else{
+$combonum = $real_combonum;
+addnews($now,'comboupdate',$combonum,$deathnum);
+systemputchat($now,'comboupdate',$combonum);
+}
+$ginfochange = true;
+}
+
+if (($gamestate >= 40)&&($now > $afktime + $antiAFKertime * 60)) {//判定自动反挂机
+antiAFK();
+$afktime = $now;
+$ginfochange = true;
+}
+
+if($gamestate >= 40) {
+$result = $db->query("SELECT pid FROM {$tablepre}players WHERE hp>0 AND type=0");
+$alivenum = $db->num_rows($result);
+save_gameinfo();
+if($alivenum <= 1) {
+gameover();
+}
+}
+
+if($ginfochange){
+save_gameinfo();
+}
 }
 ?>

@@ -18,9 +18,7 @@ include $mixfile;
 include $vnmixfile;
 $writefile = GAME_ROOT.TPLDIR.'/mixhelp.htm';
 
-include config('npc',$gamecfg);
-include config('addnpc',$gamecfg);
-include config('evonpc',$gamecfg);
+include config('npctemplate',$gamecfg);
 //for ($i=0; $i<=20; $i++) $p[$i]=$i; //？？？
 for ($i=1; $i<=6; $i++) $itemlst[$i]=$i;
 

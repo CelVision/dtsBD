@@ -302,21 +302,17 @@ function sl(id) {
 //	alive = alivedata.parseJSON();
 //	$('alivelist').innerHTML = alive;
 //}
-var lastRun = 0; var delay = 50;
+var cmdSubmitting = false;
 function postCmd(formName,sendto){
+	if (cmdSubmitting) return;
+	cmdSubmitting = true;
 	var oXmlHttp = zXmlHttp.createRequest();
 	var sBody = getRequestBody(document.forms[formName]);
 	oXmlHttp.open("post", sendto, true);
 	oXmlHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-	const now = Date.now();
-	if (lastRun && now - lastRun < delay) {
-		//console.log('上次响应时间：' + lastRun + ' ' + delay + '毫秒内无法重复执行。' + '当前时间刻：' + now);
-		return;
-	}
-	lastRun = now;
-	//console.log('执行了一次指令，当前时间：' + now);
 	oXmlHttp.onreadystatechange = function () {
 		if (oXmlHttp.readyState == 4) {
+			cmdSubmitting = false;
 			if (oXmlHttp.status == 200) {
 				if (oXmlHttp.responseText!='')
 				{

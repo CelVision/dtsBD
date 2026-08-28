@@ -128,9 +128,7 @@ function print_itm_namelist()
 			}
 		}
 		//NPC掉落
-		include_once config('npc',$gamecfg);
-		include_once config('addnpc',$gamecfg);
-		include_once config('evonpc',$gamecfg);
+		include config('npctemplate',$gamecfg);
 		$nownpclist = $npcinfo;
 		foreach($enpcinfo as $ekey => $enpcs)
 		{

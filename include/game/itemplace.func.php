@@ -453,9 +453,7 @@ function get_item_place($which)
 
 function get_item_npcdrop($which)
 {
-	include config('npc',1);
-	include config('addnpc',1);
-	include config('evonpc',1);
+	include config('npctemplate',1);
 
 	$result = '';
 	$nownpclist = $npcinfo;

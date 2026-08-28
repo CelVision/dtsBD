@@ -9,6 +9,14 @@ if(!$cuser || !defined('IN_GAME')) {
 	exit('Not in game.');
 }
 
+// 状态机心跳：复用 chat 轮询驱动游戏状态推进
+$lockfile = !empty($groomid) ? "process_room{$groomid}.lock" : 'process.lock';
+$plock = fopen(GAME_ROOT.'./gamedata/'.$lockfile, 'ab');
+ flock($plock, LOCK_EX);
+ load_gameinfo();
+ advance_gamestate();
+ fclose($plock);
+
 if(($sendmode == 'send')&&$chatmsg) {
 	$result = $db->query("SELECT pid FROM {$tablepre}players WHERE name='$cuser' AND type='0'");
 	if(!$db->num_rows($result)) exit('Not in game.');
