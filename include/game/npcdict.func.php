@@ -24,7 +24,7 @@ $npc_spawn_config = array(
 		24 => array('num' => 3,   'pls' => 34),
 		26 => array('num' => 1,   'pls' => 34),
 		88 => array('num' => 4,   'pls' => 32),
-		90 => array('num' => 280, 'pls' => 99, 'exclude' => array('迷之搬运工')), // 迷之搬运工仅通过场外赞助addnpc生成
+		90 => array('num' => 280, 'pls' => 99),
 		91 => array('num' => 1,   'pls' => 99),
 		92 => array('num' => 100, 'pls' => null, 'exclude' => array('✦真实的火种')), // sub有各自pls，✦真实的火种不参与开局刷新
 	),
@@ -44,6 +44,7 @@ $npc_spawn_config = array(
 		25 => array('num' => 0,   'pls' => 99),
 		89 => array('num' => 1,   'pls' => 99),
 		90 => array('num' => 1,   'pls' => 99),
+		99 => array('num' => 1,   'pls' => 99),  // 迷之搬运工：仅通过addnpc生成
 		92 => array('num' => 100, 'pls' => 99),
 	),
 );

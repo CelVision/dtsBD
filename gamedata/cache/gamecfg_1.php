@@ -159,7 +159,7 @@ $credits2_values = 2;
 //场外支援系统 赞助者的头衔
 $sponsor_title = '场外热心玩家';
 //场外支援系统 快递员NPC的类别
-$gnpctype = 90;
+$gnpctype = 99;
 //场外支援系统 快递员NPC的子类别
 $gnpcsub = 0;
 //场外支援系统 不能赞助自己 1:启用 0:关闭
