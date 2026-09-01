@@ -273,6 +273,10 @@ save_gameinfo();
 	}
 	if ($mode & 8) {
 		//echo " - NPC初始化 - ";
+		include_once GAME_ROOT."./include/game/npcdict.func.php";
+		global $npc_spawn_config, $npc_sub_pls;
+		spawn_npc_all($now);
+		/* OLD CODE PRESERVED FOR ROLLBACK
 		$db->query("DELETE FROM {$tablepre}players WHERE type>0 ");
 		include config('npctemplate',$gamecfg);
 		include_once GAME_ROOT."./include/game/clubslct.func.php";
@@ -864,23 +868,23 @@ function movehtm($atime = 0) {
 	//return;
 }
 
-function addnpc($type,$sub,$num,$time = 0,$anpcdata = NULL) {
+function addnpc($type,$sub,$num,$time = 0,$anpcdata = NULL,$pls_override = NULL) {
+	// C4: 委托给新系统 addnpc_compat() -> spawn_npc()
+	include_once GAME_ROOT."./include/game/npcdict.func.php";
+	return addnpc_compat($type, $sub, $num, $time, $anpcdata, $pls_override);
+	/* OLD CODE PRESERVED FOR ROLLBACK
 	global $now,$db,$gtablepre,$tablepre,$log,$mapinfo,$typeinfo,$arealist,$areanum,$gamecfg;
 	global $hidding_typelist,$deepzones;
 	include_once GAME_ROOT."./include/game/clubslct.func.php";
 
 	$time = $time == 0 ? $now : $time;
 	$plsnum = sizeof($mapinfo['plsinfo']);
-	/*if(empty($anpcinfo) || empty($npcinit)){
-		include config('npc',$gamecfg);
-	}*/
 	$npcinit = get_npcinit();
 	$anpcinfo = get_addnpcinfo();
 	$anpc_namelist = Array();
 	$anpc = array_merge($npcinit,$anpcinfo[$type]);
 	$anpc = array_merge($anpc,$anpc['sub'][$sub]);	
 	if(!$anpc){
-		//echo 'no npc.';
 		return;
 	} else {
 		for($i=0;$i< $num;$i++)
@@ -985,9 +989,14 @@ function addnpc($type,$sub,$num,$time = 0,$anpcdata = NULL) {
 		return $summon_ids;
 	}
 	return;
+	*/
 }
 
 function evonpc($type,$name){
+	// C4: 委托给新系统 evolve_npc()
+	include_once GAME_ROOT."./include/game/npcdict.func.php";
+	return evolve_npc($type, $name);
+	/* OLD CODE PRESERVED FOR ROLLBACK
 	global $now,$db,$gtablepre,$tablepre,$log,$mapinfo,$typeinfo,$enpcinfo,$gamecfg;
 	if(!$type || !$name){return false;}
 	if(empty($enpcinfo)){
@@ -1042,6 +1051,7 @@ function evonpc($type,$name){
 	}
 		
 	return $npc;
+	*/
 }
 
 function antiAFK($timelimit = 0){
