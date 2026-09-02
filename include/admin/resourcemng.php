@@ -150,6 +150,16 @@ if(strpos($command,'expand_') === 0) {
 		$expanded_bi = $sbi;
 		$expanded_page = 0;
 	}
+} elseif($command == 'restore') {
+	$bakfile = $resource_file.'.bak';
+	if(file_exists($bakfile)) {
+		copy($bakfile, $resource_file);
+		adminlog('resourcemng', 'restore', $gamecfg);
+		$cmd_info = '已从备份恢复配置文件（撤销最近一次保存）。';
+		include $resource_file;
+	} else {
+		$cmd_info = '备份文件不存在（保存过一次后才会生成备份）。';
+	}
 }
 
 // 全图随机池（99不是地图，单独处理）

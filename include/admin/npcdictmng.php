@@ -92,6 +92,16 @@ if(strpos($command,'expand_') === 0) {
 		$expanded_type = $stype;
 		$expanded_name = $sname;
 	}
+} elseif($command == 'restore') {
+	$bakfile = $dict_file.'.bak';
+	if(file_exists($bakfile)) {
+		copy($bakfile, $dict_file);
+		adminlog('npcdictmng', 'restore', $gamecfg);
+		$cmd_info = '已从备份恢复配置文件（撤销最近一次保存）。';
+		include $dict_file;
+	} else {
+		$cmd_info = '备份文件不存在（保存过一次后才会生成备份）。';
+	}
 }
 
 $npcdisplay = Array();

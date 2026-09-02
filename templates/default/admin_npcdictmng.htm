@@ -3,6 +3,7 @@
 <form method="post" name="npcdictmng">
 <input type="hidden" name="mode" value="npcdictmng">
 <input type="hidden" id="command" name="command" value="list">
+<input type="submit" value="从备份恢复（撤销最近一次保存）" onclick="if(!confirm('确定用保存前的备份覆盖当前配置文件吗？')){return false;}$('command').value='restore'">
 <table class="admin">
 	<tr>
 		<th width="40">编号</th>

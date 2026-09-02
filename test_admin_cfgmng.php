@@ -185,6 +185,18 @@ check('池保存:仅删除页内1行', count($np['item']) == $p0cnt - 1);
 check('池保存:页外行保持原样', $np['item'][100] === $p0['item'][101]);
 check('池保存:页内未删行原样', $np['item'][0] === $p0['item'][0]);
 
+// ── 6d. 从备份恢复（撤销6c的保存）──
+check('恢复前备份文件已生成', file_exists($res98.'.bak'));
+$command = 'restore';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+$saveinfo = $cmd_info;
+ob_end_clean();
+check('恢复:提示成功', strpos($saveinfo, '已从备份恢复') !== false);
+check('恢复:回到6c保存前状态(npc=14,90,91)', $maps[99][0]['npc'] === Array(14,90,91));
+check('恢复:池物品数回到原值', count($maps[99][0]['item']) == $p0cnt);
+check('恢复:此前保存的地图改动仍在', $maps[0][0]['plsinfo'] === '无月之影·改');
+
 // ── 7. npcdictmng 列表渲染 ──
 $command = 'list';
 ob_start();
@@ -248,9 +260,28 @@ include $dict98;
 check('npcdictmng非法JSON:提示解析失败', strpos($saveinfo, '解析失败') !== false);
 check('npcdictmng非法JSON:数据未变', $npcdict[1]['红暮-自动托管']['clubskillpara'] == $d10['clubskillpara']);
 
+// ── 10b. 从备份恢复（撤销场景9的保存）──
+check('npcdict备份文件已生成', file_exists($dict98.'.bak'));
+$command = 'restore';
+ob_start();
+include GAME_ROOT.'./include/admin/npcdictmng.php';
+$saveinfo = $cmd_info;
+ob_end_clean();
+unset($npcdict);
+include $dict98;
+check('npcdict恢复:提示成功', strpos($saveinfo, '已从备份恢复') !== false);
+check('npcdict恢复:mhp回到7500', $npcdict[1]['红暮-自动托管']['mhp'] === 7500);
+check('npcdict恢复:clubskillpara回到lvl5', $npcdict[1]['红暮-自动托管']['clubskillpara']['c4_stable']['lvl'] === 5);
+
 // ── 清理 ──
-if(substr($res98, -15) === 'resource_98.php') unlink($res98);
-if(substr($dict98, -14) === 'npcdict_98.php') unlink($dict98);
+if(substr($res98, -15) === 'resource_98.php') {
+	unlink($res98);
+	if(file_exists($res98.'.bak')) unlink($res98.'.bak');
+}
+if(substr($dict98, -14) === 'npcdict_98.php') {
+	unlink($dict98);
+	if(file_exists($dict98.'.bak')) unlink($dict98.'.bak');
+}
 
 echo $fail == 0 ? "\n=== 管理配置功能测试全部通过 ===\n" : "\n=== 存在 $fail 项失败 ===\n";
 exit($fail == 0 ? 0 : 1);

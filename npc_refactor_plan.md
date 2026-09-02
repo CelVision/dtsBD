@@ -220,8 +220,8 @@ $maps[2][0] = Array(
 - **`include/admin/cfgfile.func.php`**：共用函数——`regenerate_gameresource_file()`/`regenerate_npcdict_file()`（var_export整文件重建，两文件均为纯数据文件）、`admin_cfg_decode()`（还原gstrfilter的htmlspecialchars）、`admin_cfg_typed()`（保持原字段类型写入）、`admin_map_itemrows()`/`admin_cfg_pagebtns()`（物品行HTML+分页导航）、`admin_npcdict_edit_table()`（NPC属性编辑表，仿npcmng布局）。
 - **resourcemng**：每分支可编辑 plsinfo/xyinfo/bg/areainfo/isindoor/events/npc(typeId列表) 与物品掉落表（增删行）；**map 99不是地图**——单独渲染为"全图随机刷新池"区块（仅NPC+物品表）；物品表超过100行分页（99池515行会超过PHP max_input_vars=1000导致提交截断），保存采用合并语义：只处理POST中出现的行号，未提交的分页行保持原样。
 - **npcdictmng**：每NPC条目可编辑基础属性/六熟练/装备6件套/包裹7格/描述/clubskillpara(JSON校验，非法输入拒绝并提示)；name/typeId/source/pass为结构键不可编辑。
-- 保存流程：读当前房间文件→内存改→var_export重建→adminlog。类型保持：原字符串存字符串、原整数存整数，未改动字段原样保留（areainfo含`\"`的旧转义在保存时被规范化为`"`，属无害清理）。
-- **测试**：`test_admin_cfgmng.php`（51项：重建回环一致性、列表/展开渲染、地图分支保存[改名/改行/删行/空修改]、全图随机池独立渲染+分页提交合并语义、NPC属性/clubskillpara保存、非法JSON拒绝）。**教训：临时测试文件路径必须显式指定（如`_98`），严禁`config()`——其_98→_1回退曾导致误删真实_1文件，已从git恢复并加路径守卫**。`test_tpl_compile.php`扩展至8个模板。
+- 保存流程：读当前房间文件→内存改→var_export重建→adminlog。**保存前自动备份**（`admin_cfg_backup()`把当前文件复制为`<file>.bak`，已为_1文件生成初始备份）；两个界面均有"从备份恢复"按钮（confirm确认，`restore`命令把`.bak`复制回当前文件，撤销最近一次保存）。类型保持：原字符串存字符串、原整数存整数，未改动字段原样保留（areainfo含`\"`的旧转义在保存时被规范化为`"`，属无害清理）。
+- **测试**：`test_admin_cfgmng.php`（59项：重建回环一致性、列表/展开渲染、地图分支保存[改名/改行/删行/空修改]、全图随机池独立渲染+分页提交合并语义、NPC属性/clubskillpara保存、非法JSON拒绝、备份生成+恢复回滚验证）。**教训：临时测试文件路径必须显式指定（如`_98`），严禁`config()`——其_98→_1回退曾导致误删真实_1文件，已从git恢复并加路径守卫**。`test_tpl_compile.php`扩展至8个模板。
 
 ### 2026-09-02 开局刷新池修复 — 红暮双版本随机bug
 

@@ -6,7 +6,13 @@ if(!defined('IN_GAME')) {
 // gameresource / npcdict 数据文件重建（管理界面 resourcemng / npcdictmng 使用）
 // 三个文件均为纯数据文件（变量定义加结束标记），可用 var_export 整体重建
 
+// 保存前备份（用于恢复）：把当前文件复制为 .bak，保存后可用“从备份恢复”撤销
+function admin_cfg_backup($file) {
+	if(file_exists($file)) copy($file, $file.'.bak');
+}
+
 function regenerate_gameresource_file($file, $maps, $npc_spawn_config, $npc_sub_pls) {
+	admin_cfg_backup($file);
 	$out = '<?php'."\n\n";
 	$out .= '// gameresource：地图与资源总配置（管理界面 resourcemng 重建）'."\n";
 	$out .= '// \'npc\' 字段：该地图分支初始固定刷新的NPC类别（typeId，指向npcdict辞典模板）'."\n";
@@ -24,6 +30,7 @@ function regenerate_gameresource_file($file, $maps, $npc_spawn_config, $npc_sub_
 }
 
 function regenerate_npcdict_file($file, $npcdict, $npc_evolve) {
+	admin_cfg_backup($file);
 	$out = '<?php'."\n";
 	$out .= 'if(!defined(\'IN_GAME\')) exit(\'Access Denied\');'."\n\n";
 	$out .= '// NPC辞典 v1 — 自动生成（管理界面 npcdictmng 重建）'."\n";
