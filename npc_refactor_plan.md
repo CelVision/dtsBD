@@ -213,6 +213,14 @@ $maps[2][0] = Array(
 
 ## 变更日志
 
+### 2026-09-02 开局刷新池修复 — 红暮双版本随机bug
+
+**问题**：npcdict把 npc_1.php(sub)/addnpc_1.php(asub)/evonpc_1.php(esub) 三源合一后，`spawn_npc_all()`开局对typeId 1在 **红暮-自动托管(sub) 与 强版红暮(asub) 之间随机二选一**，约一半开局强版提前登场且自动托管缺席；type 14/21同理可能开局刷出esub进化目标（战斗模式梦美、黑色奪魂曲_evo等）。原版语义：开局只遍历npc_1.php，asub仅由addnpc()（如破灭之诗的`addnpc(1,0,1)`）召唤，esub仅作evonpc目标。
+
+**修复**：`npcdict.func.php` 新增 `get_npc_init_pool($type)` — 同组优先取sub来源；纯asub组（92种火，字典全组标asub）回退用全部asub条目；esub与同组asub不参与开局刷新。`spawn_npc_all()` 与 `maphelp.php`/`test_maphelp_data.php` 的NPC展示改用该池。破灭之诗处理器（`item.func.php:2182`）无需改动：其 `DELETE 红暮-自动托管` + `addnpc(1,0,1)`→强版红暮 的链路本就正确。
+
+**验证**：新增 `test_init_pool.php`（11项全过：type1池仅自动托管、100次选择确定、type14=3基础/21=10无evo、92回退+exclude后5种火、addnpc(1,0)指强版、进化目标仍可取数、自动托管数值与原版npc_1.php一致）；maphelp页无月之影NPC行仅"红暮-自动托管 ×1"，随机池NPC只显示3基础形态；`test_spawn_config_equiv.php` 等旧测试不受影响。
+
 ### 2026-08-28 状态机心跳 + template_render修复
 
 #### 已完成

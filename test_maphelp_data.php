@@ -24,7 +24,7 @@ function maphelp_npcword($mid, $types) {
 			if(!empty($subs)) $parts[] = implode('、', $subs);
 			continue;
 		}
-		$names = get_npcdict_names($type);
+		$names = get_npc_init_pool($type);
 		if(empty($names)) continue;
 		if(count($names) > 4) {
 			$nameword = implode('、', array_slice($names, 0, 3)) . ' 等' . count($names) . '种';
@@ -83,7 +83,7 @@ $randnpcword = array();
 if(!empty($maps[99][0]['npc'])) {
 	foreach($maps[99][0]['npc'] as $type) {
 		$cfg = get_npc_spawn_config($type, 'init');
-		$names = get_npcdict_names($type);
+		$names = get_npc_init_pool($type);
 		if(count($names) > 4) $nameword = implode('、', array_slice($names, 0, 3)) . ' 等' . count($names) . '种';
 		else $nameword = implode('、', $names);
 		$randnpcword[] = $nameword . ' ×' . $cfg['num'];
@@ -94,7 +94,7 @@ if(!empty($maps[99][0]['npc'])) {
 echo "地图卡片（含未填充分支）: " . count($mapdisplay) . "\n";
 $unfilled_cnt = 0; $with_npc = 0;
 foreach($mapdisplay as $md) { if($md['unfilled']) $unfilled_cnt++; if(!empty($md['npcword'])) $with_npc++; }
-echo "其中待补充分支: $unfilled_cnt，含固定刷新NPC: $with_npc\n";
+echo "其中待补充分支: {$unfilled_cnt}，含固定刷新NPC: {$with_npc}\n";
 echo "全图随机池物品: $poolitems\n";
 echo "全图随机NPC类别数: " . count($randnpcword) . "\n\n";
 

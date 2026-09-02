@@ -66,6 +66,21 @@ function get_npcdict_data($type, $name) {
 	return $d['dict'][$type][$name];
 }
 
+// 开局刷新池 — 还原原版 npc_1.php 语义：
+// 同组内优先取 sub 来源（原 npc_1.php 条目）；纯 asub 组（如92种火）回退用全部 asub 条目；
+// esub（进化目标）与同组内的 asub（addnpc专属召唤，如type1的强版红暮）不参与开局刷新
+function get_npc_init_pool($type) {
+	$d = get_npcdict();
+	if(!isset($d['dict'][$type])) return array();
+	$sub_names = $asub_names = array();
+	foreach($d['dict'][$type] as $name => $data) {
+		$src = isset($data['source']) ? $data['source'] : 'sub';
+		if($src == 'sub') $sub_names[] = $name;
+		elseif($src == 'asub') $asub_names[] = $name;
+	}
+	return !empty($sub_names) ? $sub_names : $asub_names;
+}
+
 // 统一spawn函数 — 替代 addnpc()
 // 参数与 addnpc() 对齐，$sub 数字下标改为 $name 字符串
 function spawn_npc($type, $name, $num = 1, $time = 0, $anpcdata = NULL, $pls_override = NULL) {
@@ -204,7 +219,8 @@ function spawn_npc_all($time = 0) {
 
 
 	foreach($d['dict'] as $type => $npcs) {
-		$names = array_keys($npcs);
+		// 开局刷新池（sub优先/纯asub组回退/排除esub进化目标，见 get_npc_init_pool）
+		$names = get_npc_init_pool($type);
 		// 从 spawn 配置读取 typeId 级别的 num 和 pls
 		$cfg = get_npc_spawn_config($type, 'init');
 		// 排除不参与开局刷新的NPC

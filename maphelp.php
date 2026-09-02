@@ -58,7 +58,7 @@ function maphelp_npcword($mid, $types) {
 			if(!empty($subs)) $parts[] = implode('、', $subs);
 			continue;
 		}
-		$names = get_npcdict_names($type);
+		$names = get_npc_init_pool($type);
 		if(empty($names)) continue;
 		if(count($names) > 4) {
 			$nameword = implode('、', array_slice($names, 0, 3)) . ' 等' . count($names) . '种';
@@ -171,7 +171,7 @@ $randnpcword = array();
 if(!empty($maps[99][0]['npc'])) {
 	foreach($maps[99][0]['npc'] as $type) {
 		$cfg = get_npc_spawn_config($type, 'init');
-		$names = get_npcdict_names($type);
+		$names = get_npc_init_pool($type);
 		if(empty($names)) continue;
 		if(count($names) > 4) {
 			$nameword = implode('、', array_slice($names, 0, 3)) . ' 等' . count($names) . '种';
