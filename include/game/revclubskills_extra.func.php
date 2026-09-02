@@ -195,8 +195,12 @@
 		{
 			$mcost = get_skillvars($sk,'mcost');
 			$money -= $mcost;
-			$anpcinfo = get_addnpcinfo();
-			$mercinfo = $anpcinfo[25]['sub'];
+			include_once GAME_ROOT.'./include/game/npcdict.func.php';
+			$d = get_npcdict();
+			$mercinfo = array();
+			foreach($d['dict'][25] as $mname => $mdata) {
+				if(isset($mdata['source']) && $mdata['source'] === 'asub') $mercinfo[] = $mdata;
+			}
 			# 获取佣兵出货概率
 			$tot = count($mercinfo);
 			$tp = 0;

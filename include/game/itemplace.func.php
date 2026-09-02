@@ -453,40 +453,22 @@ function get_item_place($which)
 
 function get_item_npcdrop($which)
 {
-	include config('npctemplate',1);
+	include_once GAME_ROOT.'./include/game/npcdict.func.php';
+	$d = get_npcdict();
 
 	$result = '';
-	$nownpclist = $npcinfo;
-	foreach($enpcinfo as $ekey => $enpcs)
+	foreach($d['dict'] as $ntype => $npcs)
 	{
-		foreach($enpcs as $sname => $enpc)
+		foreach($npcs as $nname => $npc)
 		{
-			$nownpclist[$ekey]['sub'][$sname] = $enpc;
-		}
-	}
-	foreach($anpcinfo as $akey => $anpcs)
-	{
-		foreach($anpcs['sub'] as $aid => $anpc)
-		{
-			$nownpclist[$akey]['sub']['a'.$aid] = $anpc;
-		}
-	}
-	foreach($nownpclist as $ntype => $npcs)
-	{
-		foreach(array('wep','arb','arh','ara','arf','art','itm1','itm2','itm3','itm4','itm5','itm6') as $nipval)
-		{
-			if(!empty($npcs['sub'])) 
+			foreach(array('wep','arb','arh','ara','arf','art','itm1','itm2','itm3','itm4','itm5','itm6') as $nipval)
 			{
-				foreach($npcs['sub'] as $npc)
+				if(isset($npc[$nipval]) && ($which == $npc[$nipval]))
 				{
-					$npc = array_merge($npcs,$npc);
-					if(isset($npc[$nipval]) && ($which == $npc[$nipval]))
+					$nresult ="击败{$npc['name']}后拾取 \r";
+					if(strpos($result,$nresult)===false)
 					{
-						$nresult ="击败{$npc['name']}后拾取 \r";
-						if(strpos($result,$nresult)===false)
-						{
-							$result .= $nresult;
-						}
+						$result .= $nresult;
 					}
 				}
 			}

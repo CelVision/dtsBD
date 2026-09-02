@@ -128,33 +128,15 @@ function print_itm_namelist()
 			}
 		}
 		//NPC掉落
-		include config('npctemplate',$gamecfg);
-		$nownpclist = $npcinfo;
-		foreach($enpcinfo as $ekey => $enpcs)
+		include_once GAME_ROOT.'./include/game/npcdict.func.php';
+		$d = get_npcdict();
+		foreach($d['dict'] as $ntype => $npcs)
 		{
-			foreach($enpcs as $sname => $enpc)
+			foreach($npcs as $nname => $npc)
 			{
-				$nownpclist[$ekey]['sub'][$sname] = $enpc;
-			}
-		}
-		foreach($anpcinfo as $akey => $anpcs)
-		{
-			foreach($anpcs['sub'] as $aid => $anpc)
-			{
-				$nownpclist[$akey]['sub']['a'.$aid] = $anpc;
-			}
-		}
-		foreach($nownpclist as $npcs)
-		{
-			foreach(array('wep','arb','arh','ara','arf','art','itm1','itm2','itm3','itm4','itm5','itm6') as $nipval)
-			{
-				if(isset($npcs[$nipval]) && !in_array($npcs[$nipval],$iarr)) $iarr[] = $npcs[$nipval];
-				if(!empty($npcs['sub'])) 
+				foreach(array('wep','arb','arh','ara','arf','art','itm1','itm2','itm3','itm4','itm5','itm6') as $nipval)
 				{
-					foreach($npcs['sub'] as $npc)
-					{
-						if(isset($npc[$nipval]) && !in_array($npc[$nipval],$iarr)) $iarr[] = $npc[$nipval];
-					}
+					if(isset($npc[$nipval]) && $npc[$nipval] && !in_array($npc[$nipval],$iarr)) $iarr[] = $npc[$nipval];
 				}
 			}
 		}
