@@ -269,7 +269,7 @@ function load_gameinfo() {
 	// Migration: populate $mapinfo['events'] if missing (game started before events refactor)
 	if(!empty($mapinfo) && !isset($mapinfo['events']) && isset($mapinfo['plsinfo'])){
 		global $gamecfg;
-		$cfgfile = file_exists(GAME_ROOT."./gamedata/cache/mapresource_{$gamecfg}.php") ? GAME_ROOT."./gamedata/cache/mapresource_{$gamecfg}.php" : GAME_ROOT."./gamedata/cache/mapresource_1.php";
+		$cfgfile = config('gameresource', $gamecfg);
 		include $cfgfile;
 		$mapinfo['events'] = Array();
 		$mapinfo['bg'] = Array();

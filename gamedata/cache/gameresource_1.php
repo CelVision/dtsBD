@@ -1,5 +1,9 @@
 <?php
 
+// gameresource：地图与资源总配置（原 mapresource 更名定版）
+// 'npc' 字段：该地图分支初始固定刷新的NPC类别（typeId，指向npcdict辞典模板）
+// map 99 的 'npc'：全图随机刷新池的NPC类别
+// 完整刷新参数（num/pls/sub级位置）见文末 $npc_spawn_config / $npc_sub_pls
 $maps = Array
 (
   //0表示室内，1表示室外
@@ -29,7 +33,7 @@ $maps = Array
 			Array('1', '1', '曾经的荣光-煤气', 'EW', '1', '1', '10'),
 			Array('0', '1', '→【神器任意门】←', 'ZA', '1', '1', ''),
 		),
-		'npc' => Array(),
+		'npc' => Array(1),
       ),
     ),
     1 => array(
@@ -118,7 +122,7 @@ $maps = Array
 			Array('1', '4', '游戏王十星素材', 'WK10', '1', '1', 'J'),
 			Array('99', '7', '救世龙 ★1', 'WC01', '100', '50', 'Ms'),
 		),
-		'npc' => Array(),
+		'npc' => Array(92),
          ),
 
       1 => Array(
@@ -129,7 +133,7 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '0', 
 		'item' => Array(),
-		'npc' => Array(),
+		'npc' => Array(92),
          ),   
     ),
     3 => array(
@@ -172,7 +176,7 @@ $maps = Array
 			Array('99', '7', '一杯八分满的啤酒', 'HS', '99', '1', ''),
 			Array('0', '5', '伏特加', 'HS', '35', '1', ''),
 		),
-		'npc' => Array(),
+		'npc' => Array(92),
          ),
       1 => Array(
         'plsinfo'=>'',
@@ -182,7 +186,7 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '',
 		'item' => Array(),
-		'npc' => Array(),
+		'npc' => Array(92),
       ),
         ),
     4=> array(
@@ -567,7 +571,7 @@ $maps = Array
 			Array('3', '2', '磨刀石', 'Y', '12', '1', ''),
 			Array('0', '2', '密封的酒瓶', 'X', '1', '1', ''),
 		),
-		'npc' => Array(),
+		'npc' => Array(92),
          ),
       1 => Array(
         'plsinfo'=>'',
@@ -577,7 +581,7 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '',
 		'item' => Array(),
-		'npc' => Array(),
+		'npc' => Array(92),
       ),
     ),
     13=>array(
@@ -709,7 +713,7 @@ $maps = Array
 			Array('99', '1', '【风神的神德】', 'EW', '1', '1', '6'),
 			Array('0', '5', '☆残页的魔导书☆', 'X', '1', '1', ''),
 		),
-		'npc' => Array(),
+		'npc' => Array(92),
          ),
       1 => Array(
         'plsinfo'=>'',
@@ -719,7 +723,7 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '',
 		'item' => Array(),
-		'npc' => Array(),
+		'npc' => Array(92),
       ),
     ),
     16=>array(
@@ -857,7 +861,7 @@ $maps = Array
 			Array('99', '8', '长森牛奶', 'HS', '55', '3', ''),
 			Array('99', '1', '长森牛奶', 'PS', '55', '3', ''),
 		),
-		'npc' => Array(),
+		'npc' => Array(92),
          ),
       1 => Array(
         'plsinfo'=>'',
@@ -867,7 +871,7 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '',
 		'item' => Array(),
-		'npc' => Array(),
+		'npc' => Array(92),
       ),
     ),
     19=>array(
@@ -938,7 +942,7 @@ $maps = Array
 			Array('0', '4', '海星面包', 'PB', '135', '2', ''),
 			Array('0', '10', '喷雾器罐', 'Y', '1', '1', ''),
 		),
-		'npc' => Array(),
+		'npc' => Array(92),
          ),
       1 => Array(
         'plsinfo'=>'',
@@ -948,7 +952,7 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '',
 		'item' => Array(),
-		'npc' => Array(),
+		'npc' => Array(92),
       ),
     ),
     21=>array(
@@ -1044,7 +1048,7 @@ $maps = Array
 			Array('3', '3', '奇迹-希望', 'HB', '4565', '4', ''),
 			Array('4', '3', '奇迹-友情', 'HB', '5676', '5', ''),
 		),
-		'npc' => Array(),
+		'npc' => Array(92),
          ),
       1 => Array(
         'plsinfo'=>'',
@@ -1054,7 +1058,7 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '',
 		'item' => Array(),
-		'npc' => Array(),
+		'npc' => Array(92),
       ),
     ),
     23=>array(
@@ -1079,7 +1083,7 @@ $maps = Array
 			Array('1', '1', '幻之刃', 'WK', '80', '40', ''),
 			Array('1', '1', '幻之使魔', 'WD', '80', '40', 'd'),
 		),
-		'npc' => Array(),
+		'npc' => Array(92),
          ),
       1 => Array(
         'plsinfo'=>'',
@@ -1089,7 +1093,7 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '',
 		'item' => Array(),
-		'npc' => Array(),
+		'npc' => Array(92),
       ),
     ),
     24=>array(
@@ -1114,7 +1118,7 @@ $maps = Array
 			Array('1', '0', '永恒飞刃', 'WC', '90', '200', 'r'),
 			Array('1', '0', '永恒之桶', 'WD', '80', '70', 'd'),
 		),
-		'npc' => Array(),
+		'npc' => Array(92),
          ),
       1 => Array(
         'plsinfo'=>'',
@@ -1124,7 +1128,7 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '',
 		'item' => Array(),
-		'npc' => Array(),
+		'npc' => Array(92),
       ),
     ),
     25=>array(
@@ -1307,7 +1311,7 @@ $maps = Array
 			Array('99', '5', '烂苹果', 'PB2', '90', '1', '🍎'),
 			Array('99', '10', '空白符卡', 'X', '1', '1', ''),
 		),
-		'npc' => Array(),
+		'npc' => Array(92),
          ),
       1 => Array(
         'plsinfo'=>'',
@@ -1317,7 +1321,7 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '',
 		'item' => Array(),
-		'npc' => Array(),
+		'npc' => Array(92),
       ),
     ),
     30=>array(
@@ -1408,7 +1412,7 @@ $maps = Array
 			Array('0', '5', 'SCP-294', 'PB', '70', '∞', 'Z'),
 			Array('0', '5', 'SCP-500', 'ME', '20', '6', ''),
 		),
-		'npc' => Array(),
+		'npc' => Array(88),
          ),
       1 => Array(
         'plsinfo'=>'',
@@ -1418,7 +1422,7 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '',
 		'item' => Array(),
-		'npc' => Array(),
+		'npc' => Array(88),
       ),
     ),
     33=>array(
@@ -1471,10 +1475,10 @@ $maps = Array
         'events'=>Array('valhalla_gate'),
         'isindoor' => '0',  
 		'item' => Array(),
-		'npc' => Array(),
+		'npc' => Array(20, 21, 22, 24, 26),
          ),
     ),
-  // 全图随机物品池（原 mapitemresource map_id 99）
+  // 全图随机池（原 mapitemresource map_id 99；NPC随机刷新类别见npc字段）
   99 => array(
     0 => Array(
 		'item' => Array(
@@ -1994,8 +1998,59 @@ $maps = Array
 			Array('0', '7', '【Alicemagic】', 'ss', '30', '1', ''),
 			Array('0', '7', '【Crow Song】', 'ss', '90', '1', ''),
 		),
-		'npc' => Array(),
+		'npc' => Array(14, 90, 91),
     ),
   ),
+);
+
+// ── NPC刷新配置（从 include/game/npcdict.func.php 迁入）──
+// init = 开局刷新(rs_game mode&8)，add = 动态召唤(addnpc)
+// pls: 0=无月之影, 34=英灵殿, 99=随机, 具体数字=固定地点, array=多地择一, null=按sub配置
+$npc_spawn_config = array(
+	'init' => array(
+		1  => array('num' => 1,   'pls' => 0),
+		14 => array('num' => 3,   'pls' => 99),
+		15 => array('num' => 0,   'pls' => 99),  // 不刷新，仅addnpc
+		19 => array('num' => 0,   'pls' => 0),   // 不刷新，仅addnpc
+		20 => array('num' => 10,  'pls' => 34),
+		21 => array('num' => 5,   'pls' => 34),
+		22 => array('num' => 2,   'pls' => 34),
+		24 => array('num' => 3,   'pls' => 34),
+		26 => array('num' => 1,   'pls' => 34),
+		88 => array('num' => 4,   'pls' => 32),
+		90 => array('num' => 280, 'pls' => 99),
+		91 => array('num' => 1,   'pls' => 99),
+		92 => array('num' => 100, 'pls' => null, 'exclude' => array('✦真实的火种')), // sub有各自pls，✦真实的火种不参与开局刷新
+	),
+	'add' => array(
+		1  => array('num' => 1,   'pls' => 0),
+		2  => array('num' => 16,  'pls' => 99),
+		4  => array('num' => 1,   'pls' => 33),
+		5  => array('num' => 2,   'pls' => 99),
+		6  => array('num' => 1,   'pls' => 99),
+		7  => array('num' => 3,   'pls' => 99),
+		9  => array('num' => 1,   'pls' => 0),
+		11 => array('num' => 6,   'pls' => 99),
+		12 => array('num' => 1,   'pls' => 99),
+		13 => array('num' => 3,   'pls' => 99),
+		15 => array('num' => 1,   'pls' => 99),
+		19 => array('num' => 1,   'pls' => 0),
+		25 => array('num' => 0,   'pls' => 99),
+		89 => array('num' => 1,   'pls' => 99),
+		90 => array('num' => 1,   'pls' => 99),
+		99 => array('num' => 1,   'pls' => 99),  // 迷之搬运工：仅通过addnpc生成
+		92 => array('num' => 100, 'pls' => 99),
+	),
+);
+
+// sub级别pls覆盖（typeId 92篝火：每个sub有固定刷新位置）
+$npc_sub_pls = array(
+	92 => array(
+		'✦覆唱的篝火' => array(2, 15),
+		'✦爱恋的埋火' => array(3, 22),
+		'✦怜悯的永火' => array(18, 23),
+		'✦执念的残火' => array(20, 24),
+		'✦希望的焰火' => array(12, 29),
+	),
 );
 ?>

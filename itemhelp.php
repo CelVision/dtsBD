@@ -4,7 +4,7 @@ define('CURSCRIPT', 'help');
 
 require './include/common.inc.php';
 
-$mapitemfile = config('mapresource',$gamecfg);
+$mapitemfile = config('gameresource',$gamecfg);
 $writefile = GAME_ROOT.TPLDIR.'/itemhelp.htm';
 
 if(filemtime($mapitemfile) > filemtime($writefile))

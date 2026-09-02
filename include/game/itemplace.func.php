@@ -323,8 +323,8 @@ function get_item_place($which)
 	//获取某物品的获取方式，如刷新地点或商店是否有卖等
 	$result="";
 	global $maps;
-	include config('mapresource',$gamecfg);
-	//遍历所有地图和分支查找物品（item数据已合入mapresource）
+	include config('gameresource',$gamecfg);
+	//遍历所有地图和分支查找物品（item数据已合入gameresource）
 	foreach($maps as $imap => $branches)
 	{
 		foreach($branches as $ibranch => $branch)

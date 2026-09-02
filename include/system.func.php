@@ -48,7 +48,7 @@ function rs_game($mode = 0) {
 	if ($mode & 2) {
 
 //生成地图(吐槽一下循环调用)
-		include config('mapresource',$gamecfg);
+		include config('gameresource',$gamecfg);
 		global $mapid, $mapinfo,$mapid;
 		//生成出一个0和1组成的array，每个位置对应一个地图
 		$mapid = Array();
@@ -274,7 +274,6 @@ save_gameinfo();
 	if ($mode & 8) {
 		//echo " - NPC初始化 - ";
 		include_once GAME_ROOT."./include/game/npcdict.func.php";
-		global $npc_spawn_config, $npc_sub_pls;
 		spawn_npc_all($now);
 	}
 	if ($mode & 16) {
@@ -294,9 +293,9 @@ save_gameinfo();
 
 
 
-//通过mapid分支选择对应地图的物品列表（item数据已合入mapresource）
+//通过mapid分支选择对应地图的物品列表（item数据已合入gameresource）
 		global $mapid, $maps;
-		include config('mapresource',$gamecfg);
+		include config('gameresource',$gamecfg);
 		$an = $areanum ? ceil($areanum/$areaadd) : 0;
 		//遍历每个地图ID，根据$mapid选择分支
 		for($imap = 0; $imap < $plsnum; $imap++) {

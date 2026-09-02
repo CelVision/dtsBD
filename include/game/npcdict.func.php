@@ -6,66 +6,23 @@ if(!defined('IN_GAME')) exit('Access Denied');
 //
 // 索引方式：spawn_npc($typeId, $npcName, $num, ...)
 // 数据来源：$npcdict (npcdict_1.php) + $npc_evolve (进化关系映射)
-// 刷新配置：pls/num 已从辞典移出，由下方 $npc_spawn_config 管理
+// 刷新配置：$npc_spawn_config / $npc_sub_pls 迁至 gameresource（gamedata/cache/gameresource_1.php 文末）
+// 地图分支的 'npc' 字段为该地初始固定刷新的 typeId 引用（指向本辞典）；99段为全图随机池
 
-// ── 刷新配置 ──────────────────────────────────────────
-// 从 npc_1.php / addnpc_1.php 父类提取，typeId 级别的 spawn 参数
-// init = 开局刷新(rs_game mode&8)，add = 动态召唤(addnpc)
-// pls: 0=无月之影, 34=禁区, 99=随机, 具体数字=固定地点, array=多地择一, null=按sub配置
-$npc_spawn_config = array(
-	'init' => array(
-		1  => array('num' => 1,   'pls' => 0),
-		14 => array('num' => 3,   'pls' => 99),
-		15 => array('num' => 0,   'pls' => 99),  // 不刷新，仅addnpc
-		19 => array('num' => 0,   'pls' => 0),   // 不刷新，仅addnpc
-		20 => array('num' => 10,  'pls' => 34),
-		21 => array('num' => 5,   'pls' => 34),
-		22 => array('num' => 2,   'pls' => 34),
-		24 => array('num' => 3,   'pls' => 34),
-		26 => array('num' => 1,   'pls' => 34),
-		88 => array('num' => 4,   'pls' => 32),
-		90 => array('num' => 280, 'pls' => 99),
-		91 => array('num' => 1,   'pls' => 99),
-		92 => array('num' => 100, 'pls' => null, 'exclude' => array('✦真实的火种')), // sub有各自pls，✦真实的火种不参与开局刷新
-	),
-	'add' => array(
-		1  => array('num' => 1,   'pls' => 0),
-		2  => array('num' => 16,  'pls' => 99),
-		4  => array('num' => 1,   'pls' => 33),
-		5  => array('num' => 2,   'pls' => 99),
-		6  => array('num' => 1,   'pls' => 99),
-		7  => array('num' => 3,   'pls' => 99),
-		9  => array('num' => 1,   'pls' => 0),
-		11 => array('num' => 6,   'pls' => 99),
-		12 => array('num' => 1,   'pls' => 99),
-		13 => array('num' => 3,   'pls' => 99),
-		15 => array('num' => 1,   'pls' => 99),
-		19 => array('num' => 1,   'pls' => 0),
-		25 => array('num' => 0,   'pls' => 99),
-		89 => array('num' => 1,   'pls' => 99),
-		90 => array('num' => 1,   'pls' => 99),
-		99 => array('num' => 1,   'pls' => 99),  // 迷之搬运工：仅通过addnpc生成
-		92 => array('num' => 100, 'pls' => 99),
-	),
-);
-
-// sub级别pls覆盖（typeId 92篝火：每个sub有固定刷新位置）
-$npc_sub_pls = array(
-	92 => array(
-		'✦覆唱的篝火' => array(2, 15),
-		'✦爱恋的埋火' => array(3, 22),
-		'✦怜悯的永火' => array(18, 23),
-		'✦执念的残火' => array(20, 24),
-		'✦希望的焰火' => array(12, 29),
-	),
-);
-
-// 导出到全局作用域（include_once 在函数内时变量不会自动进入全局）
-$GLOBALS['npc_spawn_config'] = $npc_spawn_config;
-$GLOBALS['npc_sub_pls'] = $npc_sub_pls;
+// 懒加载刷新配置（数据在 gameresource；任意调用上下文可用）
+function load_npc_spawn_data() {
+	if(isset($GLOBALS['npc_spawn_config']) && isset($GLOBALS['npc_sub_pls'])) return;
+	global $gamecfg;
+	// gameresource 同时定义 $maps / $npc_spawn_config / $npc_sub_pls
+	include config('gameresource', $gamecfg);
+	$GLOBALS['npc_spawn_config'] = $npc_spawn_config;
+	$GLOBALS['npc_sub_pls'] = $npc_sub_pls;
+	if(!isset($GLOBALS['maps'])) $GLOBALS['maps'] = $maps;
+}
 
 // 获取typeId的spawn配置
 function get_npc_spawn_config($type, $mode = 'init') {
+	load_npc_spawn_data();
 	if(isset($GLOBALS['npc_spawn_config'][$mode][$type])) {
 		return $GLOBALS['npc_spawn_config'][$mode][$type];
 	}
@@ -74,6 +31,7 @@ function get_npc_spawn_config($type, $mode = 'init') {
 
 // 获取sub级别pls覆盖
 function get_npc_sub_pls($type, $name) {
+	load_npc_spawn_data();
 	if(isset($GLOBALS['npc_sub_pls'][$type][$name])) {
 		return $GLOBALS['npc_sub_pls'][$type][$name];
 	}
@@ -231,7 +189,7 @@ function spawn_npc_random($type, $num = 1, $time = 0, $anpcdata = NULL, $pls_ove
 }
 
 // 开局批量刷新 — 替代 rs_game() mode&8 的NPC初始化逻辑
-// num/pls 从 $npc_spawn_config['init'] 读取，sub级pls从 $npc_sub_pls 读取
+// num/pls 从 gameresource 的 $npc_spawn_config['init'] 读取，sub级pls从 $npc_sub_pls 读取
 function spawn_npc_all($time = 0) {
 	global $now,$db,$gtablepre,$tablepre,$log,$mapinfo,$typeinfo,$arealist,$areanum,$gamecfg;
 	global $hidding_typelist,$deepzones;

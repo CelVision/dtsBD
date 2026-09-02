@@ -7,9 +7,9 @@ function print_itm_namelist()
 	if(!file_exists($in_file))
 	{
 		$iarr=Array();
-		//获取所有地图刷新道具道具名（item数据已合入mapresource）
+		//获取所有地图刷新道具道具名（item数据已合入gameresource）
 		global $maps;
-		include config('mapresource',$gamecfg);
+		include config('gameresource',$gamecfg);
 		foreach($maps as $imap => $branches)
 		{
 			foreach($branches as $ibranch => $branch)

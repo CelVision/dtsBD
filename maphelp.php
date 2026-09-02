@@ -5,7 +5,7 @@ define('CURSCRIPT', 'help');
 require './include/common.inc.php';
 require './include/game.func.php';
 
-include config('mapresource',$gamecfg);
+include config('gameresource',$gamecfg);
 include config('npcdict',$gamecfg);
 include_once GAME_ROOT.'./include/game/npcdict.func.php';
 
@@ -44,43 +44,30 @@ function maphelp_skword($iskind) {
 	return $r;
 }
 
-// ── 从刷新配置推导各地图固定刷新NPC（mapresource的npc字段暂空，后续数据迁入后可替换）──
-$mapnpcword = array();
-$randnpcword = array();
-if(isset($npc_spawn_config['init'])) {
-	foreach($npc_spawn_config['init'] as $type => $cfg) {
-		if(empty($cfg['num'])) continue;
-		$pls = isset($cfg['pls']) ? $cfg['pls'] : null;
-		$names = array();
-		if(isset($npcdict[$type])) $names = array_keys($npcdict[$type]);
+// ── NPC名称解析：地图分支 'npc' 字段为 typeId 引用，名称查 npcdict；数量查刷新配置 ──
+function maphelp_npcword($mid, $types) {
+	$parts = array();
+	foreach($types as $type) {
+		$cfg = get_npc_spawn_config($type, 'init');
+		// type 92种火：sub级固定位置，只显示固定在本地图的sub名（数量为全类型总数，不逐图显示）
+		if(!empty($GLOBALS['npc_sub_pls'][$type])) {
+			$subs = array();
+			foreach($GLOBALS['npc_sub_pls'][$type] as $subname => $plss) {
+				if(in_array($mid, $plss)) $subs[] = $subname;
+			}
+			if(!empty($subs)) $parts[] = implode('、', $subs);
+			continue;
+		}
+		$names = get_npcdict_names($type);
 		if(empty($names)) continue;
 		if(count($names) > 4) {
 			$nameword = implode('、', array_slice($names, 0, 3)) . ' 等' . count($names) . '种';
 		} else {
 			$nameword = implode('、', $names);
 		}
-		$entryword = $nameword . ' ×' . $cfg['num'];
-		if(is_array($pls)) {
-			foreach($pls as $p) { if($p != 99) $mapnpcword[$p][] = $entryword; else $randnpcword[] = $entryword; }
-		} elseif($pls === 99) {
-			$randnpcword[] = $entryword;
-		} elseif($pls === null) {
-			// pls=null 且有 sub 级配置的类型（如92篝火）由 sub 循环处理
-			if(!isset($npc_sub_pls[$type])) $randnpcword[] = $entryword;
-		} else {
-			$mapnpcword[$pls][] = $entryword;
-		}
+		$parts[] = $nameword . ' ×' . $cfg['num'];
 	}
-}
-// sub级固定位置（type 92篝火：每个sub有固定刷新地图）
-if(isset($npc_sub_pls)) {
-	foreach($npc_sub_pls as $type => $subs) {
-		foreach($subs as $subname => $plss) {
-			foreach($plss as $p) {
-				if($p != 99) $mapnpcword[$p][] = $subname;
-			}
-		}
-	}
+	return implode('；', $parts);
 }
 
 // ── 构建地图展示数据 ──
@@ -109,12 +96,12 @@ foreach($maps as $mid => $branches) {
 			'indoor' => empty($branch['isindoor']) ? '室内' : '室外',
 			'area' => $branch['areainfo'],
 			'items' => $items_disp,
-			'npcword' => isset($mapnpcword[$mid]) ? implode('；', $mapnpcword[$mid]) : '',
+			'npcword' => !empty($branch['npc']) ? maphelp_npcword($mid, $branch['npc']) : '',
 		);
 	}
 }
 
-// 全图随机掉落池（map_id 99）
+// 全图随机掉落池（map_id 99，'item'/'npc' 与普通地图同结构）
 $poolitems = array();
 if(isset($maps[99][0]['item'])) {
 	foreach($maps[99][0]['item'] as $item) {
@@ -127,6 +114,21 @@ if(isset($maps[99][0]['item'])) {
 			'sk' => maphelp_skword($iskind),
 			'num' => $inum,
 		);
+	}
+}
+// 全图随机刷新NPC（99段 'npc' 字段的 typeId 引用）
+$randnpcword = array();
+if(!empty($maps[99][0]['npc'])) {
+	foreach($maps[99][0]['npc'] as $type) {
+		$cfg = get_npc_spawn_config($type, 'init');
+		$names = get_npcdict_names($type);
+		if(empty($names)) continue;
+		if(count($names) > 4) {
+			$nameword = implode('、', array_slice($names, 0, 3)) . ' 等' . count($names) . '种';
+		} else {
+			$nameword = implode('、', $names);
+		}
+		$randnpcword[] = $nameword . ' ×' . $cfg['num'];
 	}
 }
 
