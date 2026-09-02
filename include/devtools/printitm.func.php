@@ -7,14 +7,15 @@ function print_itm_namelist()
 	if(!file_exists($in_file))
 	{
 		$iarr=Array();
-		//获取所有地图刷新道具道具名
-		global $mapitems;
-		include config('mapitemresource',$gamecfg);
-		foreach($mapitems as $imap => $branches)
+		//获取所有地图刷新道具道具名（item数据已合入mapresource）
+		global $maps;
+		include config('mapresource',$gamecfg);
+		foreach($maps as $imap => $branches)
 		{
-			foreach($branches as $ibranch => $itemlist)
+			foreach($branches as $ibranch => $branch)
 			{
-				foreach($itemlist as $item)
+				if(empty($branch['item'])) continue;
+				foreach($branch['item'] as $item)
 				{
 					$iname = $item[2];
 					if(!in_array($iname,$iarr)) $iarr[] = $iname;

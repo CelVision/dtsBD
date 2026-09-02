@@ -8,7 +8,7 @@ include_once GAME_ROOT.'./include/game/itemplace.func.php';
 
 $mixfile = config('mixitem',$gamecfg);
 $shopfile = config('shopitem',$gamecfg);
-$mapitemfile = config('mapitemresource',$gamecfg);
+$mapitemfile = config('mapresource',$gamecfg);
 $synfile = config('synitem',$gamecfg);
 $ovlfile = config('overlay',$gamecfg);
 $presentfile = config('present',$gamecfg);
@@ -18,23 +18,24 @@ include $mixfile;
 include $vnmixfile;
 $writefile = GAME_ROOT.TPLDIR.'/mixhelp.htm';
 
-include config('npctemplate',$gamecfg);
+include config('npcdict',$gamecfg);
+include_once GAME_ROOT.'./include/game/npcdict.func.php';
+$npcinit = array(); // get_npc_helpinfo 引用，辞典已展平无需父类模板
 //for ($i=0; $i<=20; $i++) $p[$i]=$i; //？？？
 for ($i=1; $i<=6; $i++) $itemlst[$i]=$i;
 
-# 将evonpc加入npc队列
-foreach($enpcinfo as $ekey => $enpcs)
-{
-	# evonpc在npcinfo中一定会有大类 所以只加入子类别
-	foreach($enpcs as $sname => $enpc) $npcinfo[$ekey]['esub'][$sname] = $enpc;
-}
-# 将addnpc加入npc队列
-foreach($anpcinfo as $akey => $anpcs)
-{
-	# 如果npc队列中没有该addnpc大类，则先加入大类
-	if(!isset($npcinfo[$akey])) $npcinfo[$akey] = $anpcs;
-	# 之后遍历每个子类addnpc，依次加入
-	foreach($anpcs['sub'] as $aid => $anpc) $npcinfo[$akey]['asub'][$aid] = $anpc;
+// 从辞典构建 $npcinfo 兼容结构（sub/asub/esub 分组）
+$npcinfo = array();
+foreach($npcdict as $type => $npcs) {
+	foreach($npcs as $name => $npc) {
+		$src = isset($npc['source']) ? $npc['source'] : 'sub';
+		$npcinfo[$type][$src][$name] = $npc;
+	}
+	// 保留大类属性（取第一个NPC的字段作为父类）
+	if(!empty($npcs)) {
+		$first = reset($npcs);
+		$npcinfo[$type]['mode'] = isset($first['mode']) ? $first['mode'] : 1;
+	}
 }
 $npcinfo = get_npc_helpinfo($npcinfo);
 //print_r($npcinfo[14]['esub']);

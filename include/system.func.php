@@ -294,15 +294,15 @@ save_gameinfo();
 
 
 
-//通过mapid分支选择对应地图的物品列表
-		global $mapid, $mapitems;
-		include config('mapitemresource',$gamecfg);
+//通过mapid分支选择对应地图的物品列表（item数据已合入mapresource）
+		global $mapid, $maps;
+		include config('mapresource',$gamecfg);
 		$an = $areanum ? ceil($areanum/$areaadd) : 0;
 		//遍历每个地图ID，根据$mapid选择分支
 		for($imap = 0; $imap < $plsnum; $imap++) {
 			$ibranch = isset($mapid[$imap]) ? $mapid[$imap] : 0;
-			if(!isset($mapitems[$imap][$ibranch])) continue;
-			foreach($mapitems[$imap][$ibranch] as $item) {
+			if(!isset($maps[$imap][$ibranch]['item'])) continue;
+			foreach($maps[$imap][$ibranch]['item'] as $item) {
 				list($iarea,$inum,$iname,$ikind,$ieff,$ista,$iskind) = $item;
 				if(($iarea == $an)||($iarea == 99)) {
 					//破灭之诗使用后不再刷新无月之影的煤气罐
@@ -318,8 +318,8 @@ save_gameinfo();
 			}
 		}
 		//处理全图随机掉落物品 (imap=99)
-		if(isset($mapitems[99][0])) {
-			foreach($mapitems[99][0] as $item) {
+		if(isset($maps[99][0]['item'])) {
+			foreach($maps[99][0]['item'] as $item) {
 				list($iarea,$inum,$iname,$ikind,$ieff,$ista,$iskind) = $item;
 				if(($iarea == $an)||($iarea == 99)) {
 					for($j = $inum; $j>0; $j--) {
