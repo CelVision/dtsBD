@@ -1,0 +1,143 @@
+<div class="subtitle">$lang['resourcemng'] <span class="grey" style="font-size:9pt;">$resource_file</span></div>
+<div><span class="yellow">$cmd_info</span></div>
+<form method="post" name="resourcemng">
+<input type="hidden" name="mode" value="resourcemng">
+<input type="hidden" id="command" name="command" value="list">
+<table class="admin">
+	<tr>
+		<th width="55">编号</th>
+		<th>名字</th>
+		<th width="55">坐标</th>
+		<th width="40">环境</th>
+		<th width="50">物品数</th>
+		<th width="90">NPC</th>
+		<th width="100">操作</th>
+	</tr>
+	<!--{loop $mapdisplay $r}-->
+	<tr>
+		<td>{$r['id']}</td>
+		<td>{$r['name']}</td>
+		<td>{$r['xy']}</td>
+		<td>{$r['indoor']}</td>
+		<td>{$r['itemcnt']}</td>
+		<td>{$r['npclist']}</td>
+		<td><input type="submit" value="{$r['btnword']}" onclick="$('command').value='{$r['btncmd']}'"></td>
+	</tr>
+	<!--{if $r['expanded']}-->
+	<tr>
+		<td colspan="7" style="padding:8px;">
+			<input type="hidden" name="mid" value="{$r['mid']}">
+			<input type="hidden" name="bi" value="{$r['bi']}">
+			<table class="admin">
+				<tr>
+					<th width="70">地图名</th>
+					<td><input size="16" type="text" name="plsinfo" value="{$r['f_plsinfo']}" maxlength="40"></td>
+					<th width="40">坐标</th>
+					<td><input size="8" type="text" name="xyinfo" value="{$r['f_xyinfo']}" maxlength="10"></td>
+					<th width="50">背景图</th>
+					<td><input size="4" type="text" name="bg" value="{$r['f_bg']}" maxlength="4"></td>
+					<th width="40">环境</th>
+					<td><select name="isindoor"><option value="0"{$r['sel0']}>室内</option><option value="1"{$r['sel1']}>室外</option></select></td>
+				</tr>
+				<tr>
+					<th>NPC类别</th>
+					<td><input size="12" type="text" name="npcword" value="{$r['f_npcword']}" maxlength="60">（typeId，逗号分隔）</td>
+					<th>特殊事件</th>
+					<td><input size="14" type="text" name="events" value="{$r['f_eventsword']}" maxlength="100"></td>
+					<th colspan="2">格式：事件名逗号分隔，留空为无</th>
+					<td></td>
+				</tr>
+				<tr>
+					<th>简介</th>
+					<td colspan="7"><textarea name="areainfo" cols="90" rows="3">{$r['f_areainfo']}</textarea></td>
+				</tr>
+			</table>
+			<br>物品掉落表（勾选“删”后保存即可删除该行，可新增行；多页时翻页后保存不影响其他页）：
+			<table class="admin">
+				<tr>
+					<th width="50">禁</th>
+					<th width="55">数量</th>
+					<th>物品名</th>
+					<th width="55">类别</th>
+					<th width="55">效果</th>
+					<th width="55">耐久</th>
+					<th width="55">属性</th>
+					<th width="30">删</th>
+				</tr>
+				<tbody id="item_body">
+				{$r['itemrows']}
+				</tbody>
+			</table>
+			<input type="hidden" name="itemcount" id="itemcount" value="{$r['itemcount']}">
+			{$r['pagebtns']}
+			<input type="button" value="新增物品行" onclick="add_item_row()">
+			<input type="submit" value="保存修改" onclick="$('command').value='submit'">
+		</td>
+	</tr>
+	<!--{/if}-->
+	<!--{/loop}-->
+</table>
+<br>
+<table class="admin">
+	<tr>
+		<th colspan="3" class="tdtitle">全图随机刷新池（编号99，非地图：物品与NPC在全地图随机刷新）</th>
+	</tr>
+	<tr>
+		<th width="60">物品数</th>
+		<th>NPC类别</th>
+		<th width="100">操作</th>
+	</tr>
+	<tr>
+		<td>{$randpool['itemcnt']}</td>
+		<td>{$randpool['npclist']}</td>
+		<td><input type="submit" value="{$randpool['btnword']}" onclick="$('command').value='{$randpool['btncmd']}'"></td>
+	</tr>
+	<!--{if $randpool['expanded']}-->
+	<tr>
+		<td colspan="3" style="padding:8px;">
+			<input type="hidden" name="mid" value="99">
+			<input type="hidden" name="bi" value="{$randpool['bi']}">
+			NPC类别：<input size="14" type="text" name="npcword" value="{$randpool['f_npcword']}" maxlength="60">（typeId，逗号分隔）
+			<br>物品掉落表（勾选“删”后保存即可删除该行，可新增行；分页提交，翻页后保存不影响其他页）：
+			<table class="admin">
+				<tr>
+					<th width="50">禁</th>
+					<th width="55">数量</th>
+					<th>物品名</th>
+					<th width="55">类别</th>
+					<th width="55">效果</th>
+					<th width="55">耐久</th>
+					<th width="55">属性</th>
+					<th width="30">删</th>
+				</tr>
+				<tbody id="item_body">
+				{$randpool['itemrows']}
+				</tbody>
+			</table>
+			<input type="hidden" name="itemcount" id="itemcount" value="{$randpool['itemcount']}">
+			{$randpool['pagebtns']}
+			<input type="button" value="新增物品行" onclick="add_item_row()">
+			<input type="submit" value="保存修改" onclick="$('command').value='submit'">
+		</td>
+	</tr>
+	<!--{/if}-->
+</table>
+</form>
+<script type="text/javascript">
+function add_item_row(){
+	var tb = document.getElementById('item_body');
+	var ic = document.getElementById('itemcount');
+	if(!tb || !ic) return;
+	var seq = parseInt(ic.value);
+	if(isNaN(seq) || seq >= 5000) return;
+	var tr = tb.insertRow(-1);
+	var cols = ['area','num','name','kind','eff','sta','sk'];
+	var sizes = [6,6,16,6,6,6,6];
+	for(var i = 0; i < 7; i++){
+		var td = tr.insertCell(-1);
+		td.innerHTML = '<input size="'+sizes[i]+'" type="text" name="item_'+seq+'_'+cols[i]+'" value="">';
+	}
+	tr.insertCell(-1).innerHTML = '<input type="checkbox" name="itemdel_'+seq+'" value="1">';
+	ic.value = seq + 1;
+}
+</script>

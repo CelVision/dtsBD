@@ -213,6 +213,16 @@ $maps[2][0] = Array(
 
 ## 变更日志
 
+### 2026-09-02 管理界面：gameresource/npcdict 配置编辑器（权限8）
+
+新增两个管理入口（`admin.php` `$admin_cmd_list`，均权限8，菜单在"系统环境"列）：`resourcemng`（地图资源配置）与 `npcdictmng`（NPC辞典配置），均为展开表格式（外层编号+名字，点"展开"出编辑表）。
+
+- **`include/admin/cfgfile.func.php`**：共用函数——`regenerate_gameresource_file()`/`regenerate_npcdict_file()`（var_export整文件重建，两文件均为纯数据文件）、`admin_cfg_decode()`（还原gstrfilter的htmlspecialchars）、`admin_cfg_typed()`（保持原字段类型写入）、`admin_map_itemrows()`/`admin_cfg_pagebtns()`（物品行HTML+分页导航）、`admin_npcdict_edit_table()`（NPC属性编辑表，仿npcmng布局）。
+- **resourcemng**：每分支可编辑 plsinfo/xyinfo/bg/areainfo/isindoor/events/npc(typeId列表) 与物品掉落表（增删行）；**map 99不是地图**——单独渲染为"全图随机刷新池"区块（仅NPC+物品表）；物品表超过100行分页（99池515行会超过PHP max_input_vars=1000导致提交截断），保存采用合并语义：只处理POST中出现的行号，未提交的分页行保持原样。
+- **npcdictmng**：每NPC条目可编辑基础属性/六熟练/装备6件套/包裹7格/描述/clubskillpara(JSON校验，非法输入拒绝并提示)；name/typeId/source/pass为结构键不可编辑。
+- 保存流程：读当前房间文件→内存改→var_export重建→adminlog。类型保持：原字符串存字符串、原整数存整数，未改动字段原样保留（areainfo含`\"`的旧转义在保存时被规范化为`"`，属无害清理）。
+- **测试**：`test_admin_cfgmng.php`（51项：重建回环一致性、列表/展开渲染、地图分支保存[改名/改行/删行/空修改]、全图随机池独立渲染+分页提交合并语义、NPC属性/clubskillpara保存、非法JSON拒绝）。**教训：临时测试文件路径必须显式指定（如`_98`），严禁`config()`——其_98→_1回退曾导致误删真实_1文件，已从git恢复并加路径守卫**。`test_tpl_compile.php`扩展至8个模板。
+
 ### 2026-09-02 开局刷新池修复 — 红暮双版本随机bug
 
 **问题**：npcdict把 npc_1.php(sub)/addnpc_1.php(asub)/evonpc_1.php(esub) 三源合一后，`spawn_npc_all()`开局对typeId 1在 **红暮-自动托管(sub) 与 强版红暮(asub) 之间随机二选一**，约一半开局强版提前登场且自动托管缺席；type 14/21同理可能开局刷出esub进化目标（战斗模式梦美、黑色奪魂曲_evo等）。原版语义：开局只遍历npc_1.php，asub仅由addnpc()（如破灭之诗的`addnpc(1,0,1)`）召唤，esub仅作evonpc目标。

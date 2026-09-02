@@ -10,7 +10,7 @@ $tpldir = 'templates/default';
 require GAME_ROOT.'./include/global.func.php';
 include GAME_ROOT.'./include/template.func.php';
 
-$templates = array('help_intro', 'help_mix', 'help_npc', 'maphelp', 'header');
+$templates = array('help_intro', 'help_mix', 'help_npc', 'maphelp', 'header', 'admin_resourcemng', 'admin_npcdictmng', 'admin_menu');
 foreach($templates as $tpl) {
 	$objfile = $base . "1_{$tpl}.tpl.php";
 	parse_template($tpl, 1, $tpldir);
