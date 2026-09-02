@@ -4,14 +4,12 @@
 	<!--{eval $ksub='sub';}-->
 <!--{/if}-->
 <!--{loop $npcinfo[$kind][$ksub] $key $value}-->
-<!--{if isset($npcdescription[$kind]['sub'][$key]['description']) }-->
-	<!--{eval $description = $npcdescription[$kind]['sub'][$key]['description'];}-->
-<!--{elseif isset($npcinfo[$kind][$ksub][$key]['description'])}-->
+<!--{if isset($npcinfo[$kind][$ksub][$key]['description'])}-->
 	<!--{eval $description = $npcinfo[$kind][$ksub][$key]['description'];}-->
 <!--{else}-->
 	<!--{eval $description = '这个人似乎非常神秘，履历空空';}-->
 <!--{/if}-->
-<!--{if is_numeric($key) || $ksub == 'esub' }-->
+<!--{if isset($npcinfo[$kind][$ksub][$key]['name']) }-->
 <table border="1" cellspacing="0" cellpadding="0" valign="middle">
 	<tr>
 		<td>
@@ -44,8 +42,8 @@
 									数目
 								</td>
 								<td width=100px align="center" class="b3">
-									<!--{if !empty($npcdescription[$kind][$ksub][$key]['count'])}-->
-										$npcdescription[$kind][$ksub][$key]['count']
+									<!--{if !empty($npcinfo[$kind][$ksub][$key]['help_count'])}-->
+										$npcinfo[$kind][$ksub][$key]['help_count']
 									<!--{else}-->
 										-
 									<!--{/if}-->
