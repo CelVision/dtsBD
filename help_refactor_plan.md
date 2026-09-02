@@ -13,13 +13,21 @@
 2. **合成表一览** — `helpmix.php` + `help_mix.htm`
    - 复用原 mixhelp 缓存生成逻辑（filemtime + writeover）
    - 道具合成说明 + {template mixhelp} + 同调/超量合成说明
-3. **地图百科** — `maphelp.php` + `maphelp.htm`
-   - 每个地图/分支形态：名称（坐标·室内/室外）+ areainfo简介 + 固定掉落物表（跟在简介后）+ 固定刷新NPC行
-   - **NPC数据源：地图分支 `npc` 字段（typeId引用→npcdict名称+刷新配置数量）**
-   - map 99 全图随机池（item/npc 两key，与普通地图同结构）单独成节
-   - 链接 itemhelp.php（按地点排序的完整掉落表）
+3. **地图百科** — `maphelp.php` + `maphelp.htm`（已升级为综合卡片表格，见下）
 4. **NPC图鉴** — `helpnpc.php` + `help_npc.htm`
    - 复用 npcinfo 构建（npcdict → npcinfo 兼容结构 + ty1~ty25a 分组）
+
+### 地图百科综合表格（2026-09-02 完成）
+
+每张地图卡片（每个分支形态一张，共67张）整合：
+
+- **背景图头像**：分支 `bg` 字段 → `img/location/{bg}.jpg` 作单元格背景（cover填充；缺图回退 `-1.png`）
+- 上表：地图名称 / 分支形态（分支形态N·固定形态） / 坐标 / 环境（室内·室外） / **地图特性**（商店·安全箱·医院，来自 `$shops`/`$depots`/`$hospitals`） / **基准遇敌率**（40%+`$pls_find_modifier`修正，连斗+20%·死斗+40%说明在页首） / **特殊事件**（分支 `events` → 中文名）
+- 下表：**简介**（areainfo） / **固定掉落物表**（刷新时间·名称·类型·效/耐·属性·数量） / **固定刷新NPC**（分支 `npc` 字段 → typeId → npcdict 名称+sub位置+刷新数量）
+- **未填充分支（plsinfo为空，共24个）**：显示「（待补充）」灰字，其余单元格留空/—
+- map 99 全图随机池（item/npc 两key，与普通地图同结构）单独成节；链接 itemhelp.php
+- 页首说明：分支随机选一、遇敌率与发现率关系、地图特性释义
+- 附带：`itemhelp.htm` 缓存自动再生（地点列由旧“端点”占位变为分支真名）
 
 ### gameresource 定版（原 mapresource 更名投产）
 
@@ -36,7 +44,7 @@
 
 - 原 `help.php` + `help.htm` 完整保留，可随时回退
 - `mapitemresource_1.php`、`mapresource_1.php.bak_merge`、`npcdict_1.php.bak_c4` 保留（回退用）
-- 迁移/验证脚本：`migrate_gameresource.php`（npc字段填充+配置迁入）、`verify_gameresource.php`（数据结构验证）、`test_spawn_config_equiv.php`（**新旧配置等价性回归**）、`test_maphelp_data.php`、`test_tpl_compile.php`
+- 迁移/验证脚本：`migrate_gameresource.php`（npc字段填充+配置迁入）、`verify_gameresource.php`（数据结构验证）、`test_spawn_config_equiv.php`（**新旧配置等价性回归**）、`test_maphelp_data.php`（新版含特性/遇敌率/事件/未填充分支统计）、`check_maphelp_content.php`（HTTP渲染内容检查，16项全部通过）、`test_tpl_compile.php`
 
 ## 后续待办
 
