@@ -1,0 +1,197 @@
+<input type="hidden" id="mode" name="mode" value="command">
+<input type="hidden" id="command" name="command" value="menu">
+<input type="hidden" id="subcmd" name="subcmd" value="">
+<input type="hidden" id="subcmd2" name="subcmd2" value="">
+现在想要做什么？<br /><br />
+
+<input type="button" class="cmdbutton" id="zz" name="search" value="[Z]向前搜寻" onclick="$('command').value='search';postCmd('gamecmd','command.php');this.disabled=true;" <!--{if (array_search($pls,$arealist) <= $areanum && !$hack) && (isset($mapinfo['plsinfo'][$pls]) && !isset($hplsinfo[$pgroup]))}-->disabled<!--{/if}-->>
+<input type="button" class="cmdbutton" id="zb" name="searchback" value="[Shift+Z]向后搜寻" onclick="$('command').value='searchback';postCmd('gamecmd','command.php');this.disabled=true;" <!--{if (array_search($pls,$arealist) <= $areanum && !$hack) && (isset($mapinfo['plsinfo'][$pls]) && !isset($hplsinfo[$pgroup]))}-->disabled<!--{/if}-->>
+<select id="moveto" name="moveto" id="d" onchange="$('command').value='move';postCmd('gamecmd','command.php');this.disabled=true;">
+{template move}
+</select>
+	<br />
+	<!-- 背包栏 -->
+	<br />
+	<!--{if $itms1}-->
+	<input type="button" id="11" class="cmdbutton" <!--{if strpos($itmk1,'W')===0 || strpos($itmk1,'D')===0 || strpos($itmk1,'A')===0}-->value="[1]装备"<!--{else}-->value="[1]使用"<!--{/if}--> onclick="$('mode').value='command';$('command').value='itm1';postCmd('gamecmd','command.php');this.disabled=true;"><span class="yellow">{$itm1}</span>/{$itme1}/{$itms1}<br>
+	<!--{/if}-->
+	<!--{if $itms2}-->
+	<input type="button" id="22" class="cmdbutton" <!--{if strpos($itmk2,'W')===0 || strpos($itmk2,'D')===0 || strpos($itmk2,'A')===0}-->value="[2]装备"<!--{else}-->value="[2]使用"<!--{/if}--> onclick="$('mode').value='command';$('command').value='itm2';postCmd('gamecmd','command.php');this.disabled=true;"><span class="yellow">{$itm2}</span>/{$itme2}/{$itms2}<br>
+	<!--{/if}-->
+	<!--{if $itms3}-->
+	<input type="button" id="33" class="cmdbutton" <!--{if strpos($itmk3,'W')===0 || strpos($itmk3,'D')===0 || strpos($itmk3,'A')===0}-->value="[3]装备"<!--{else}-->value="[3]使用"<!--{/if}--> onclick="$('mode').value='command';$('command').value='itm3';postCmd('gamecmd','command.php');this.disabled=true;"><span class="yellow">{$itm3}</span>/{$itme3}/{$itms3}<br>
+	<!--{/if}-->
+	<!--{if $itms4}-->
+	<input type="button" id="44" class="cmdbutton" <!--{if strpos($itmk4,'W')===0 || strpos($itmk4,'D')===0 || strpos($itmk4,'A')===0}-->value="[4]装备"<!--{else}-->value="[4]使用"<!--{/if}--> onclick="$('mode').value='command';$('command').value='itm4';postCmd('gamecmd','command.php');this.disabled=true;"><span class="yellow">{$itm4}</span>/{$itme4}/{$itms4}<br>
+	<!--{/if}-->
+	<!--{if $itms5}-->
+	<input type="button" id="55" class="cmdbutton" <!--{if strpos($itmk5,'W')===0 || strpos($itmk5,'D')===0 || strpos($itmk5,'A')===0}-->value="[5]装备"<!--{else}-->value="[5]使用"<!--{/if}--> onclick="$('mode').value='command';$('command').value='itm5';postCmd('gamecmd','command.php');this.disabled=true;"><span class="yellow">{$itm5}</span>/{$itme5}/{$itms5}<br>
+	<!--{/if}-->
+	<!--{if $itms6}-->
+	<input type="button" id="66" class="cmdbutton" <!--{if strpos($itmk6,'W')===0 || strpos($itmk6,'D')===0 || strpos($itmk6,'A')===0}-->value="[6]装备"<!--{else}-->value="[6]使用"<!--{/if}--> onclick="$('mode').value='command';$('command').value='itm6';postCmd('gamecmd','command.php');this.disabled=true;"><span class="yellow">{$itm6}</span>/{$itme6}/{$itms6}<br>
+	<!--{/if}-->
+<br>
+
+	<!-- 第 -1 行：社团提示相关-->
+	<!--{if $club==19}--> 
+		【<span class="lime">报应点数：<span id="anum">$rp</span></span>】<br>
+	<!--{/if}-->
+	<!--{if $nick==69}--> 
+		【<span class="lime">梦之数值：<span id="anum">$clbpara['randver1']</span>，<span id="anum">$clbpara['randver2']</span>，<span id="anum">$clbpara['randver3']</span></span>】<br>
+	<!--{/if}-->
+
+	<!-- 第 1 行 : 包裹相关-->
+	<!--{if $club==20}--> 
+		<!--{if $clbstatusa}--> 
+		<input type="button" class="cmdbutton" id="elementmix" name="elementmix" value="■■■■" onclick="$('command').value='itemmain';$('subcmd').name='itemcmd';$('subcmd').value='elementmix';postCmd('gamecmd','command.php');this.disabled=true;">
+		<!--{else}-->
+		<input type="button" class="cmdbutton" id="elementmix" name="elementmix" value="元素口袋" onclick="$('command').value='itemmain';$('subcmd').name='itemcmd';$('subcmd').value='elementmix';postCmd('gamecmd','command.php');this.disabled=true;">
+		<!--{/if}-->
+	<!--{else}-->
+	<input type="button" class="cmdbutton" id="itemmix" name="itemmix" value="道具合成" onclick="$('command').value='itemmain';$('subcmd').name='itemcmd';$('subcmd').value='itemmix';postCmd('gamecmd','command.php');this.disabled=true;">
+	<!--{/if}-->
+	<span tooltip="交换道具位置，或合并可堆叠道具">
+		<input type="button" class="cmdbutton" id="itemmerge" name="itemmerge" value="整理包裹" onclick="$('command').value='itemmain';$('subcmd').name='itemcmd';$('subcmd').value='itemmerge';postCmd('gamecmd','command.php');this.disabled=true;">
+	</span>
+	<input type="button" class="cmdbutton" id="itemdrop" name="itemdrop" value="道具丢弃" onclick="$('command').value='itemmain';$('subcmd').name='itemcmd';$('subcmd').value='itemdrop';postCmd('gamecmd','command.php');this.disabled=true;">
+	<br>
+
+	<!-- 第 2 行: 武器相关-->
+	<span tooltip="切换主/副武器，或将手中武器存放于副武器栏内">
+		<input type="button" class="cmdbutton" id="cc" name="sw_weapon" value="[C]切换武器" onclick="$('mode').value='itemmain';$('command').value='changewep';postCmd('gamecmd','command.php');this.disabled=true;">
+	</span>
+	<span tooltip="装备的武器中带有“多重”属性时，点此转换武器模式">
+		<input type="button" class="cmdbutton" name="sp_weapon" value="武器模式" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_weapon';postCmd('gamecmd','command.php');this.disabled=true;">
+	</span>
+	<span tooltip="消耗{$arte}点歌魂歌唱，可能会暴露自己的位置">
+		<!--{if strpos($artk,'ss')!==false}-->
+		<input type="button" class="cmdbutton" id="sp_weapon" name="sp_weapon" value="歌唱" onclick="$('command').value='song';$('subcmd').name='song';postCmd('gamecmd','command.php');this.disabled=true;">
+		<!--{/if}-->
+	</span>
+	<br>
+
+	<!-- 第 2.5 行: 背包指令-->
+	<!--{if strpos($arbsk,'^')!==false && $arbs && $arbe}-->
+	<input type="button" class="cmdbutton" id="itemencase" name="itemencase" value="存放道具" onclick="$('command').value='itemmain';$('subcmd').name='itemcmd';$('subcmd').value='itemencase';postCmd('gamecmd','command.php');this.disabled=true;">
+	<input type="button" class="cmdbutton" id="itemout" name="itemout" value="取出道具" onclick="$('command').value='itemmain';$('subcmd').name='itemcmd';$('subcmd').value='itemout';postCmd('gamecmd','command.php');this.disabled=true;">
+	<span tooltip="查看背包中存放的道具信息与背包容量">
+		<input type="button" class="cmdbutton" id="itemmain" name="itemmain" value="背包信息" onclick="$('mode').value='itemmain';$('command').value='iteminfo';postCmd('gamecmd','command.php');this.disabled=true;">
+	</span>
+	<br>
+	<!--{/if}-->
+
+	<!-- 第 3 行：休养指令-->
+	<span tooltip="进入睡眠状态，随时间缓慢恢复体力
+	<!--{if $pose == 8}-->当前地图存活种火数量越多，恢复速率越快<!--{/if}-->
+	">
+		<input type="button" class="cmdbutton" id="q" name="rest1" value="[Q]睡眠" onclick="$('command').value='rest1';postCmd('gamecmd','command.php');this.disabled=true;">
+	</span>
+	<span tooltip="进入治疗状态，随时间缓慢恢复生命
+	<!--{if $pose == 8}-->当前地图存活种火数量越多，恢复速率越快<!--{/if}-->
+	">
+		<input type="button" class="cmdbutton" id="w" name="rest2" value="[W]治疗" onclick="$('command').value='rest2';postCmd('gamecmd','command.php');this.disabled=true;">
+	</span>
+	<!--{if in_array($pls,$hospitals)}-->
+	<span tooltip="进入静养状态，随时间缓慢恢复生命与体力，同时可以积攒怒气">
+		<input type="button" class="cmdbutton" id="e" name="rest3" value="[E]静养" onclick="$('command').value='rest3';postCmd('gamecmd','command.php');this.disabled=true;">
+	</span>
+	<!--{/if}-->
+	<br>
+
+	<!-- 第 3.5 行：队伍指令-->
+	<!--{if $gamestate < 40}-->
+		<!--{if !$teamID}-->
+		<span tooltip="消耗{$team_sp}点体力，创建一支队伍">
+			<input type="button" class="cmdbutton" id="teammake" name="teammake" value="组建队伍" onclick="$('command').value='team';$('subcmd').name='teamcmd';$('subcmd').value='teammake';postCmd('gamecmd','command.php');this.disabled=true;">
+		</span>
+		<span tooltip="消耗{$teamj_sp}点体力，加入一支队伍">
+			<input type="button" class="cmdbutton" id="teammake" name="teamjoin" value="加入队伍" onclick="$('command').value='team';$('subcmd').name='teamcmd';$('subcmd').value='teamjoin';postCmd('gamecmd','command.php');this.disabled=true;">
+		</span>
+		<!--{else}-->
+		<input type="button" class="cmdbutton" id="teammake" name="teamquit" value="脱离队伍" onclick="$('command').value='team';$('subcmd').name='teamcmd';$('subcmd').value='teamquit';postCmd('gamecmd','command.php');this.disabled=true;">
+		<!--{/if}-->
+	<br />
+	<!--{/if}-->
+
+	<!-- 第 4 行：地区功能-->
+	<!--{if in_array($pls,$shops) || !check_skill_unlock('c11_ebuy',$pdata)}-->
+		<input type="button" class="cmdbutton" id="aa" name="sp_shop" value="[A]商店" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_shop';postCmd('gamecmd','command.php');this.disabled=true;">
+		<br>
+	<!--{/if}-->
+	
+		<input type="button" class="cmdbutton" id="control" name="sp_control" value="控制台" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_control';postCmd('gamecmd','command.php');this.disabled=true;">
+		<br>
+	
+	<!--{if in_array($pls,$depots)}-->
+	<span tooltip="向安全箱中存入或取出道具">
+		<input type="button" class="cmdbutton" name="sp_depot" value="安全箱" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_depot';postCmd('gamecmd','command.php');this.disabled=true;">
+	</span>
+	<br>
+	<!--{/if}-->
+
+	<!-- 第 5 行：社团特殊功能-->
+	<!--{if $club == 7}-->
+		<span tooltip="消耗一枚电池，为武器或陷阱附加电击属性">
+			<input type="button" class="cmdbutton" id="sp_adtsk" name="sp_adtsk" value="武器带电" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_adtsk';postCmd('gamecmd','command.php');this.disabled=true;">
+			<input type="button" class="cmdbutton" id="sp_trapadtsk" name="sp_trapadtsk" value="陷阱带电" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_trapadtsk';postCmd('gamecmd','command.php');this.disabled=true;">
+		</span>
+		<br />
+	<!--{elseif $club == 8}-->
+		<span tooltip="消耗一份毒药，为武器或陷阱附加带毒属性">
+			<input type="button" class="cmdbutton" id="sp_adtsk" name="sp_adtsk" value="武器淬毒" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_adtsk';postCmd('gamecmd','command.php');this.disabled=true;">
+			<input type="button" class="cmdbutton" id="sp_trapadtsk" name="sp_trapadtsk" value="陷阱淬毒" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_trapadtsk';postCmd('gamecmd','command.php');this.disabled=true;">
+		</span>
+		<span tooltip="选择一份背包中的补给品，检查其是否带毒">
+			<input type="button" class="cmdbutton" id="sp_poison" name="sp_poison" value="检查毒物" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_poison';postCmd('gamecmd','command.php');this.disabled=true;">
+		</span>
+		<br />
+    <!--{elseif $club == 21}-->
+        <span tooltip="可以通过消耗体力，将武器·装备上的「要素」取出成为物品">
+            <input type="button" class="cmdbutton" id="sp_extract_trait" name="sp_extract_trait" value="提取「🥚」" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_extract_trait';postCmd('gamecmd','command.php');this.disabled=true;">
+        </span>
+        <span tooltip="插回其他物品让其他物品获得这些属性">
+            <input type="button" class="cmdbutton" id="sp_add_trait" name="sp_add_trait" value="插入「🥚」" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_add_trait';postCmd('gamecmd','command.php');this.disabled=true;">
+        </span>
+		<span tooltip="消耗代码片段，以永久减少移动/探索时的生命/体力损失">
+            <input type="button" class="cmdbutton" id="sp_consume_trait" name="sp_consume_trait" value="消耗「🥚」" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_consume_trait';postCmd('gamecmd','command.php');this.disabled=true;">
+        </span>
+        <br />
+	<!--{elseif $club == 99}-->
+		<span tooltip="舍弃当前称号，使属性大幅提升">
+			<input type="button" class="cmdbutton" id="sp_pbomb" name="sp_pbomb" value="X 按钮" onclick="$('command').value='special';$('subcmd').name='sp_cmd';$('subcmd').value='sp_pbomb';postCmd('gamecmd','command.php');this.disabled=true;">
+		</span>
+		<br />
+	<!--{/if}-->
+	<br />
+
+	<!-- 对话框 -->
+	<!--{if isset($dialogue_id)}-->
+	{template dialogue}
+	<!--{/if}-->
+
+	<!-- 子面板 -->
+	<span tooltip="查看战场地图、切换背景音乐或调节背景音量">
+		<input type="button" class="cmdbutton" id="s" name="sp_terminal" value="[S]子面板" onclick="showModalDialog($('terminal'));">
+	</span>
+	{template sp_terminal}
+	<!--{if isset($gamevars['apis'])}-->
+	{template sp_console_search}
+	<!--{/if}-->
+
+	<!-- 技能面板 -->
+	<span tooltip="升级或使用技能">
+		<input type="button" class="cmdbutton" id="v" name="skillstable" value="[V]技能表" onclick="showModalDialog($('skillpage'));">
+	</span>
+	{template skillpage}
+
+	<!--{if !empty(get_skillpara('c11_merc','id',$clbpara))}-->
+	<span tooltip="查看或管理佣兵">
+		<input type="button" class="cmdbutton" name="sp_mercpage" value="佣兵管理" onclick="showModalDialog($('mercpage'));">
+	</span>
+	{template skill_mercpage}
+	<!--{/if}-->
+
+	<!--<br>
+	<span tooltip="创建一项新的合成索引，会覆盖掉原来的索引记录">
+		<input type="button" class="cmdbutton" id="v" name="skillstable" value="合成索引" onclick="showModalDialog($('skillpage'));">
+	</span> -->

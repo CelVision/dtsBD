@@ -1,0 +1,73 @@
+<br>
+
+<form method="post" name="info" onsubmit="winner.php">
+<input type="hidden" id="command" name="command" value="info">
+<input type="hidden" id="gnum" name="gnum" value="">
+<center>
+	<TABLE border="1" cellspacing="0" cellpadding="0">
+		<TR height="20">
+			<TD class="b1" width="30px"><span>回</span></TD>
+			<TD class="b1" width="60px"><span>胜利方式</span></TD>
+			<TD class="b1" width="95px"><span>头衔</span></TD>
+			<TD class="b1" width="95px"><span>优胜者名</span></TD>
+			<TD class="b1"><span>头像</span></TD>
+			<TD class="b1"><span>游戏结束时间</span></TD>
+			<TD class="b1" width="240px"><span>胜利者留言</span></TD>
+			<TD class="b1" width="240px"><span>使用武器</span></TD>
+			<TD class="b1" width="95px"><span>最高伤害</span></TD>
+			<TD class="b1" width="95px"><span>杀人最多</span></TD>
+			<TD class="b1"><span>查看信息</span></TD>
+		</TR>
+		<!--{loop $winfo $gid $info}-->
+		<TR height="20">
+			<TD class="b2" ><span>$gid</span></TD>
+			<TD class="b3" ><span>$gwin[$info['wmode']]</span></TD>
+			<TD class="b3" ><!--{if !empty($info['nickinfo'])}--><span>$info['nickinfo']<!--{else}--><span class="grey">-</span><!--{/if}--></TD>
+			<TD class="b3"  style="white-space: nowrap;">
+				<!--{if $info['name']}-->
+					<!--{if is_array($info['name'])}-->
+						<span>{$info['teamID']}</span><br>
+						<!--{loop $info['name'] $tname}-->
+							<span class="evergreen"><u><a href="user_profile.php?playerID=$tname">$tname</a></u></span><br>
+						<!--{/loop}-->
+					<!--{else}-->
+						<span class="evergreen"><u><a href="user_profile.php?playerID=$info['name']">$info['name']</a></u></span>
+					<!--{/if}-->
+				<!--{else}-->
+					<span class="grey">无</span>
+				<!--{/if}-->
+			</TD>
+			<TD class="b3">
+				<!--{if is_array($info['name'])}-->
+					<span><img src="img/$info['iconImg']" style="width:70;height:60;"></span>
+				<!--{else}-->
+					<span><img src="img/$info['iconImg']" style="width:70;height:40;"></span>
+				<!--{/if}-->
+			</TD>
+			<TD class="b3"><span>$info['date']</span><br><span>$info['time']</span></TD>
+			<TD class="b3" ><!--{if $info['motto']}--><span class="white">$info['motto']</span><!--{else}--><span class="grey">无</span><!--{/if}--></TD>
+			<TD class="b3" width="80px"><!--{if $info['wep']}--><span class="white">$info['wep']</span><!--{else}--><span class="grey">无</span><!--{/if}--></TD>
+			<TD class="b3"><!--{if $info['hdmg']}--><span class="white"><u><a href="user_profile.php?playerID=$info['hdp']">$info['hdp']</a></u></span><!--{else}--><span class="grey">无</span><!--{/if}--></TD>
+			<TD class="b3"><!--{if $info['hkill']}--><span class="white"><u><a href="user_profile.php?playerID=$info['hkp']">$info['hkp']</a></u></span><!--{else}--><span class="grey">无</span><!--{/if}--></TD>
+			<TD class="b3">
+				<span>
+					<!--{if $info['wmode'] && $info['wmode'] != 1 && $info['wmode'] !=4 && $info['wmode'] != 6}--><span class="white"><a href="winner.php?command=info&gnum=$info[gid]">🥇</a></span><!--{else}-->　<!--{/if}-->
+					<input type="button" value="角色信息" <!--{if $info['wmode'] && $info['wmode'] != 1 && $info['wmode'] !=4 && $info['wmode'] != 6}-->onclick="$('command').value='info';$('gnum').value='$gid';document.info.submit();"<!--{else}-->disabled<!--{/if}-->>
+					<!--{if $info['wmode'] && $info['wmode'] !=4}--><span class="white"><a href="winner.php?command=news&gnum=$info[gid]">📼</a></span><!--{else}-->　<!--{/if}-->
+					<input type="button" value="该局状况" <!--{if $info['wmode'] && $info['wmode'] !=4}-->onclick="$('command').value='news';$('gnum').value='$gid';document.info.submit();"<!--{else}-->disabled<!--{/if}-->>
+                    $download_buttons[$gid]
+				</span>
+			</TD>
+		</TR>
+		<!--{/loop}-->
+	</TABLE>
+</center>
+</form>
+
+<form method="post" name="list" action="winner.php">
+<input type="hidden" name="command" value="list">
+<input type="hidden" name="start" value="$gamenum">
+<input style="width: 120px;" type="button" value="最近 {$winlimit} 回" onClick="document['list'].submit();">
+<br>
+<!--{if isset($listinfo)}-->$listinfo<!--{/if}-->
+</form>
