@@ -1,0 +1,88 @@
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+
+{template header}
+
+
+<div class="subtitle">地图百科</div>
+
+<HR>
+<div align="left" style="text-align: left; PADDING-LEFT: 2em;PADDING-right: 2em">
+
+<p>游戏中各地区的简介、固定掉落物与固定刷新NPC一览如下。</p>
+<p><span class="yellow">部分地图存在两种随机形态，此处均已列出；实际游戏开局时会随机选择其中一种。</span></p>
+<p><span class="lime">若只想查找合成表中某物品的掉落位置，可将鼠标停留在合成表中该物品上查看。</span></p>
+<p><a href="itemhelp.php"><u>&gt;&gt;点我查看按地点排序的掉落物品一览表&lt;&lt;</u></a></p>
+<br>
+
+<!--{loop $mapdisplay $k $md}-->
+<p><span class="subtitle2">$md['title']</span> <span class="grey">（$md['xy'] · $md['indoor']）</span></p>
+<p>$md['area']</p>
+<!--{if !empty($md['items'])}-->
+<p><span class="lime">固定掉落物：</span></p>
+<table>
+	<tr>
+		<td class="b1" height=20px><span>刷新时间</span></td>
+		<td class="b1"><span>物品名称</span></td>
+		<td class="b1"><span>物品类型</span></td>
+		<td class="b1"><span>效/耐</span></td>
+		<td class="b1"><span>物品属性</span></td>
+		<td class="b1"><span>数量</span></td>
+	</tr>
+	<!--{loop $md['items'] $ik $it}-->
+	<tr>
+		<td class="b3"><span>$it['area']</span></td>
+		<td class="b3"><span>$it['name']</span></td>
+		<td class="b3"><span>$it['kind']</span></td>
+		<td class="b3"><span>$it['effsta']</span></td>
+		<td class="b3"><span>$it['sk']</span></td>
+		<td class="b3"><span>$it['num']</span></td>
+	</tr>
+	<!--{/loop}-->
+</table>
+<!--{/if}-->
+<!--{if $md['npcword']}-->
+<p><span class="lime">固定刷新NPC：</span><span class="yellow">$md['npcword']</span> <span class="grey">（NPC详细资料见NPC图鉴）</span></p>
+<!--{/if}-->
+<br>
+<!--{/loop}-->
+
+<!--{if !empty($poolitems)}-->
+<p><span class="subtitle2">全图随机掉落</span></p>
+<p>以下物品不固定出现在某一地区，而是会在对应禁区阶段随机散落到全图各地：</p>
+<table>
+	<tr>
+		<td class="b1" height=20px><span>刷新时间</span></td>
+		<td class="b1"><span>物品名称</span></td>
+		<td class="b1"><span>物品类型</span></td>
+		<td class="b1"><span>效/耐</span></td>
+		<td class="b1"><span>物品属性</span></td>
+		<td class="b1"><span>数量</span></td>
+	</tr>
+	<!--{loop $poolitems $pk $pt}-->
+	<tr>
+		<td class="b3"><span>$pt['area']</span></td>
+		<td class="b3"><span>$pt['name']</span></td>
+		<td class="b3"><span>$pt['kind']</span></td>
+		<td class="b3"><span>$pt['effsta']</span></td>
+		<td class="b3"><span>$pt['sk']</span></td>
+		<td class="b3"><span>$pt['num']</span></td>
+	</tr>
+	<!--{/loop}-->
+</table>
+<br>
+<!--{/if}-->
+
+<!--{if !empty($randnpcword)}-->
+<p><span class="subtitle2">全图随机刷新NPC</span></p>
+<p>以下NPC开局时会散落在全图各地随机位置：</p>
+<!--{loop $randnpcword $rk $rw}-->
+<p><span class="yellow">$rw</span></p>
+<!--{/loop}-->
+<!--{/if}-->
+
+</div>
+
+{template footer}
