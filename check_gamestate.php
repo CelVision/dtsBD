@@ -46,7 +46,7 @@ $res = $mysqli->query("SELECT * FROM {$tablepre}chat ORDER BY cid DESC LIMIT 5")
 if ($res && $res->num_rows > 0) {
     echo "\n=== Recent Chat (last 5) ===\n";
     while ($row = $res->fetch_assoc()) {
-        echo "  [{$row['cid']}] " . date('m-d H:i:s', $row['time']) . " type={$row['type']} user={$row['user']} msg=" . mb_substr($row['msg'], 0, 40) . "\n";
+        echo "  [{$row['cid']}] " . date('m-d H:i:s', $row['time']) . " type={$row['type']} send={$row['send']} msg=" . mb_substr($row['msg'], 0, 40) . "\n";
     }
 }
 
