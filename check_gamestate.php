@@ -33,7 +33,7 @@ if ($res) {
 }
 
 // Recent news
-$res = $mysqli->query("SELECT * FROM {$tablepre}news ORDER BY nid DESC LIMIT 5");
+$res = $mysqli->query("SELECT * FROM {$tablepre}newsinfo ORDER BY nid DESC LIMIT 5");
 if ($res && $res->num_rows > 0) {
     echo "\n=== Recent News (last 5) ===\n";
     while ($row = $res->fetch_assoc()) {
