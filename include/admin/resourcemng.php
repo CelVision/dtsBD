@@ -87,6 +87,19 @@ if(strpos($command,'expand_') === 0) {
 				$chg++;
 			}
 		}
+		// 地图特性flags（逗号分隔；可新增也可清空，不要求原键存在）
+		if(isset($_POST['flagsword'])) {
+			$fls = Array();
+			foreach(explode(',', admin_cfg_decode($_POST['flagsword'])) as $fl) {
+				$fl = trim($fl);
+				if($fl !== '') $fls[] = (string)$fl;
+			}
+			$ofl = isset($b['flags']) ? $b['flags'] : Array();
+			if($fls != $ofl) {
+				$b['flags'] = $fls;
+				$chg++;
+			}
+		}
 		// 物品行合并语义：只有POST中出现的行号才参与修改/删除，未提交的行（其他分页）保持原样
 		$origitems = $b['item'];
 		$origcnt = count($origitems);
@@ -210,6 +223,7 @@ foreach($maps as $mid => $branches) {
 			$r['f_bg'] = htmlspecialchars(isset($branch['bg']) ? $branch['bg'] : '');
 			$r['f_areainfo'] = htmlspecialchars(isset($branch['areainfo']) ? $branch['areainfo'] : '');
 			$r['f_eventsword'] = htmlspecialchars(implode(',', isset($branch['events']) ? $branch['events'] : Array()));
+			$r['f_flagsword'] = htmlspecialchars(implode(',', isset($branch['flags']) ? $branch['flags'] : Array()));
 			$r['f_npcword'] = htmlspecialchars(implode(',', isset($branch['npc']) ? $branch['npc'] : Array()));
 			$r['sel0'] = (isset($branch['isindoor']) && $branch['isindoor'] == '0') ? ' selected' : '';
 			$r['sel1'] = (isset($branch['isindoor']) && $branch['isindoor'] == '1') ? ' selected' : '';

@@ -640,13 +640,14 @@ function event_kagari_hill(){
 }
 
 function event_valhalla_gate(){
-	global $log,$pls,$art,$mapinfo,$gamestate,$hack,$arealist,$areanum;
+	global $log,$pls,$art,$mapinfo,$gamestate,$hack,$arealist,$areanum,$noesc_pls;
 	$dice1 = rand(0,5);
 	$dice2 = rand(20,40);
 		global $art,$mapinfo,$gamestate,$hack,$arealist,$areanum;
 		if (($art!='Untainted Glory')&&($gamestate != 50)){
 			$rpls=-1;
-			while ($rpls<0 || $arealist[$rpls]==34){
+			//传送落点排除noesc_tp地图（原：写死排34，防止被传出文又随机传回英灵殿）
+			while ($rpls<0 || in_array($arealist[$rpls],$noesc_pls)){
 				if($hack){$rpls = rand(0,sizeof($mapinfo['plsinfo'])-1);}
 				else {$rpls = rand($areanum+1,sizeof($mapinfo['plsinfo'])-1);}
 			} 

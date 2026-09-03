@@ -4,6 +4,7 @@
  * 1. 每地图分支 npc 字段填入初始固定刷新的 typeId（引用npcdict辞典模板）
  * 2. 文件尾部追加 $npc_spawn_config / $npc_sub_pls（从npcdict.func.php迁入）
  * 3. 头部注释说明 npc 字段语义
+ * 4. 特殊地图分支注入 'flags' 特性字段（防重跑丢失）
  */
 $file = 'gamedata/cache/gameresource_1.php';
 $lines = file($file, FILE_IGNORE_NEW_LINES);
@@ -22,6 +23,15 @@ $mapnpc = array(
 	99 => 'Array(14, 90, 91)',           // 全图随机池：女主/数据残影/数据残影-？？？
 );
 
+// ── 特殊地图分支特性（map 0/32/33/34；分支级差异由此实现）──
+$mapflags = array(
+	0  => "Array('deepzone', 'norandom_drop', 'norandom_npc', 'lockbranch')",
+	32 => "Array('deepzone')",
+	33 => "Array('deepzone', 'lockbranch')",
+	34 => "Array('deepzone', 'norandom_drop', 'norandom_npc', 'noesc_tp', 'lockbranch')",
+);
+$flagsfilled = array();
+
 $current = null;
 $out = array();
 $filled = array();
@@ -38,6 +48,15 @@ foreach($lines as $ln) {
 	if($current !== null && isset($mapnpc[$current]) && preg_match("/^(\s*)'npc'\s*=>\s*Array\(\),\s*$/", $ln, $m2)) {
 		$ln = $m2[1] . "'npc' => " . $mapnpc[$current] . ",";
 		$filled[$current] = isset($filled[$current]) ? $filled[$current] + 1 : 1;
+	}
+	// flags特性注入：目标地图首个 'item' 行前插入（该图已存在flags则跳过，防重复）
+	if($current !== null && isset($mapflags[$current])) {
+		if(strpos($ln, "'flags'") !== false) {
+			$flagsfilled[$current] = 1;
+		} elseif(empty($flagsfilled[$current]) && preg_match("/^(\s*)'item'\s*=>\s*Array\(/", $ln, $m3)) {
+			$out[] = $m3[1] . "'flags' => " . $mapflags[$current] . ",";
+			$flagsfilled[$current] = 1;
+		}
 	}
 	// 尾部结束标记前插入刷新配置
 	if(trim($ln) === '?>') {
@@ -110,4 +129,5 @@ echo "填充统计:\n";
 foreach($filled as $mid => $cnt) echo "  map $mid: $cnt 处分支\n";
 $missed = array_diff(array_keys($mapnpc), array_keys($filled));
 if($missed) { echo "错误：未填充的地图 " . implode(',', $missed) . "\n"; exit(1); }
+echo "flags注入统计: " . implode(',', array_keys($flagsfilled)) . "\n";
 echo "全部目标地图已填充\n";

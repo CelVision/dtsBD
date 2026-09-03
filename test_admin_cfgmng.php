@@ -197,6 +197,76 @@ check('恢复:回到6c保存前状态(npc=14,90,91)', $maps[99][0]['npc'] === Ar
 check('恢复:池物品数回到原值', count($maps[99][0]['item']) == $p0cnt);
 check('恢复:此前保存的地图改动仍在', $maps[0][0]['plsinfo'] === '无月之影·改');
 
+// ── 6e. flags编辑：修改34-0特性，验证保存生效 ──
+$_POST = Array(
+	'mid' => '34', 'bi' => '0',
+	'flagsword' => gstrfilter('deepzone,noesc_tp'),
+	'npcword' => gstrfilter(implode(',', $maps[34][0]['npc'])),
+	'itemcount' => '0',
+);
+$command = 'submit';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+$saveinfo = $cmd_info;
+ob_end_clean();
+unset($maps);
+include $res98;
+check('flags保存:34-0改为deepzone,noesc_tp', $maps[34][0]['flags'] === Array('deepzone','noesc_tp'));
+check('flags保存:0-0原flags未受影响', $maps[0][0]['flags'] === Array('deepzone','norandom_drop','norandom_npc','lockbranch'));
+
+// ── 6f. flags清空：POST空flagsword → 空数组 ──
+$_POST['flagsword'] = gstrfilter('');
+$command = 'submit';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+ob_end_clean();
+unset($maps);
+include $res98;
+check('flags清空:34-0变空数组', $maps[34][0]['flags'] === Array());
+
+// ── 6g. 未POST flagsword（其他字段保存）→ flags保持原样 ──
+$_POST = Array(
+	'mid' => '34', 'bi' => '0',
+	'npcword' => gstrfilter(implode(',', $maps[34][0]['npc'])),
+	'itemcount' => '0',
+);
+$command = 'submit';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+ob_end_clean();
+unset($maps);
+include $res98;
+check('flags保留:未POST时保持空数组', $maps[34][0]['flags'] === Array());
+
+// ── 6h. flags新增：给原无flags键的1-0加特性 ──
+$_POST = Array(
+	'mid' => '1', 'bi' => '0',
+	'flagsword' => gstrfilter('deepzone'),
+	'npcword' => gstrfilter(implode(',', $maps[1][0]['npc'])),
+	'itemcount' => '0',
+);
+$command = 'submit';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+ob_end_clean();
+unset($maps);
+include $res98;
+check('flags新增:1-0加上deepzone', $maps[1][0]['flags'] === Array('deepzone'));
+
+// ── 6i. flags渲染：展开区含flags输入框 ──
+$command = 'expand_0_0';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+$out = ob_get_clean();
+check('flags渲染:展开区含flagsword输入框', strpos($out, 'name="flagsword"') !== false);
+check('flags渲染:值含deepzone', strpos($out, 'deepzone') !== false);
+check('flags渲染:含flags说明行', strpos($out, 'flags说明') !== false);
+$command = 'expand_99_0';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+$out = ob_get_clean();
+check('flags渲染:99池无flagsword输入框', strpos($out, 'name="flagsword"') === false);
+
 // ── 7. npcdictmng 列表渲染 ──
 $command = 'list';
 ob_start();

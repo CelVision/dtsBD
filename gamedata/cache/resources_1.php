@@ -1151,8 +1151,7 @@ $r_elements_info = Array
 	4 =>'<span class="mtgwhite">昼闪闪</span>',
 	5 =>'<span class="mtgblack">夜静静</span>',
 );
-//NPC在躲避禁区、追杀玩家时不会进入的危险区（默认：无月之影、SCP、雏菊、英灵殿）
-$deepzones = Array(0,32,33,34);
+//NPC在躲避禁区、追杀玩家时不会进入的危险区——已配置化：由gameresource地图分支'flags'的deepzone标记开局提取进mapinfo，load_gameinfo()内derive_map_flaglists()派生
 //安全箱位置
 $depots = Array(5,28);
 $shops = Array(0,14,27);

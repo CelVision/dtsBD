@@ -207,7 +207,7 @@ function spawn_npc_random($type, $num = 1, $time = 0, $anpcdata = NULL, $pls_ove
 // num/pls 从 gameresource 的 $npc_spawn_config['init'] 读取，sub级pls从 $npc_sub_pls 读取
 function spawn_npc_all($time = 0) {
 	global $now,$db,$gtablepre,$tablepre,$log,$mapinfo,$typeinfo,$arealist,$areanum,$gamecfg;
-	global $hidding_typelist,$deepzones;
+	global $hidding_typelist,$deepzones,$norandnpc_pls;
 	include_once GAME_ROOT."./include/game/clubslct.func.php";
 
 	$time = $time == 0 ? $now : $time;
@@ -273,15 +273,15 @@ function spawn_npc_all($time = 0) {
 			} elseif(is_array($cfg_pls)) {
 				$npc['pls'] = $cfg_pls[array_rand($cfg_pls)];
 			} elseif($cfg_pls === 99 || $cfg_pls === null) {
-				// 随机区域
+				// 随机区域：排除norandom_npc地图（原：rand(1,..)隐性排0+写死排34）；躲避类NPC另避deepzone
 				if(in_array($npc['type'], $hidding_typelist)) {
 					do {
-						$rpls = rand(1, $plsnum - 1);
-					} while(in_array($rpls, $deepzones));
+						$rpls = rand(0, $plsnum - 1);
+					} while(in_array($rpls, $deepzones) || in_array($rpls, $norandnpc_pls));
 				} else {
 					do {
-						$rpls = rand(1, $plsnum - 1);
-					} while($rpls == 34);
+						$rpls = rand(0, $plsnum - 1);
+					} while(in_array($rpls, $norandnpc_pls));
 				}
 				$npc['pls'] = $rpls;
 			} else {

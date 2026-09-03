@@ -4,6 +4,9 @@
 // 'npc' 字段：该地图分支初始固定刷新的NPC类别（typeId，指向npcdict辞典模板）
 // map 99 的 'npc'：全图随机刷新池的NPC类别
 // 完整刷新参数（num/pls/sub级位置）见文末 $npc_spawn_config / $npc_sub_pls
+// 'flags' 字段：地图分支特性（开局提取进mapinfo，分支级差异由此实现）
+//   deepzone = NPC主动避开的危险图 | norandom_drop = 全图随机池物品不落入 | norandom_npc = 全图随机池NPC不刷入
+//   noesc_tp = 躲禁区被动传送不去 | lockbranch = 开局锁死基础分支不轮换
 $maps = Array
 (
   //0表示室内，1表示室外
@@ -34,6 +37,7 @@ $maps = Array
 			Array('0', '1', '→【神器任意门】←', 'ZA', '1', '1', ''),
 		),
 		'npc' => Array(1),
+		'flags' => Array('deepzone', 'norandom_drop', 'norandom_npc', 'lockbranch'),
       ),
     ),
     1 => array(
@@ -1413,6 +1417,7 @@ $maps = Array
 			Array('0', '5', 'SCP-500', 'ME', '20', '6', ''),
 		),
 		'npc' => Array(88),
+		'flags' => Array('deepzone'),
          ),
       1 => Array(
         'plsinfo'=>'',
@@ -1464,6 +1469,7 @@ $maps = Array
 			Array('2', '1', '究级篝酱加农炮', 'WG', '4800', '200', 'ir'),
 		),
 		'npc' => Array(),
+		'flags' => Array('deepzone', 'lockbranch'),
          ),
     ),
     34=>array(
@@ -1476,6 +1482,7 @@ $maps = Array
         'isindoor' => '0',  
 		'item' => Array(),
 		'npc' => Array(20, 21, 22, 24, 26),
+		'flags' => Array('deepzone', 'norandom_drop', 'norandom_npc', 'noesc_tp', 'lockbranch'),
          ),
     ),
   // 全图随机池（原 mapitemresource map_id 99；NPC随机刷新类别见npc字段）

@@ -291,8 +291,46 @@ function load_gameinfo() {
 		$gameinfo_update['mapinfo'] = addslashes(json_encode($mapinfo,JSON_UNESCAPED_UNICODE));
 		$db->array_update("{$gtablepre}game",$gameinfo_update,"groomid = {$groomid}");
 	}
-	
+
+	// Migration: populate $mapinfo['flags'] if missing (game started before map flags refactor)
+	if(!empty($mapinfo) && !isset($mapinfo['flags']) && isset($mapinfo['plsinfo']) && migrate_mapinfo_flags($mapinfo)){
+		$gameinfo_update = Array();
+		$gameinfo_update['mapinfo'] = addslashes(json_encode($mapinfo,JSON_UNESCAPED_UNICODE));
+		$db->array_update("{$gtablepre}game",$gameinfo_update,"groomid = {$groomid}");
+	}
+
+	// 从mapinfo['flags']派生全局排除表（地图特性配置化：危险图/随机池排除/传送排除）
+	derive_map_flaglists();
+
 	return Array($gamestate,$gamevars);
+}
+
+function derive_map_flaglists() {
+	global $mapinfo,$deepzones,$noranddrop_pls,$norandnpc_pls,$noesc_pls;
+	$deepzones = $noranddrop_pls = $norandnpc_pls = $noesc_pls = Array();
+	if(empty($mapinfo['flags']) || !is_array($mapinfo['flags'])) return;
+	foreach($mapinfo['flags'] as $fid => $ffl){
+		if(!is_array($ffl)) continue;
+		if(in_array('deepzone',$ffl)) $deepzones[] = $fid;
+		if(in_array('norandom_drop',$ffl)) $noranddrop_pls[] = $fid;
+		if(in_array('norandom_npc',$ffl)) $norandnpc_pls[] = $fid;
+		if(in_array('noesc_tp',$ffl)) $noesc_pls[] = $fid;
+	}
+	return;
+}
+
+// 旧局（flags重构前开局）补默认flags：精确复刻重构前的写死行为
+// 0=危险+全图池双排除，32/33=危险，34=危险+双排除+躲禁区传送排除；其余图无特性
+function migrate_mapinfo_flags(&$mapinfo) {
+	if(!isset($mapinfo['plsinfo'])) return false;
+	$mapinfo['flags'] = Array();
+	foreach($mapinfo['plsinfo'] as $id => $plsname){
+		if($id == 0) $mapinfo['flags'][$id] = Array('deepzone','norandom_drop','norandom_npc');
+		elseif($id == 32 || $id == 33) $mapinfo['flags'][$id] = Array('deepzone');
+		elseif($id == 34) $mapinfo['flags'][$id] = Array('deepzone','norandom_drop','norandom_npc','noesc_tp');
+		else $mapinfo['flags'][$id] = Array();
+	}
+	return true;
 }
 
 function save_gameinfo() 

@@ -52,10 +52,6 @@ function rs_game($mode = 0) {
 		global $mapid, $mapinfo,$mapid;
 		//生成出一个0和1组成的array，每个位置对应一个地图
 		$mapid = Array();
-		//无月，雏菊，英灵不动他
-		$mapid[0] = 0;
-		$mapid[33] = 0;
-		$mapid[34] = 0;
 		for($id=1 ; $id<33 ; $id++)
 			{
 				$dice = rand(0,99);
@@ -65,6 +61,11 @@ function rs_game($mode = 0) {
 					$mapid[$id] = 0;
 				} ;
 				
+			}
+		//lockbranch地图（如英灵殿/雏菊）锁死基础分支不轮换，特性见gameresource地图flags
+		for($id=0 ; $id<35 ; $id++)
+			{
+				if(isset($maps[$id][0]['flags']) && in_array('lockbranch', $maps[$id][0]['flags'])) $mapid[$id] = 0;
 			}
 		//tada!地图序号表
 		/*$mapinfo = Array();
@@ -90,7 +91,11 @@ function rs_game($mode = 0) {
 				$mapinfo['events'][$id] = $maps[$id][$mapid[$id]]['events'];
 			$mapinfo['bg'][$id] = $maps[$id][$mapid[$id]]['bg'];
 				$mapinfo['isindoor'][$id] = $maps[$id][$mapid[$id]]['isindoor'];
+				//提取选中分支的特性flags（分支级差异：轮换到不同分支可有不同特性）
+				$mapinfo['flags'][$id] = isset($maps[$id][$mapid[$id]]['flags']) ? $maps[$id][$mapid[$id]]['flags'] : Array();
 			}
+		//新mapinfo生成后立即派生全局排除表，供同调用的mode&16（物品刷新）使用
+		derive_map_flaglists();
 		save_gameinfo();
 //地图生成部分结束
 /*      留个纪念吧
@@ -279,7 +284,7 @@ save_gameinfo();
 	if ($mode & 16) {
 		//echo " - 地图道具/陷阱初始化 - ";
 		//感谢 Martin1994 提供地图道具数据库化的源代码
-		global $gamevars;
+		global $gamevars,$mapinfo,$noranddrop_pls;
 		$plsnum = sizeof($mapinfo['plsinfo']);
 		$iqry = $tqry = '';
 //		if($gamestate == 0){
@@ -322,8 +327,9 @@ save_gameinfo();
 				list($iarea,$inum,$iname,$ikind,$ieff,$ista,$iskind) = $item;
 				if(($iarea == $an)||($iarea == 99)) {
 					for($j = $inum; $j>0; $j--) {
-						$rmap = rand(1,$plsnum-1);
-						while ($rmap==34){$rmap = rand(1,$plsnum-1);}
+						//全图随机池落点排除norandom_drop地图（原：rand(1,..)隐性排0+while排34写死）
+						$rmap = rand(0,$plsnum-1);
+						while (in_array($rmap,$noranddrop_pls)){$rmap = rand(0,$plsnum-1);}
 						if(strpos($ikind,'TO')===0){
 							$tqry .= "('$iname', '$ikind','$ieff','$ista','$iskind','$rmap'),";
 						}else{
@@ -443,7 +449,7 @@ function rs_sttime() {
 function add_once_area($atime) {
 	//实际上GAMEOVER的判断是在common.inc.php里
 	global $db,$gtablepre,$tablepre,$now,$gamestate,$areaesc,$arealist,$areanum,$arealimit,$areaadd,$mapinfo,$weather,$hack,$validnum,$alivenum,$deathnum;
-	global $gamevars,$deepzones,$sentinel_typelist,$npc_away_from_deepzones;
+	global $gamevars,$deepzones,$sentinel_typelist,$npc_away_from_deepzones,$noesc_pls;
 	
 	if (($gamestate > 10)&&($now > $atime)) {
 		$plsnum = sizeof($mapinfo['plsinfo']) - 1;
@@ -502,7 +508,8 @@ function add_once_area($atime) {
 					addnews($endtime,"death$state",$sub['name'],$sub['type'],$deathpls);
 					$deathnum++;
 					} else {
-					do{$pls = $arealist[rand($areanum+1,$plsnum)];}while ($pls==34);
+					//玩家躲禁区传送排除noesc_tp地图（原：写死排34，防被动传送绕过英灵殿gate）
+					do{$pls = $arealist[rand($areanum+1,$plsnum)];}while (in_array($pls,$noesc_pls));
 					$db->query("UPDATE {$tablepre}players SET pls='$pls' WHERE pid=$pid ");
 					}
 				//躲避禁区判定
@@ -526,7 +533,7 @@ function add_once_area($atime) {
 					{
 					    do{
 							$pls = $arealist[rand($areanum+1,$plsnum)];
-						}while ($pls==34);
+						}while (in_array($pls,$noesc_pls));
 					}
 					$db->query("UPDATE {$tablepre}players SET pls='$pls' WHERE pid=$pid");
 				}
