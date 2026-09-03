@@ -8,6 +8,7 @@ require './include/game.func.php';
 include config('gameresource',$gamecfg);
 include config('npcdict',$gamecfg);
 include_once GAME_ROOT.'./include/game/npcdict.func.php';
+include_once GAME_ROOT.'./include/game/maphelp.func.php'; // npcword/eventword/mapfeatures展示函数（与测试共用，防复制漂移）
 
 // 物品类型中文（与 itemhelp.php 显示逻辑一致）
 function maphelp_kindword($ikind) {
@@ -44,63 +45,6 @@ function maphelp_skword($iskind) {
 	return $r;
 }
 
-// ── NPC名称解析：地图分支 'npc' 字段为 typeId 引用，名称查 npcdict；数量查刷新配置 ──
-function maphelp_npcword($mid, $types) {
-	$parts = array();
-	foreach($types as $type) {
-		$cfg = get_npc_spawn_config($type, 'init');
-		// type 92种火：sub级固定位置，只显示固定在本地图的sub名（数量为全类型总数，不逐图显示）
-		if(!empty($GLOBALS['npc_sub_pls'][$type])) {
-			$subs = array();
-			foreach($GLOBALS['npc_sub_pls'][$type] as $subname => $plss) {
-				if(in_array($mid, $plss)) $subs[] = $subname;
-			}
-			if(!empty($subs)) $parts[] = implode('、', $subs);
-			continue;
-		}
-		$names = get_npc_init_pool($type);
-		if(empty($names)) continue;
-		if(count($names) > 4) {
-			$nameword = implode('、', array_slice($names, 0, 3)) . ' 等' . count($names) . '种';
-		} else {
-			$nameword = implode('、', $names);
-		}
-		$parts[] = $nameword . ' ×' . $cfg['num'];
-	}
-	return implode('；', $parts);
-}
-
-// ── 特殊事件中文名（include/game/event.func.php 的 event_* 函数）──
-function maphelp_eventword($events) {
-	static $evnames = array(
-		'mask_stranger' => '面具怪人',
-		'crash_girl' => '撞人的少女',
-		'slip_pool' => '脚滑落水',
-		'hammer' => '大锤袭击',
-		'crows' => '乌鸦群袭',
-		'youkai' => '妖怪袭击',
-		'pikachu' => '野生皮卡丘',
-		'angel_barrage' => '天使部队演习',
-		'kagari_graveyard' => '篝火之瞳',
-		'kagari_hill' => '篝火少女',
-		'valhalla_gate' => '英灵殿之门',
-	);
-	$words = array();
-	foreach($events as $ev) {
-		$words[] = isset($evnames[$ev]) ? $evnames[$ev] : $ev;
-	}
-	return implode('、', $words);
-}
-
-// ── 地图级属性：特性标签（resources）+ 基准遇敌率（combatcfg）──
-function maphelp_mapfeatures($mid) {
-	global $shops, $depots, $hospitals;
-	$tags = array();
-	if(in_array($mid, $shops)) $tags[] = '商店';
-	if(in_array($mid, $depots)) $tags[] = '安全箱';
-	if(in_array($mid, $hospitals)) $tags[] = '医院（可静养）';
-	return $tags;
-}
 function maphelp_findrate($mid) {
 	global $pls_find_modifier;
 	$mod = isset($pls_find_modifier[$mid]) ? $pls_find_modifier[$mid] : 0;

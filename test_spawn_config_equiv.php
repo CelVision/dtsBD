@@ -11,7 +11,7 @@ require GAME_ROOT.'./include/global.func.php';
 $gamecfg = 1;
 include GAME_ROOT.'./include/game/npcdict.func.php';
 
-// ── 迁移前快照（原npcdict.func.php内嵌数据）──
+// ── 迁移前快照（原npcdict.func.php内嵌数据；88已下沉图32分支npc字段，见$expected_map_plan）──
 $expected_init = array(
 	1  => array('num' => 1,   'pls' => 0),
 	14 => array('num' => 3,   'pls' => 99),
@@ -22,10 +22,14 @@ $expected_init = array(
 	22 => array('num' => 2,   'pls' => 34),
 	24 => array('num' => 3,   'pls' => 34),
 	26 => array('num' => 1,   'pls' => 34),
-	88 => array('num' => 4,   'pls' => 32),
+	// 88 已下沉图32分支npc字段（结构化typeId=>num）
 	90 => array('num' => 280, 'pls' => 99),
 	91 => array('num' => 1,   'pls' => 99),
 	92 => array('num' => 100, 'pls' => null, 'exclude' => array('✦真实的火种')),
+);
+// 图级固定刷新计划（地图分支结构化npc：typeId=>num；取代旧init的88条目）
+$expected_map_plan = array(
+	88 => array('num' => 4, 'pls' => 32, 'exclude' => array()),
 );
 $expected_add = array(
 	1  => array('num' => 1,   'pls' => 0),
@@ -68,7 +72,25 @@ if($GLOBALS['npc_spawn_config']['init'] !== $expected_init) {
 	foreach($expected_init as $t => $c) {
 		if(get_npc_spawn_config($t, 'init') !== $c) echo "  - type $t: 期望 " . var_export($c, true) . " 实际 " . var_export(get_npc_spawn_config($t, 'init'), true) . "\n";
 	}
-} else echo "OK: init 配置（13类）完全一致\n";
+} else echo "OK: init 配置（12类）完全一致\n";
+
+// 图级固定刷新计划对比（地图分支结构化npc）
+$mplan = get_map_npc_plan();
+if($mplan !== $expected_map_plan) {
+	echo "FAIL: 地图固定刷新计划不一致\n";
+	var_export($mplan); echo "\n";
+	$fail++;
+} else echo "OK: 地图固定刷新计划（88 SCP→图32×4）与旧init条目等价\n";
+
+// 全量展开等价：旧init(含88) vs 新(init无88 + map_plan含88) 生成的刷新计划应逐type全等
+$old_full = $expected_init + array(88 => array('num' => 4, 'pls' => 32, 'exclude' => array()));
+ksort($old_full);
+$new_full = $GLOBALS['npc_spawn_config']['init'] + $mplan;
+ksort($new_full);
+if($old_full !== $new_full) {
+	echo "FAIL: 全量刷新计划不等价（旧88下沉前后合并对比）\n";
+	$fail++;
+} else echo "OK: 全量刷新计划等价（下沉前后每type的num/pls/exclude全等）\n";
 
 // add 全量对比
 if($GLOBALS['npc_spawn_config']['add'] !== $expected_add) {

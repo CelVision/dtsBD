@@ -1416,7 +1416,7 @@ $maps = Array
 			Array('0', '5', 'SCP-294', 'PB', '70', '∞', 'Z'),
 			Array('0', '5', 'SCP-500', 'ME', '20', '6', ''),
 		),
-		'npc' => Array(88),
+		'npc' => Array(88 => 4),		// 图级固定刷新（typeId=>数量）：SCP生物↓刷4只；取代全局spawn_config的88条目
 		'flags' => Array('deepzone'),
          ),
       1 => Array(
@@ -1427,7 +1427,7 @@ $maps = Array
         'events'=>Array(),
         'isindoor' => '',
 		'item' => Array(),
-		'npc' => Array(88),
+		'npc' => Array(88 => 4),
       ),
     ),
     33=>array(
@@ -2024,7 +2024,7 @@ $npc_spawn_config = array(
 		22 => array('num' => 2,   'pls' => 34),
 		24 => array('num' => 3,   'pls' => 34),
 		26 => array('num' => 1,   'pls' => 34),
-		88 => array('num' => 4,   'pls' => 32),
+		// 88 SCP生物：已下沉到图32分支 npc 字段（typeId=>num 图级固定刷新，见上方32段）
 		90 => array('num' => 280, 'pls' => 99),
 		91 => array('num' => 1,   'pls' => 99),
 		92 => array('num' => 100, 'pls' => null, 'exclude' => array('✦真实的火种')), // sub有各自pls，✦真实的火种不参与开局刷新

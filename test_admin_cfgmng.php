@@ -267,6 +267,53 @@ include GAME_ROOT.'./include/admin/resourcemng.php';
 $out = ob_get_clean();
 check('flags渲染:99池无flagsword输入框', strpos($out, 'name="flagsword"') === false);
 
+// ── 6j. npcword结构化语法：32-0保存88:5 ──
+$_POST = Array(
+	'mid' => '32', 'bi' => '0',
+	'npcword' => gstrfilter('88:5'),
+	'itemcount' => '0',
+);
+$command = 'submit';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+$saveinfo = $cmd_info;
+ob_end_clean();
+unset($maps);
+include $res98;
+check('npc语法:32-0保存88:5为结构化', $maps[32][0]['npc'] === Array(88 => 5));
+
+// ── 6k. 混合语法（扁平+结构化）拒绝且保持原值 ──
+$_POST['npcword'] = gstrfilter('88, 20:3');
+$command = 'submit';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+$saveinfo = $cmd_info;
+ob_end_clean();
+unset($maps);
+include $res98;
+check('npc语法:混合输入被拒绝', strpos($saveinfo, 'NPC类别格式错误') !== false);
+check('npc语法:混合输入npc未变(仍88=>5)', $maps[32][0]['npc'] === Array(88 => 5));
+
+// ── 6l. 非法项拒绝 ──
+$_POST['npcword'] = gstrfilter('abc');
+$command = 'submit';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+$saveinfo = $cmd_info;
+ob_end_clean();
+unset($maps);
+include $res98;
+check('npc语法:非法项被拒绝', strpos($saveinfo, 'NPC类别格式错误') !== false);
+check('npc语法:非法项npc未变', $maps[32][0]['npc'] === Array(88 => 5));
+
+// ── 6m. npcword结构化渲染 ──
+$command = 'expand_32_0';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+$out = ob_get_clean();
+check('npc语法:展开区渲染88:5', strpos($out, '88:5') !== false);
+check('npc语法:输入框含新语法提示', strpos($out, 'typeId:数量') !== false);
+
 // ── 7. npcdictmng 列表渲染 ──
 $command = 'list';
 ob_start();

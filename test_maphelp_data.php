@@ -10,51 +10,7 @@ include config('gameresource', $gamecfg);
 include config('combatcfg', $gamecfg);   // $pls_find_modifier 遇敌率修正
 include config('resources', $gamecfg);   // $shops/$depots/$hospitals 地图特性
 include GAME_ROOT.'./include/game/npcdict.func.php';
-
-// 复制 maphelp.php 的 maphelp_npcword 逻辑
-function maphelp_npcword($mid, $types) {
-	$parts = array();
-	foreach($types as $type) {
-		$cfg = get_npc_spawn_config($type, 'init');
-		if(!empty($GLOBALS['npc_sub_pls'][$type])) {
-			$subs = array();
-			foreach($GLOBALS['npc_sub_pls'][$type] as $subname => $plss) {
-				if(in_array($mid, $plss)) $subs[] = $subname;
-			}
-			if(!empty($subs)) $parts[] = implode('、', $subs);
-			continue;
-		}
-		$names = get_npc_init_pool($type);
-		if(empty($names)) continue;
-		if(count($names) > 4) {
-			$nameword = implode('、', array_slice($names, 0, 3)) . ' 等' . count($names) . '种';
-		} else {
-			$nameword = implode('、', $names);
-		}
-		$parts[] = $nameword . ' ×' . $cfg['num'];
-	}
-	return implode('；', $parts);
-}
-
-// 复制 maphelp.php 的地图级属性函数
-function maphelp_eventword($events) {
-	static $evnames = array(
-		'mask_stranger' => '面具怪人', 'crash_girl' => '撞人的少女', 'slip_pool' => '脚滑落水',
-		'hammer' => '大锤袭击', 'crows' => '乌鸦群袭', 'youkai' => '妖怪袭击',
-		'pikachu' => '野生皮卡丘', 'angel_barrage' => '天使部队演习',
-		'kagari_graveyard' => '篝火之瞳', 'kagari_hill' => '篝火少女', 'valhalla_gate' => '英灵殿之门',
-	);
-	$words = array();
-	foreach($events as $ev) $words[] = isset($evnames[$ev]) ? $evnames[$ev] : $ev;
-	return implode('、', $words);
-}
-function maphelp_mapfeatures($mid) {
-	$tags = array();
-	if(in_array($mid, $GLOBALS['shops'])) $tags[] = '商店';
-	if(in_array($mid, $GLOBALS['depots'])) $tags[] = '安全箱';
-	if(in_array($mid, $GLOBALS['hospitals'])) $tags[] = '医院（可静养）';
-	return $tags;
-}
+include GAME_ROOT.'./include/game/maphelp.func.php'; // 与 maphelp.php 同源展示函数（不再复制逻辑防漂移）
 
 $mapdisplay = array();
 foreach($maps as $mid => $branches) {

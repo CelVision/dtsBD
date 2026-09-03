@@ -7,7 +7,8 @@ if(!defined('IN_GAME')) exit('Access Denied');
 // 索引方式：spawn_npc($typeId, $npcName, $num, ...)
 // 数据来源：$npcdict (npcdict_1.php) + $npc_evolve (进化关系映射)
 // 刷新配置：$npc_spawn_config / $npc_sub_pls 迁至 gameresource（gamedata/cache/gameresource_1.php 文末）
-// 地图分支的 'npc' 字段为该地初始固定刷新的 typeId 引用（指向本辞典）；99段为全图随机池
+// 地图分支 'npc' 字段双语义：扁平 Array(typeId,...)=引用标注（数量查全局config，兼容旧数据）；
+// 结构化 Array(typeId => num)=图级固定刷新（数量直接由地图分支定义，试点：88 SCP→图32）；99段为全图随机池
 
 // 懒加载刷新配置（数据在 gameresource；任意调用上下文可用）
 function load_npc_spawn_data() {
@@ -36,6 +37,28 @@ function get_npc_sub_pls($type, $name) {
 		return $GLOBALS['npc_sub_pls'][$type][$name];
 	}
 	return null;
+}
+
+// 地图分支npc字段结构化（typeId=>num）→ 图级固定刷新计划（试点：88 SCP→图32）
+// 扁平 Array(typeId,...) 不入计划，继续走全局 $npc_spawn_config['init']（兼容旧数据）
+// 注：同一type配在多图时后者覆盖前者（当前语义：固定刷新type↔图一一对应）
+function get_map_npc_plan() {
+	global $mapid;
+	load_npc_spawn_data();
+	if(empty($GLOBALS['maps']) || !is_array($GLOBALS['maps'])) return array();
+	$plan = array();
+	foreach($GLOBALS['maps'] as $mid => $branches) {
+		if($mid == 99 || !is_array($branches)) continue; // 99池：随机散布类走全局config
+		$bid = (isset($mapid[$mid]) && isset($branches[$mapid[$mid]])) ? intval($mapid[$mid]) : 0;
+		if(!isset($branches[$bid]['npc']) || !is_array($branches[$bid]['npc'])) continue;
+		$narr = $branches[$bid]['npc'];
+		$keys = array_keys($narr);
+		if(empty($keys) || $keys === range(0, count($keys) - 1)) continue; // 扁平引用
+		foreach($narr as $type => $num) {
+			$plan[intval($type)] = array('num' => intval($num), 'pls' => intval($mid), 'exclude' => array());
+		}
+	}
+	return $plan;
 }
 
 // 加载NPC辞典（单例缓存）
@@ -217,12 +240,14 @@ function spawn_npc_all($time = 0) {
 	// 清空旧NPC
 	$db->query("DELETE FROM {$tablepre}players WHERE type>0");
 
+	// 地图分支结构化npc（typeId=>num）优先于全局init配置（图级固定刷新，试点：88 SCP→图32）
+	$map_plan = get_map_npc_plan();
 
 	foreach($d['dict'] as $type => $npcs) {
 		// 开局刷新池（sub优先/纯asub组回退/排除esub进化目标，见 get_npc_init_pool）
 		$names = get_npc_init_pool($type);
-		// 从 spawn 配置读取 typeId 级别的 num 和 pls
-		$cfg = get_npc_spawn_config($type, 'init');
+		// 从 spawn 配置读取 typeId 级别的 num 和 pls（地图结构化npc优先）
+		$cfg = isset($map_plan[$type]) ? $map_plan[$type] : get_npc_spawn_config($type, 'init');
 		// 排除不参与开局刷新的NPC
 		$exclude = isset($cfg['exclude']) ? $cfg['exclude'] : array();
 		if(!empty($exclude)) {

@@ -70,12 +70,32 @@ if(strpos($command,'expand_') === 0) {
 			}
 		}
 		if(isset($_POST['npcword']) && array_key_exists('npc',$b)) {
-			$ns = Array();
+			// 语法：纯typeId=扁平引用列表（现状兼容）；typeId:数量=图级固定刷新（结构化typeId=>num）；两种不可混合
+			$ns = Array(); $pairs = Array(); $haspair = false; $hasplain = false;
+			$badnpc = false;
 			foreach(explode(',', admin_cfg_decode($_POST['npcword'])) as $nv) {
 				$nv = trim($nv);
-				if($nv !== '') $ns[] = $nv;
+				if($nv === '') continue;
+				if(preg_match('/^(\d+):(\d+)$/', $nv, $pm)) {
+					$haspair = true;
+					$pairs[intval($pm[1])] = intval($pm[2]);
+				} elseif(preg_match('/^\d+$/', $nv)) {
+					$hasplain = true;
+					$ns[] = $nv;
+				} else {
+					$badnpc = true;
+					break;
+				}
 			}
-			if($ns != $b['npc']) {
+			if($badnpc || ($haspair && $hasplain)) {
+				// 格式非法（非数字项或扁平/结构化混输）：拒绝修改本字段，保留原值
+				$npcwarn = true;
+			} elseif($haspair) {
+				if($pairs != $b['npc']) {
+					$b['npc'] = $pairs;
+					$chg++;
+				}
+			} elseif($ns != $b['npc']) {
 				$nn = Array();
 				$i = 0;
 				foreach($ns as $nv) {
@@ -159,6 +179,7 @@ if(strpos($command,'expand_') === 0) {
 		} else {
 			$cmd_info = "未检测到编号 {$smid}-{$sbi} 的有效修改。";
 		}
+		if(!empty($npcwarn)) $cmd_info .= ' 但NPC类别格式错误（需全部为typeId或全部为typeId:数量，不可混合），该项未保存。';
 		$expanded_mid = $smid;
 		$expanded_bi = $sbi;
 		$expanded_page = 0;
@@ -224,7 +245,16 @@ foreach($maps as $mid => $branches) {
 			$r['f_areainfo'] = htmlspecialchars(isset($branch['areainfo']) ? $branch['areainfo'] : '');
 			$r['f_eventsword'] = htmlspecialchars(implode(',', isset($branch['events']) ? $branch['events'] : Array()));
 			$r['f_flagsword'] = htmlspecialchars(implode(',', isset($branch['flags']) ? $branch['flags'] : Array()));
-			$r['f_npcword'] = htmlspecialchars(implode(',', isset($branch['npc']) ? $branch['npc'] : Array()));
+			// npc字段双形态：结构化 typeId=>num 渲染为 "typeId:num"；扁平 typeId 渲染为 "typeId"
+			$narr = isset($branch['npc']) ? $branch['npc'] : Array();
+			$nkeys = array_keys($narr);
+			if(!empty($nkeys) && $nkeys !== range(0, count($nkeys) - 1)) {
+				$nw = Array();
+				foreach($narr as $nt => $nn) $nw[] = $nt . ':' . $nn;
+				$r['f_npcword'] = htmlspecialchars(implode(',', $nw));
+			} else {
+				$r['f_npcword'] = htmlspecialchars(implode(',', $narr));
+			}
 			$r['sel0'] = (isset($branch['isindoor']) && $branch['isindoor'] == '0') ? ' selected' : '';
 			$r['sel1'] = (isset($branch['isindoor']) && $branch['isindoor'] == '1') ? ' selected' : '';
 			$r['itemcount'] = $r['itemcnt'];
