@@ -167,7 +167,8 @@ function spawn_npc($type, $name, $num = 1, $time = 0, $anpcdata = NULL, $pls_ove
 						}
 					}
 				} else {
-					$npc['pls'] = $cfg_pls;
+					// 'name:地图名' 寻靶（免写死坐标，地图数据改名/重排id自动跟随）；其余按字面值固定
+					$npc['pls'] = resolve_npc_target_pls($cfg_pls);
 				}
 			}
 		}
@@ -215,6 +216,32 @@ function spawn_npc($type, $name, $num = 1, $time = 0, $anpcdata = NULL, $pls_ove
 		return $summon_ids;
 	}
 	return;
+}
+
+// 位置寻靶：'name:地图名' → 按本局选中分支的 plsinfo 匹配图id（地图id重排/分支改名自动跟随，免写死坐标）
+// 匹配不到（改名/删除/未填充分支）时回退全图随机（与 pls=99 同语义）
+function resolve_npc_target_pls($pls) {
+	global $arealist, $areanum, $mapid, $log;
+	if(is_string($pls) && strpos($pls, 'name:') === 0) {
+		$tname = trim(substr($pls, 5));
+		load_npc_spawn_data();
+		if(is_array($GLOBALS['maps'])) {
+			foreach($GLOBALS['maps'] as $mid => $branches) {
+				if($mid == 99 || !is_array($branches)) continue;
+				$bid = (isset($mapid[$mid]) && isset($branches[$mapid[$mid]])) ? intval($mapid[$mid]) : 0;
+				if(isset($branches[$bid]['plsinfo']) && $branches[$bid]['plsinfo'] === $tname) return intval($mid);
+			}
+		}
+		// 寻靶失败：回退随机并提示（不中断召唤流程）
+		$areaarr = array_slice($arealist, $areanum + 1);
+		if(!empty($areaarr)) {
+				if(isset($log) && $log !== '') $log .= '但预定目标区域似乎并不存在于这个世界，召唤偏离了预定地点……<br>';
+				shuffle($areaarr);
+				return $areaarr[0];
+		}
+		return 0;
+	}
+	return $pls;
 }
 
 // 随机spawn — 从某个typeId下随机选一个NPC生成
@@ -310,7 +337,8 @@ function spawn_npc_all($time = 0) {
 				}
 				$npc['pls'] = $rpls;
 			} else {
-				$npc['pls'] = $cfg_pls;
+				// 'name:地图名' 寻靶（免写死坐标，地图数据改名/重排id自动跟随）；其余按字面值固定
+				$npc['pls'] = resolve_npc_target_pls($cfg_pls);
 			}
 
 			$npc['state'] = 0;

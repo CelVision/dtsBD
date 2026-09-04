@@ -11,30 +11,30 @@ require GAME_ROOT.'./include/global.func.php';
 $gamecfg = 1;
 include GAME_ROOT.'./include/game/npcdict.func.php';
 
-// ── 迁移前快照（原npcdict.func.php内嵌数据；88已下沉图32分支npc字段，见$expected_map_plan）──
+// ── 迁移前快照（原npcdict.func.php内嵌数据；1/20-26/88已下沉地图分支npc字段，见$expected_map_plan）──
 $expected_init = array(
-	1  => array('num' => 1,   'pls' => 0),
 	14 => array('num' => 3,   'pls' => 99),
 	15 => array('num' => 0,   'pls' => 99),
 	19 => array('num' => 0,   'pls' => 0),
-	20 => array('num' => 10,  'pls' => 34),
-	21 => array('num' => 5,   'pls' => 34),
-	22 => array('num' => 2,   'pls' => 34),
-	24 => array('num' => 3,   'pls' => 34),
-	26 => array('num' => 1,   'pls' => 34),
-	// 88 已下沉图32分支npc字段（结构化typeId=>num）
+	// 1 红暮-自动托管→图0；20/21/22/24/26 英灵殿系→图34；88 SCP→图32（均下沉分支npc字段）
 	90 => array('num' => 280, 'pls' => 99),
 	91 => array('num' => 1,   'pls' => 99),
 	92 => array('num' => 100, 'pls' => null, 'exclude' => array('✦真实的火种')),
 );
-// 图级固定刷新计划（地图分支结构化npc：typeId=>num；取代旧init的88条目）
+// 图级固定刷新计划（地图分支结构化npc：typeId=>num）
 $expected_map_plan = array(
-	88 => array('num' => 4, 'pls' => 32, 'exclude' => array()),
+	1  => array('num' => 1,   'pls' => 0,  'exclude' => array()),
+	20 => array('num' => 10,  'pls' => 34, 'exclude' => array()),
+	21 => array('num' => 5,   'pls' => 34, 'exclude' => array()),
+	22 => array('num' => 2,   'pls' => 34, 'exclude' => array()),
+	24 => array('num' => 3,   'pls' => 34, 'exclude' => array()),
+	26 => array('num' => 1,   'pls' => 34, 'exclude' => array()),
+	88 => array('num' => 4,   'pls' => 32, 'exclude' => array()),
 );
 $expected_add = array(
 	1  => array('num' => 1,   'pls' => 0),
 	2  => array('num' => 16,  'pls' => 99),
-	4  => array('num' => 1,   'pls' => 33),
+	4  => array('num' => 1,   'pls' => 'name:雏菊之丘'),
 	5  => array('num' => 2,   'pls' => 99),
 	6  => array('num' => 1,   'pls' => 99),
 	7  => array('num' => 3,   'pls' => 99),
@@ -72,25 +72,39 @@ if($GLOBALS['npc_spawn_config']['init'] !== $expected_init) {
 	foreach($expected_init as $t => $c) {
 		if(get_npc_spawn_config($t, 'init') !== $c) echo "  - type $t: 期望 " . var_export($c, true) . " 实际 " . var_export(get_npc_spawn_config($t, 'init'), true) . "\n";
 	}
-} else echo "OK: init 配置（12类）完全一致\n";
+} else echo "OK: init 配置（6类）完全一致\n";
 
 // 图级固定刷新计划对比（地图分支结构化npc）
 $mplan = get_map_npc_plan();
-if($mplan !== $expected_map_plan) {
+$mplan_sorted = $mplan; ksort($mplan_sorted);
+if($mplan_sorted !== $expected_map_plan) {
 	echo "FAIL: 地图固定刷新计划不一致\n";
 	var_export($mplan); echo "\n";
 	$fail++;
-} else echo "OK: 地图固定刷新计划（88 SCP→图32×4）与旧init条目等价\n";
+} else echo "OK: 地图固定刷新计划（红暮→图0、英灵殿系5类→图34、SCP→图32）与旧init条目等价\n";
 
-// 全量展开等价：旧init(含88) vs 新(init无88 + map_plan含88) 生成的刷新计划应逐type全等
-$old_full = $expected_init + array(88 => array('num' => 4, 'pls' => 32, 'exclude' => array()));
-ksort($old_full);
+// 全量展开等价：旧init(13类含下沉7类) vs 新(init 6类 + map_plan 7类) 生成的刷新计划应逐type全等
+$old_full = array(
+	1  => array('num' => 1,   'pls' => 0,  'exclude' => array()),
+	14 => array('num' => 3,   'pls' => 99),
+	15 => array('num' => 0,   'pls' => 99),
+	19 => array('num' => 0,   'pls' => 0),
+	20 => array('num' => 10,  'pls' => 34, 'exclude' => array()),
+	21 => array('num' => 5,   'pls' => 34, 'exclude' => array()),
+	22 => array('num' => 2,   'pls' => 34, 'exclude' => array()),
+	24 => array('num' => 3,   'pls' => 34, 'exclude' => array()),
+	26 => array('num' => 1,   'pls' => 34, 'exclude' => array()),
+	88 => array('num' => 4,   'pls' => 32, 'exclude' => array()),
+	90 => array('num' => 280, 'pls' => 99),
+	91 => array('num' => 1,   'pls' => 99),
+	92 => array('num' => 100, 'pls' => null, 'exclude' => array('✦真实的火种')),
+);
 $new_full = $GLOBALS['npc_spawn_config']['init'] + $mplan;
-ksort($new_full);
+ksort($old_full); ksort($new_full);
 if($old_full !== $new_full) {
-	echo "FAIL: 全量刷新计划不等价（旧88下沉前后合并对比）\n";
+	echo "FAIL: 全量刷新计划不等价（下沉前后合并对比）\n";
 	$fail++;
-} else echo "OK: 全量刷新计划等价（下沉前后每type的num/pls/exclude全等）\n";
+} else echo "OK: 全量刷新计划等价（13类逐type的num/pls/exclude全等）\n";
 
 // add 全量对比
 if($GLOBALS['npc_spawn_config']['add'] !== $expected_add) {

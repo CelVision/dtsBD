@@ -25,6 +25,18 @@ function check($name, $cond) {
 	if(!$cond) $fail++;
 }
 
+// npc字段→表单值（结构化typeId=>num输出"typeId:num"；扁平输出"typeId"，与编辑器渲染逻辑一致）
+function npcword_of($narr) {
+	$narr = $narr ?: Array();
+	$keys = array_keys($narr);
+	if(!empty($keys) && $keys !== range(0, count($keys) - 1)) {
+		$w = Array();
+		foreach($narr as $t => $n) $w[] = $t . ':' . $n;
+		return implode(',', $w);
+	}
+	return implode(',', $narr);
+}
+
 // 临时文件路径必须显式指定_98，严禁用config()（_98不存在时会回退到_1导致误写误删真实数据）
 $res98 = GAME_ROOT.'./gamedata/cache/gameresource_98.php';
 $dict98 = GAME_ROOT.'./gamedata/cache/npcdict_98.php';
@@ -82,7 +94,7 @@ $_POST = Array(
 	'areainfo' => gstrfilter($b0['areainfo']),
 	'isindoor' => '0',
 	'events' => gstrfilter(implode(',', $b0['events'])),
-	'npcword' => gstrfilter(implode(',', $b0['npc'])),
+	'npcword' => gstrfilter(npcword_of($b0['npc'])),
 	'itemcount' => (string)count($b0['item']),
 );
 $itemcols = Array('area','num','name','kind','eff','sta','sk');
@@ -123,7 +135,7 @@ $_POST = Array(
 	'areainfo' => gstrfilter($b0['areainfo']),
 	'isindoor' => '0',
 	'events' => gstrfilter(implode(',', $b0['events'])),
-	'npcword' => gstrfilter(implode(',', $b0['npc'])),
+	'npcword' => gstrfilter(npcword_of($b0['npc'])),
 	'itemcount' => (string)count($b0['item']),
 );
 foreach($b0['item'] as $i => $it) {
@@ -201,7 +213,7 @@ check('恢复:此前保存的地图改动仍在', $maps[0][0]['plsinfo'] === '�
 $_POST = Array(
 	'mid' => '34', 'bi' => '0',
 	'flagsword' => gstrfilter('deepzone,noesc_tp'),
-	'npcword' => gstrfilter(implode(',', $maps[34][0]['npc'])),
+	'npcword' => gstrfilter(npcword_of($maps[34][0]['npc'])),
 	'itemcount' => '0',
 );
 $command = 'submit';
@@ -227,7 +239,7 @@ check('flags清空:34-0变空数组', $maps[34][0]['flags'] === Array());
 // ── 6g. 未POST flagsword（其他字段保存）→ flags保持原样 ──
 $_POST = Array(
 	'mid' => '34', 'bi' => '0',
-	'npcword' => gstrfilter(implode(',', $maps[34][0]['npc'])),
+	'npcword' => gstrfilter(npcword_of($maps[34][0]['npc'])),
 	'itemcount' => '0',
 );
 $command = 'submit';
@@ -242,7 +254,7 @@ check('flags保留:未POST时保持空数组', $maps[34][0]['flags'] === Array()
 $_POST = Array(
 	'mid' => '1', 'bi' => '0',
 	'flagsword' => gstrfilter('deepzone'),
-	'npcword' => gstrfilter(implode(',', $maps[1][0]['npc'])),
+	'npcword' => gstrfilter(npcword_of($maps[1][0]['npc'])),
 	'itemcount' => '0',
 );
 $command = 'submit';
@@ -313,6 +325,11 @@ include GAME_ROOT.'./include/admin/resourcemng.php';
 $out = ob_get_clean();
 check('npc语法:展开区渲染88:5', strpos($out, '88:5') !== false);
 check('npc语法:输入框含新语法提示', strpos($out, 'typeId:数量') !== false);
+$command = 'expand_34_0';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+$out = ob_get_clean();
+check('npc语法:34多type结构化渲染(20:10与26:1)', strpos($out, '20:10') !== false && strpos($out, '26:1') !== false);
 
 // ── 7. npcdictmng 列表渲染 ──
 $command = 'list';

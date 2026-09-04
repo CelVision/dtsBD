@@ -12,14 +12,14 @@ if(!$lines) die("读取失败\n");
 
 // ── 目标地图的 npc typeId（初始刷新；92的sub级位置见文末$npc_sub_pls）──
 $mapnpc = array(
-	0  => 'Array(1)',                    // 无月之影：红暮
+	0  => 'Array(1 => 1)',                // 无月之影：红暮-自动托管图级固定刷新×1（结构化typeId=>num）
 	2  => 'Array(92)', 15 => 'Array(92)',// 覆唱的篝火
 	3  => 'Array(92)', 22 => 'Array(92)',// 爱恋的埋火
 	18 => 'Array(92)', 23 => 'Array(92)',// 怜悯的永火
 	20 => 'Array(92)', 24 => 'Array(92)',// 执念的残火
 	12 => 'Array(92)', 29 => 'Array(92)',// 希望的焰火
 	32 => 'Array(88 => 4)',             // SCP研究设施：SCP生物图级固定刷新4只（结构化typeId=>num）
-	34 => 'Array(20, 21, 22, 24, 26)',   // 英灵殿：天神/武神/巫师等
+	34 => 'Array(20 => 10, 21 => 5, 22 => 2, 24 => 3, 26 => 1)',   // 英灵殿：英雄×10/武神×5/天神×2/巫师×3/开发组×1（图级固定刷新）
 	99 => 'Array(14, 90, 91)',           // 全图随机池：女主/数据残影/数据残影-？？？
 );
 
@@ -66,16 +66,10 @@ foreach($lines as $ln) {
 		$out[] = '// pls: 0=无月之影, 34=英灵殿, 99=随机, 具体数字=固定地点, array=多地择一, null=按sub配置';
 		$out[] = "\$npc_spawn_config = array(";
 		$out[] = "\t'init' => array(";
-		$out[] = "\t\t1  => array('num' => 1,   'pls' => 0),";
+		$out[] = "\t\t// 1 红暮-自动托管：已下沉图0分支npc字段；20/21/22/24/26 英灵殿系：已下沉图34分支npc字段；88 SCP：已下沉图32分支npc字段";
 		$out[] = "\t\t14 => array('num' => 3,   'pls' => 99),";
 		$out[] = "\t\t15 => array('num' => 0,   'pls' => 99),  // 不刷新，仅addnpc";
 		$out[] = "\t\t19 => array('num' => 0,   'pls' => 0),   // 不刷新，仅addnpc";
-		$out[] = "\t\t20 => array('num' => 10,  'pls' => 34),";
-		$out[] = "\t\t21 => array('num' => 5,   'pls' => 34),";
-		$out[] = "\t\t22 => array('num' => 2,   'pls' => 34),";
-		$out[] = "\t\t24 => array('num' => 3,   'pls' => 34),";
-		$out[] = "\t\t26 => array('num' => 1,   'pls' => 34),";
-		$out[] = "\t\t88 => array('num' => 4,   'pls' => 32),";
 		$out[] = "\t\t90 => array('num' => 280, 'pls' => 99),";
 		$out[] = "\t\t91 => array('num' => 1,   'pls' => 99),";
 		$out[] = "\t\t92 => array('num' => 100, 'pls' => null, 'exclude' => array('✦真实的火种')), // sub有各自pls，✦真实的火种不参与开局刷新";
@@ -83,7 +77,7 @@ foreach($lines as $ln) {
 		$out[] = "\t'add' => array(";
 		$out[] = "\t\t1  => array('num' => 1,   'pls' => 0),";
 		$out[] = "\t\t2  => array('num' => 16,  'pls' => 99),";
-		$out[] = "\t\t4  => array('num' => 1,   'pls' => 33),";
+		$out[] = "\t\t4  => array('num' => 1,   'pls' => 'name:雏菊之丘'),\t// 破灭之诗召唤籬：按地图名寻靶（免写死坐标，地图数据改名/重排id自动跟随）";
 		$out[] = "\t\t5  => array('num' => 2,   'pls' => 99),";
 		$out[] = "\t\t6  => array('num' => 1,   'pls' => 99),";
 		$out[] = "\t\t7  => array('num' => 3,   'pls' => 99),";

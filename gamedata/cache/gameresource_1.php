@@ -36,7 +36,7 @@ $maps = Array
 			Array('1', '1', '曾经的荣光-煤气', 'EW', '1', '1', '10'),
 			Array('0', '1', '→【神器任意门】←', 'ZA', '1', '1', ''),
 		),
-		'npc' => Array(1),
+		'npc' => Array(1 => 1),			// 图级固定刷新：红暮-自动托管×1；取代全局spawn_config的1条目
 		'flags' => Array('deepzone', 'norandom_drop', 'norandom_npc', 'lockbranch'),
       ),
     ),
@@ -1420,14 +1420,16 @@ $maps = Array
 		'flags' => Array('deepzone'),
          ),
       1 => Array(
-        'plsinfo'=>'',
+        'plsinfo'=>'Level 0',
         'xyinfo'=>'',
         'areainfo'=>'',
         'bg' => '32',
         'events'=>Array(),
         'isindoor' => '',
-		'item' => Array(),
-		'npc' => Array(88 => 4),
+		'item' => Array(
+			Array('0', '20', '杏仁水', 'HS', '100', '1', ''),
+		),
+		'npc' => Array(),
       ),
     ),
     33=>array(
@@ -1481,7 +1483,7 @@ $maps = Array
         'events'=>Array('valhalla_gate'),
         'isindoor' => '0',  
 		'item' => Array(),
-		'npc' => Array(20, 21, 22, 24, 26),
+		'npc' => Array(20 => 10, 21 => 5, 22 => 2, 24 => 3, 26 => 1),	// 图级固定刷新：英雄×10/武神×5/天神×2/巫师×3/开发组×1；取代全局spawn_config的20-26条目
 		'flags' => Array('deepzone', 'norandom_drop', 'norandom_npc', 'noesc_tp', 'lockbranch'),
          ),
     ),
@@ -2015,15 +2017,10 @@ $maps = Array
 // pls: 0=无月之影, 34=英灵殿, 99=随机, 具体数字=固定地点, array=多地择一, null=按sub配置
 $npc_spawn_config = array(
 	'init' => array(
-		1  => array('num' => 1,   'pls' => 0),
+		// 1 红暮-自动托管：已下沉图0分支npc字段；20/21/22/24/26 英灵殿系：已下沉图34分支npc字段
 		14 => array('num' => 3,   'pls' => 99),
 		15 => array('num' => 0,   'pls' => 99),  // 不刷新，仅addnpc
 		19 => array('num' => 0,   'pls' => 0),   // 不刷新，仅addnpc
-		20 => array('num' => 10,  'pls' => 34),
-		21 => array('num' => 5,   'pls' => 34),
-		22 => array('num' => 2,   'pls' => 34),
-		24 => array('num' => 3,   'pls' => 34),
-		26 => array('num' => 1,   'pls' => 34),
 		// 88 SCP生物：已下沉到图32分支 npc 字段（typeId=>num 图级固定刷新，见上方32段）
 		90 => array('num' => 280, 'pls' => 99),
 		91 => array('num' => 1,   'pls' => 99),
@@ -2032,7 +2029,7 @@ $npc_spawn_config = array(
 	'add' => array(
 		1  => array('num' => 1,   'pls' => 0),
 		2  => array('num' => 16,  'pls' => 99),
-		4  => array('num' => 1,   'pls' => 33),
+		4  => array('num' => 1,   'pls' => 'name:雏菊之丘'),	// 破灭之诗召唤籬：按地图名寻靶（原写死33）
 		5  => array('num' => 2,   'pls' => 99),
 		6  => array('num' => 1,   'pls' => 99),
 		7  => array('num' => 3,   'pls' => 99),
