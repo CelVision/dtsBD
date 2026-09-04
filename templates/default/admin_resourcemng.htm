@@ -1,5 +1,19 @@
-<div class="subtitle">$lang['resourcemng'] <span class="grey" style="font-size:9pt;">$resource_file</span></div>
+<div class="subtitle">$lang['resourcemng'] <span class="grey" style="font-size:9pt;">$resource_short</span></div>
 <div><span class="yellow">$cmd_info</span></div>
+<form method="get" style="display:inline;">
+<input type="hidden" name="mode" value="resourcemng">
+<span class="yellow">编辑目标：</span>
+<select name="rescfg">
+	<option value="">当前生效（跟随房间/模式）</option>
+	<option value="mode_1">模式1主文件（常规）</option>
+	<option value="mode_2">模式2主文件（快速）</option>
+	<!--{loop $room_res_opts $o}-->
+	<option value="{$o['val']}"{$o['sel']}>{$o['label']}</option>
+	<!--{/loop}-->
+</select>
+<input type="submit" value="切换">
+</form>
+<br>
 <form method="post" name="resourcemng">
 <input type="hidden" name="mode" value="resourcemng">
 <input type="hidden" id="command" name="command" value="list">

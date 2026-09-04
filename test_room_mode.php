@@ -243,6 +243,39 @@ $p_flat = strpos($sys_src, "array_diff(array_keys(\$mapinfo['plsinfo']), \$noran
 $p_else = strpos($sys_src, 'sim_full_pls', $p_c2);
 check('平摊:rs_game 99池物品快速分支在摘出分支前', $p_c2 !== false && $p_flat !== false && $p_else !== false && $p_flat < $p_else);
 
+// ── 6d. 房间私有resource副本（gameresource_room_N：建房派生/关房删除/房间成员加载副本） ──
+// 命名隔离：副本带room_中缀，不与模式主文件gameresource_1/2冲突
+$room_dst = GAME_ROOT.'./gamedata/cache/gameresource_room_998.php';
+@unlink($room_dst);
+check('房间副本:命名隔离(与模式主文件不同名)', $room_dst != GAME_ROOT.'./gamedata/cache/gameresource_1.php' && $room_dst != GAME_ROOT.'./gamedata/cache/gameresource_2.php');
+// spawn派生：源=模式主文件完整copy+头部标记（幂等：先删旧）
+$ok = roommng_spawn_room_resource(998, 2);
+$rc = file_exists($room_dst) ? file_get_contents($room_dst) : '';
+check('房间副本:spawn派生成功(存在+非空)', $ok && strlen($rc) > 1000);
+check('房间副本:头部含标记行(room/mode)', strpos($rc, '房间私有resource副本 room=998 mode=2') !== false);
+check('房间副本:内容=模式2主文件保真copy(init14断链差异随副本)', strpos($rc, "'num' => 0,") !== false && strpos(file_get_contents(GAME_ROOT.'./gamedata/cache/gameresource_2.php'), '<?php') === 0);
+$src2 = file_get_contents(GAME_ROOT.'./gamedata/cache/gameresource_2.php');
+check('房间副本:主体内容与模式2逐字一致(仅头部标记差异)', substr($rc, strpos($rc, '<?php')) === $src2);
+// config替换：房间成员命中副本；force/字符串绕过
+$GLOBALS['room_resource_id'] = 998;
+check('房间副本:房间成员config命中副本', config('gameresource', 2) === $room_dst && config('gameresource', 1) === $room_dst);
+check('房间副本:force=true绕过副本回主文件', config('gameresource', 2, true) === GAME_ROOT.'./gamedata/cache/gameresource_2.php');
+check('房间副本:字符串cfg直拼副本路径', config('gameresource', 'room_998') === $room_dst);
+$GLOBALS['room_resource_id'] = 0;
+// 幂等：残留副本重spawn被重置（防同号旧局污染）
+$fp = fopen($room_dst, 'a'); fwrite($fp, '// GARBAGE'); fclose($fp);
+roommng_spawn_room_resource(998, 2);
+$rc2 = file_get_contents($room_dst);
+check('房间副本:重spawn幂等重置(残留被清除)', strpos($rc2, 'GARBAGE') === false && substr($rc2, strpos($rc2, '<?php')) === $src2);
+@unlink($room_dst);
+// 关闭房间删副本/建房调spawn（源码断言）
+$rmsrc = file_get_contents(GAME_ROOT.'./include/roommng.func.php');
+check('房间副本:close_room删除副本', strpos($rmsrc, 'gameresource_room_{$rkey}.php') !== false);
+check('房间副本:create_room派生副本', strpos($rmsrc, 'roommng_spawn_room_resource($new_room_id, $roommode)') !== false);
+// 管理端编辑目标picker（rescfg：mode_N force/room_N直拼/默认跟随）
+$admsrc = file_get_contents(GAME_ROOT.'./include/admin/resourcemng.php');
+check('房间副本:resourcemng支持rescfg目标切换', strpos($admsrc, "rescfg") !== false && strpos($admsrc, "mode_(\d+)") !== false && strpos($admsrc, "room_(\d+)") !== false);
+
 // ── 结果 ──
 echo $fail ? "\n*** {$fail} FAILURES ***\n" : "\nALL PASSED\n";
 exit($fail ? 1 : 0);

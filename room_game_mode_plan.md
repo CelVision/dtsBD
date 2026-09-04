@@ -138,6 +138,18 @@
 - 测试：`test_room_mode.php` 第6c节（sim_npc_pls双模式行为+rs_game分支顺序）；
   `test_init_pool.php` 用例5修正（type1走map_plan而非全局init池，历史遗留）
 
+#### 2.6 房间私有resource副本（gameresource_room_N）✅ 已实现（2026-09-04）
+- **建房派生**：`roommng_create_new_room`→`roommng_spawn_room_resource($roomId,$mode)`——
+  copy模式主文件到`gamedata/cache/gameresource_room_{roomId}.php`+头部标记行（room/mode/generated）；
+  幂等（先删旧副本，防同号旧局异常残留污染新房）；源直拼路径不走config()（防命中残留副本）
+- **命名隔离**：`room_`中缀——不与模式主文件`gameresource_1/2`冲突
+- **加载**：`common.inc`探测（用户所在房间+副本存在）→`$room_resource_id`→`config('gameresource',*)`
+  对房间成员优先命中自己的副本（`global.func.php:136`，字符串cfg/force=true不受替换）——**各房间配置互不影响**
+- **关房删除**：`roommng_close_room` unlink副本；房主/管理端关房均走此路径
+- **管理端**：resourcemng顶部picker（rescfg参数）——mode_N=强制编辑模式主文件（force绕过副本）、
+  room_N=编辑指定房间副本（glob列出）、默认=跟随当前生效（房间成员即自己副本）；adminlog记录实际编辑文件名
+- 测试：`test_room_mode.php` 第6d节（派生/copy保真/config三种命中/幂等重置/关房删除/picker）
+
 ### Phase 3：治理与边界
 1. **maphelp**：保留全量35图展示（百科性质）；游戏内移动目标列表按 plsinfo 本局集合（现状已区分）。
 2. **寻靶失败**：小列表不含33 → 破灭之诗篝回退随机+log（npcdict 现有行为，不改）。

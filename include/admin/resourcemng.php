@@ -5,8 +5,31 @@ if(!defined('IN_ADMIN')) {
 include_once GAME_ROOT.'./include/admin/cfgfile.func.php';
 
 $cmd_info = '';
-$resource_file = config('gameresource',$gamecfg);
+// 编辑目标选择：默认跟随当前生效配置（房间成员命中自己的私有副本）；
+// rescfg显式指定——mode_N=模式主文件（force绕过房间副本替换）/room_N=房间私有副本（不存在则提示）
+$rescfg = isset($_GET['rescfg']) ? $_GET['rescfg'] : '';
+$resource_file = '';
+if(preg_match('/^room_(\d+)$/', $rescfg, $rm)) {
+	$resource_file = GAME_ROOT.'./gamedata/cache/gameresource_room_'.(int)$rm[1].'.php';
+	if(!file_exists($resource_file)) {
+		$cmd_info = '房间 '.(int)$rm[1].' 的私有resource副本不存在（房间未建或已关闭），已回退模式1主文件。';
+		$resource_file = '';
+	}
+} elseif(preg_match('/^mode_(\d+)$/', $rescfg, $mm)) {
+	$resource_file = config('gameresource', (int)$mm[1], true);
+}
+if(empty($resource_file)) $resource_file = config('gameresource', $gamecfg);
 include $resource_file;
+$resource_short = basename($resource_file);
+
+// picker选项：模式主文件+现存房间副本（glob）
+$room_res_opts = Array();
+foreach(glob(GAME_ROOT.'./gamedata/cache/gameresource_room_*.php') as $rf) {
+	if(preg_match('/gameresource_room_(\d+)\.php$/', $rf, $rm)) {
+		$rid = (int)$rm[1];
+		$room_res_opts[] = Array('val' => 'room_'.$rid, 'label' => '房间 '.$rid.' 私有副本', 'sel' => ($rescfg == 'room_'.$rid ? ' selected' : ''));
+	}
+}
 
 $expanded_mid = -1;
 $expanded_bi = -1;
@@ -186,7 +209,7 @@ if(strpos($command,'expand_') === 0) {
 		unset($b);
 		if($chg) {
 			regenerate_gameresource_file($resource_file, $maps, $npc_spawn_config, $npc_sub_pls);
-			adminlog('resourcemng', $smid.'-'.$sbi, $gamecfg);
+			adminlog('resourcemng', $smid.'-'.$sbi, $resource_short);
 			$cmd_info = "编号 {$smid}-{$sbi} 修改 {$chg} 处并已写入配置文件。";
 		} else {
 			$cmd_info = "未检测到编号 {$smid}-{$sbi} 的有效修改。";
@@ -217,7 +240,7 @@ if(strpos($command,'expand_') === 0) {
 	}
 	if($chg) {
 		regenerate_gameresource_file($resource_file, $maps, $npc_spawn_config, $npc_sub_pls);
-		adminlog('resourcemng', 'savetags', $gamecfg);
+		adminlog('resourcemng', 'savetags', $resource_short);
 		$cmd_info = "批量打标完成：共修改 {$chg} 处分支tag，已写入配置文件。";
 	} else {
 		$cmd_info = '批量打标：未检测到任何修改。';
@@ -226,7 +249,7 @@ if(strpos($command,'expand_') === 0) {
 	$bakfile = $resource_file.'.bak';
 	if(file_exists($bakfile)) {
 		copy($bakfile, $resource_file);
-		adminlog('resourcemng', 'restore', $gamecfg);
+		adminlog('resourcemng', 'restore', $resource_short);
 		$cmd_info = '已从备份恢复配置文件（撤销最近一次保存）。';
 		include $resource_file;
 	} else {

@@ -58,6 +58,12 @@ $cuser = & ${$gtablepre.'user'};
 $cpass = & ${$gtablepre.'pass'};
 $room_gamecfg = roommng_resolve_gamecfg($cuser);
 if(!empty($room_gamecfg)) $gamecfg = $room_gamecfg;
+// 房间私有resource副本（gameresource_room_{id}）：房间成员的gameresource类config()调用优先命中自己的副本
+// （各房间配置互不影响；副本由建房派生/关房删除，见roommng_spawn_room_resource）
+$room_resource_id = 0;
+if(!empty($room_resolved_id) && file_exists(GAME_ROOT.'./gamedata/cache/gameresource_room_'.$room_resolved_id.'.php')) {
+	$room_resource_id = (int)$room_resolved_id;
+}
 
 require config('resources',$gamecfg);
 require config('gamecfg',$gamecfg);

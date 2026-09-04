@@ -133,7 +133,14 @@ function clearcookies() {
 	$game_user = $game_pw = $game_secques = '';
 }
 
-function config($file = '', $cfg = 1) {
+function config($file = '', $cfg = 1, $force = false) {
+	// 房间私有resource副本（gameresource_room_{roomId}.php）：房间成员的gameresource调用优先命中自己的副本
+	// （各房间配置互不影响；$room_resource_id由common.inc按"用户所在房间+副本存在"探测设置）
+	// 显式传字符串cfg（如 'room_123'）或force=true不受此替换影响——管理端resourcemng指定编辑目标用
+	if(!$force && $file == 'gameresource' && !is_string($cfg) && !empty($GLOBALS['room_resource_id'])) {
+		$roomfile = GAME_ROOT."./gamedata/cache/{$file}_room_{$GLOBALS['room_resource_id']}.php";
+		if(file_exists($roomfile)) return $roomfile;
+	}
 	$cfgfile = file_exists(GAME_ROOT."./gamedata/cache/{$file}_{$cfg}.php") ? GAME_ROOT."./gamedata/cache/{$file}_{$cfg}.php" : GAME_ROOT."./gamedata/cache/{$file}_1.php";
 	return $cfgfile;
 }
