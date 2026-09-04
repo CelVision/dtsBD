@@ -92,6 +92,8 @@ $udata = Array('roomid' => 3, 'ip' => '1.2.3.4', 'username' => 'tester');
 roommng_create_new_room($udata, 2);
 check('建房已在房间:rerror=alreay_in_room', $rerror == 'alreay_in_room');
 check('建房已在房间:无INSERT', find_insert_with_gamecfg($db) === NULL);
+// create现在会真实派生房间resource副本（gameresource_room_1.php），测完清理防工作树污染
+@unlink(GAME_ROOT.'./gamedata/cache/gameresource_room_1.php');
 
 // ── 3. verify_db_game_structure：gamecfg列自动升级 ──
 setup_room_env();
