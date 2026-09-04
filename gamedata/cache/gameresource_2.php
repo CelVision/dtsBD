@@ -1,4 +1,27 @@
 <?php
+// ══ 快速模式配置（gameresource_2，由gameresource_1派生） ══
+// 房间gamecfg=2时加载本文件；其余配置（resources/gamecfg/combatcfg等）缺号自动回退1号
+// 本文件为完整配置而非差异补丁：1号数据/打tag更新后需重新派生本文件（copy 1号 + 下方配方）
+// ⚛ 与1号的固有差异（重派生时必须保留）：①顶部抽图配方 ②init池typeId14（三女主数据碎片）num=0不刷
+//   ——断破灭之诗链（歌词卡绝版→无强版红暮/真红暮蓝凝/全图hack）；end7幻境解离另在item.func按gamecfg拒绝
+
+// ── 快速模式抽图配方（rs_game开局按此抽图，详见 rs_game_active_maps）──
+// entry   = 锁定入选图（无月之影：入口/弱版红暮/最终防线）
+// pick    = 按地图tag随机抽取（tag => 张数）；tag打在地图分支上（后台resourcemng或批量打标）
+// exclude = 永不参与抽取的图（英灵殿：快速模式仅"解除锁定"结局，弱红暮流程不需要）
+// 删除本配置或置null = 恢复全量35图（与常规模式一致）
+$game_maps_mode = Array(
+	'entry'   => 0,
+	'pick'    => Array(
+		'growth' => 3,
+		'equip'  => 3,
+		'seed'   => 2,
+		'shop'   => 1,
+	),
+	'exclude' => Array(34),
+);
+
+
 
 // gameresource：地图与资源总配置（管理界面 resourcemng 重建）
 // 'npc' 字段：该地图分支初始固定刷新的NPC类别（typeId，指向npcdict辞典模板）
@@ -13412,7 +13435,7 @@ $npc_spawn_config = array (
   array (
     14 => 
     array (
-      'num' => 3,
+      'num' => 0,
       'pls' => 99,
     ),
     15 => 

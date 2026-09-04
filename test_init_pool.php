@@ -38,11 +38,13 @@ check('type21开局池=10且无进化版', count($p21) == 10 && !in_array('黑�
 $p92 = get_npc_init_pool(92);
 check('type92开局池回退asub全组(6)', count($p92) == 6 && in_array('✦覆唱的篝火', $p92) && in_array('✦真实的火种', $p92));
 
-// 5. 模拟 spawn_npc_all 对 type1 的完整选择流程（池→exclude→num→轮询），100次确定性
+// 5. 模拟 spawn_npc_all 对 type1 的完整选择流程（map_plan优先→池→exclude→num→轮询），100次确定性
+// type1的init配置=0号图npc字段结构化（map_plan），不在全局init池
 $deterministic = true;
 for($i = 0; $i < 100; $i++) {
 	$names = get_npc_init_pool(1);
-	$cfg = get_npc_spawn_config(1, 'init');
+	$cfg = get_map_npc_plan();
+	$cfg = isset($cfg[1]) ? $cfg[1] : get_npc_spawn_config(1, 'init');
 	$exclude = isset($cfg['exclude']) ? $cfg['exclude'] : array();
 	if(!empty($exclude)) { $names = array_values(array_diff($names, $exclude)); }
 	$namecount = count($names);

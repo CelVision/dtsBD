@@ -4,6 +4,93 @@ if(!defined('IN_GAME')) {
 	exit('Access Denied');
 }
 
+// 快速模式抽图：按gameresource的$game_maps_mode配方（tag池抽取+entry锁定+exclude排除）
+// 返回本局入选图id列表；无配置/空=全量（常规模式行为不变）
+function rs_game_active_maps($maps, $mode_cfg = null)
+{
+	$allmaps = Array();
+	foreach($maps as $mid => $branches) { if($mid != 99) $allmaps[] = $mid; }
+
+	if(empty($mode_cfg) || !is_array($mode_cfg)) return $allmaps;
+
+	$entry = isset($mode_cfg['entry']) ? (int)$mode_cfg['entry'] : 0;
+	$exclude = isset($mode_cfg['exclude']) && is_array($mode_cfg['exclude']) ? $mode_cfg['exclude'] : Array();
+	$pick = isset($mode_cfg['pick']) && is_array($mode_cfg['pick']) ? $mode_cfg['pick'] : Array();
+
+	// 图级tag池（约定同图各分支同类，取首个非空分支tag）
+	$pools = Array();
+	foreach($allmaps as $mid) {
+		if($mid == $entry || in_array($mid, $exclude)) continue;
+		$tag = '';
+		foreach($maps[$mid] as $b) { if(!empty($b['tag'])) { $tag = $b['tag']; break; } }
+		if($tag !== '') $pools[$tag][] = $mid;
+	}
+
+	$active = Array($entry);
+	foreach($pick as $tag => $num) {
+		if(empty($pools[$tag])) continue;
+		$num = min((int)$num, count($pools[$tag]));
+		if($num <= 0) continue;
+		$picked = $num == 1 ? Array(array_rand(array_flip($pools[$tag]))) : array_rand(array_flip($pools[$tag]), $num);
+		foreach($picked as $pmid) $active[] = (int)$pmid;
+	}
+	return $active;
+}
+
+// 开局地图组装：activelist推导→分支轮换（lockbranch数据驱动锁分支）→mapinfo构建
+// 从rs_game mode&2抽出为独立函数（可测）；plsinfo等键=入选图id（快速模式为非连续子集）
+function rs_game_build_mapinfo($maps, $mode_cfg = null)
+{
+	$activelist = rs_game_active_maps($maps, $mode_cfg);
+	$entry = $activelist[0];
+
+	//生成出一个0和1组成的array，每个位置对应一个地图（entry不轮换）
+	$mapid = Array($entry => 0);
+	foreach($activelist as $id) {
+		if($id == $entry) continue;
+		$mapid[$id] = rand(0,99) > 50 ? 1 : 0;
+	}
+	//lockbranch地图（如英灵殿/雏菊）锁死基础分支不轮换，特性见gameresource地图flags
+	foreach($activelist as $id) {
+		if(isset($maps[$id][0]['flags']) && in_array('lockbranch', $maps[$id][0]['flags'])) $mapid[$id] = 0;
+	}
+	//tada!地图序号表：全字段按图id提取；选中分支缺失/空名时兜底0号分支
+	$mapinfo = Array();
+	foreach($activelist as $id) {
+		if (!isset($maps[$id][$mapid[$id]]) || empty($maps[$id][$mapid[$id]]['plsinfo']))
+		{//32个地图我还没有构思好,有替代就用，没有就用0
+			$mapid[$id] = 0;
+		}
+		$mapinfo['plsinfo'][$id] = $maps[$id][$mapid[$id]]['plsinfo'];
+		$mapinfo['xyinfo'][$id] = $maps[$id][$mapid[$id]]['xyinfo'];
+		$mapinfo['areainfo'][$id] = $maps[$id][$mapid[$id]]['areainfo'];
+		$mapinfo['events'][$id] = $maps[$id][$mapid[$id]]['events'];
+		$mapinfo['bg'][$id] = $maps[$id][$mapid[$id]]['bg'];
+		$mapinfo['isindoor'][$id] = $maps[$id][$mapid[$id]]['isindoor'];
+		//提取选中分支的特性flags（分支级差异：轮换到不同分支可有不同特性）
+		$mapinfo['flags'][$id] = isset($maps[$id][$mapid[$id]]['flags']) ? $maps[$id][$mapid[$id]]['flags'] : Array();
+	}
+	return Array($mapid, $mapinfo);
+}
+
+// 全量模拟落点池：快速模式随机落点“刷到完整大地图再摘出到本局”的数据基础
+// 三池：drop(排norandom_drop) / npc(排norandom_npc) / npcdeep(npc池再排deepzone)
+// 排除按全量图各分支flags并集（保守：任一分支带排除flag即不入池）；
+// 全量模式时本局=全集，摘出无丢弃，行为与原模式一致
+function rs_game_sim_pools($maps)
+{
+	$drop = Array(); $npc = Array(); $deep = Array();
+	foreach($maps as $mid => $branches) {
+		if($mid == 99) continue;
+		$flg = Array();
+		foreach($branches as $b) { if(!empty($b['flags'])) $flg = array_unique(array_merge($flg, $b['flags'])); }
+		if(!in_array('norandom_drop', $flg)) $drop[] = $mid;
+		if(!in_array('norandom_npc', $flg)) $npc[] = $mid;
+		if(in_array('deepzone', $flg)) $deep[] = $mid;
+	}
+	return Array('drop'=>$drop, 'npc'=>$npc, 'npcdeep'=>array_values(array_diff($npc, $deep)));
+}
+
 function rs_game($mode = 0) {
 	global $db,$gtablepre,$tablepre,$groomid,$gamecfg,$now,$gamestate,$typeinfo,$areanum,$areaadd,$afktime,$combonum,$deathlimit;
 //	$stime=getmicrotime();
@@ -47,55 +134,15 @@ function rs_game($mode = 0) {
 	}
 	if ($mode & 2) {
 
-//生成地图(吐槽一下循环调用)
+//生成地图（快速模式按$game_maps_mode抽图，详见 rs_game_active_maps / rs_game_build_mapinfo）
 		include config('gameresource',$gamecfg);
-		global $mapid, $mapinfo,$mapid;
-		//生成出一个0和1组成的array，每个位置对应一个地图
-		$mapid = Array();
-		for($id=1 ; $id<33 ; $id++)
-			{
-				$dice = rand(0,99);
-				if($dice > 50){
-					$mapid[$id] = 1;
-				}else{
-					$mapid[$id] = 0;
-				} ;
-				
-			}
-		//lockbranch地图（如英灵殿/雏菊）锁死基础分支不轮换，特性见gameresource地图flags
-		for($id=0 ; $id<35 ; $id++)
-			{
-				if(isset($maps[$id][0]['flags']) && in_array('lockbranch', $maps[$id][0]['flags'])) $mapid[$id] = 0;
-			}
-		//tada!地图序号表
-		/*$mapinfo = Array();
-		for($id=0 ; $id<35 ; $id++)
-			{
-				if (isset($maps[$id][$mapid[$id]]))
-				{
-					$mapinfo[$id] = $maps[$id][$mapid[$id]];
-				}else{//32个地图我还没有构思好,有替代就用，没有就用0号
-					$mapinfo[$id] = $maps[$id][$mapid[0]];
-				}
-			}*/
-		for($id=0 ; $id<35 ; $id++)
-			{
-				if (!isset($maps[$id][$mapid[$id]]) || empty($maps[$id][$mapid[$id]]['plsinfo']))
-				{//32个地图我还没有构思好,有替代就用，没有就用0
-					$mapid[$id] = 0;
-				}
-				// 
-				$mapinfo['plsinfo'][$id] = $maps[$id][$mapid[$id]]['plsinfo'];
-				$mapinfo['xyinfo'][$id] = $maps[$id][$mapid[$id]]['xyinfo'];
-				$mapinfo['areainfo'][$id] = $maps[$id][$mapid[$id]]['areainfo'];
-				$mapinfo['events'][$id] = $maps[$id][$mapid[$id]]['events'];
-			$mapinfo['bg'][$id] = $maps[$id][$mapid[$id]]['bg'];
-				$mapinfo['isindoor'][$id] = $maps[$id][$mapid[$id]]['isindoor'];
-				//提取选中分支的特性flags（分支级差异：轮换到不同分支可有不同特性）
-				$mapinfo['flags'][$id] = isset($maps[$id][$mapid[$id]]['flags']) ? $maps[$id][$mapid[$id]]['flags'] : Array();
-			}
+		global $mapid, $mapinfo, $gamevars;
+		list($mapid, $mapinfo) = rs_game_build_mapinfo($maps, isset($game_maps_mode) ? $game_maps_mode : null);
 		//新mapinfo生成后立即派生全局排除表，供同调用的mode&16（物品刷新）使用
 		derive_map_flaglists();
+		//全量模拟池存入gamevars（持久化）：快速模式随机落点“刷到完整大地图再摘出到本局”用
+		//（99池物品落图 mode&16 / 开局NPC随机 sim_npc_pls；全量模式模拟池=全集，无丢弃）
+		$gamevars['sim_full_pls'] = rs_game_sim_pools($maps);
 		save_gameinfo();
 //地图生成部分结束
 /*      留个纪念吧
@@ -256,7 +303,9 @@ save_gameinfo();
 		list($sec,$min,$hour,$day,$month,$year,$wday,$yday,$isdst) = localtime($starttime);
 		$areatime = (ceil(($starttime + $areahour*60)/600))*600;//$areahour已改为按分钟计算，ceil是为了让禁区分钟为10的倍数
 		$plsnum = sizeof($mapinfo['plsinfo']);
-		$arealist = range(1,$plsnum-1);
+		//arealist：本局全部图id随机排序，入口图(0)固定队首；快速模式为非连续键集，从mapinfo派生
+		$arealist = array_keys($mapinfo['plsinfo']);
+		$arealist = array_values(array_diff($arealist, Array(0)));
 		shuffle($arealist);
 		array_unshift($arealist,0);
 		//file_put_contents( GAME_ROOT.'./debug.txt',var_export($arealist,1),FILE_APPEND);
@@ -285,7 +334,6 @@ save_gameinfo();
 		//echo " - 地图道具/陷阱初始化 - ";
 		//感谢 Martin1994 提供地图道具数据库化的源代码
 		global $gamevars,$mapinfo,$noranddrop_pls;
-		$plsnum = sizeof($mapinfo['plsinfo']);
 		$iqry = $tqry = '';
 //		if($gamestate == 0){
 //			global $checkstr;
@@ -302,8 +350,8 @@ save_gameinfo();
 		global $mapid, $maps;
 		include config('gameresource',$gamecfg);
 		$an = $areanum ? ceil($areanum/$areaadd) : 0;
-		//遍历每个地图ID，根据$mapid选择分支
-		for($imap = 0; $imap < $plsnum; $imap++) {
+		//遍历本局每个地图ID（快速模式为非连续键集），根据$mapid选择分支
+		foreach(array_keys($mapinfo['plsinfo']) as $imap) {
 			$ibranch = isset($mapid[$imap]) ? $mapid[$imap] : 0;
 			if(!isset($maps[$imap][$ibranch]['item'])) continue;
 			foreach($maps[$imap][$ibranch]['item'] as $item) {
@@ -323,13 +371,21 @@ save_gameinfo();
 		}
 		//处理全图随机掉落物品 (imap=99)
 		if(isset($maps[99][0]['item'])) {
+			//全图随机池落点：全量模式“刷到完整大地图再摘出到本局”——全量模拟池随机，落点不在本局的丢弃该实例
+			//（保持每图物品密度与全量一致；全量模式模拟池=全集无丢弃=行为不变；排除norandom_drop已含在模拟池）
+			//快速模式改“平摊”：总量保持，落点直接随机本局图池（不放回废图摘出，每图密度上升适应短局）
+			if($gamecfg == 2) {
+				$sim_pool = array_diff(array_keys($mapinfo['plsinfo']), $noranddrop_pls);
+			} else {
+				$sim_pool = !empty($gamevars['sim_full_pls']['drop']) ? $gamevars['sim_full_pls']['drop'] : array_diff(array_keys($mapinfo['plsinfo']), $noranddrop_pls);
+			}
+			if(empty($sim_pool)) $sim_pool = array_keys($mapinfo['plsinfo']);
 			foreach($maps[99][0]['item'] as $item) {
 				list($iarea,$inum,$iname,$ikind,$ieff,$ista,$iskind) = $item;
 				if(($iarea == $an)||($iarea == 99)) {
 					for($j = $inum; $j>0; $j--) {
-						//全图随机池落点排除norandom_drop地图（原：rand(1,..)隐性排0+while排34写死）
-						$rmap = rand(0,$plsnum-1);
-						while (in_array($rmap,$noranddrop_pls)){$rmap = rand(0,$plsnum-1);}
+						$rmap = $sim_pool[array_rand($sim_pool)];
+						if(!isset($mapinfo['plsinfo'][$rmap])) continue;   // 摘出：落废图丢弃该实例
 						if(strpos($ikind,'TO')===0){
 							$tqry .= "('$iname', '$ikind','$ieff','$ista','$iskind','$rmap'),";
 						}else{

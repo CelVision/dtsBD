@@ -51,6 +51,14 @@ require GAME_ROOT.'./include/roommng.func.php';
 require GAME_ROOT.'./include/game/revclubskills.func.php';
 require GAME_ROOT.'./include/game/dice.func.php';
 require GAME_ROOT.'./include/game/titles.func.php';
+//房间配置探测：玩家所在房间绑定的游戏模式号（game表gamecfg列），决定下方所有config()按几号加载
+//必须先于require config(...)系列执行——进快速模式房间后全套配置按2号加载，缺号自动回退1号
+$gtablepre = $tablepre;
+$cuser = & ${$gtablepre.'user'};
+$cpass = & ${$gtablepre.'pass'};
+$room_gamecfg = roommng_resolve_gamecfg($cuser);
+if(!empty($room_gamecfg)) $gamecfg = $room_gamecfg;
+
 require config('resources',$gamecfg);
 require config('gamecfg',$gamecfg);
 require config('combatcfg',$gamecfg);
@@ -60,14 +68,9 @@ require config('audio',$gamecfg);
 require config('tooltip',$gamecfg);
 require config('titles',$gamecfg);
 
-$gtablepre = $tablepre;
-
 if($need_update_db_structrue) roommng_verify_db_game_structure();
 
 ob_start();
-
-$cuser = & ${$gtablepre.'user'};
-$cpass = & ${$gtablepre.'pass'};
 
 $roomlist = Array();
 $result = $db->query("SELECT * FROM {$gtablepre}game WHERE groomid>0");

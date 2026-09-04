@@ -112,7 +112,6 @@ function spawn_npc($type, $name, $num = 1, $time = 0, $anpcdata = NULL, $pls_ove
 	include_once GAME_ROOT."./include/game/clubslct.func.php";
 
 	$time = $time == 0 ? $now : $time;
-	$plsnum = sizeof($mapinfo['plsinfo']);
 
 	$npcdata = get_npcdict_data($type, $name);
 	if(!$npcdata) {
@@ -145,13 +144,15 @@ function spawn_npc($type, $name, $num = 1, $time = 0, $anpcdata = NULL, $pls_ove
 			$npc['pls'] = $pls_override;
 		} else {
 			$sub_pls = get_npc_sub_pls($type, $name);
-			if($sub_pls !== null) {
+			if(is_array($sub_pls)) $sub_pls = array_values(array_intersect($sub_pls, array_keys($mapinfo['plsinfo'])));
+			if(!empty($sub_pls)) {
 				$npc['pls'] = $sub_pls[array_rand($sub_pls)];
 			} else {
 				$cfg = get_npc_spawn_config($type, 'add');
 				$cfg_pls = $cfg['pls'];
 				if(is_array($cfg_pls)) {
-					$npc['pls'] = $cfg_pls[array_rand($cfg_pls)];
+					$t_pls = array_values(array_intersect($cfg_pls, array_keys($mapinfo['plsinfo'])));
+					$npc['pls'] = !empty($t_pls) ? $t_pls[array_rand($t_pls)] : rand_npc_pls(false);
 				} elseif($cfg_pls === 99 || $cfg_pls === null) {
 					$areaarr = array_slice($arealist, $areanum + 1);
 					if(empty($areaarr)) {
@@ -167,8 +168,9 @@ function spawn_npc($type, $name, $num = 1, $time = 0, $anpcdata = NULL, $pls_ove
 						}
 					}
 				} else {
-					// 'name:地图名' 寻靶（免写死坐标，地图数据改名/重排id自动跟随）；其余按字面值固定
+					// 'name:地图名' 寻靶（免写死坐标，地图数据改名/重排id自动跟随）；其余按字面值固定；落到本局未入选标准图时回退随机
 					$npc['pls'] = resolve_npc_target_pls($cfg_pls);
+					if($npc['pls'] < 35 && !isset($mapinfo['plsinfo'][$npc['pls']])) $npc['pls'] = rand_npc_pls(false);
 				}
 			}
 		}
@@ -253,6 +255,35 @@ function spawn_npc_random($type, $num = 1, $time = 0, $anpcdata = NULL, $pls_ove
 	return spawn_npc($type, $name, $num, $time, $anpcdata, $pls_override);
 }
 
+// 随机落点：本局图池排除norandnpc（+躲避类另避deepzone）后随机（池差集，无死循环，等价原do-while分布）
+function rand_npc_pls($avoiddeep = false) {
+	global $mapinfo,$deepzones,$norandnpc_pls;
+	$keys = array_keys($mapinfo['plsinfo']);
+	$pool = array_diff($keys, $norandnpc_pls);
+	if($avoiddeep) $pool = array_diff($pool, $deepzones);
+	if(empty($pool)) $pool = $keys;
+	return $pool[array_rand($pool)];
+}
+
+// 全图模拟落点（开局批量刷新专用）：“刷到完整大地图再摘出到本局”——全量模拟池随机
+// （npc/npcdeep按躲避类型，排除norandom_npc/+deepzone），落点不在本局的返回NULL=丢弃该NPC
+// （保持每图NPC密度与全量一致；全量模式模拟池=全集无丢弃；运行时召唤请用 rand_npc_pls）
+// 快速模式：改为“平摊”——总量保持，落点直接随机本局图池（不模拟全量、不丢弃），每图密度上升适应短局
+function sim_npc_pls($avoiddeep = false) {
+	global $gamevars,$mapinfo,$deepzones,$norandnpc_pls,$gamecfg;
+	if($gamecfg == 2) return rand_npc_pls($avoiddeep);
+	$key = $avoiddeep ? 'npcdeep' : 'npc';
+	if(!empty($gamevars['sim_full_pls'][$key])) {
+		$sim_pool = $gamevars['sim_full_pls'][$key];
+	} else {
+		$sim_pool = array_values(array_diff(array_keys($mapinfo['plsinfo']), $norandnpc_pls));
+		if($avoiddeep) $sim_pool = array_values(array_diff($sim_pool, $deepzones));
+	}
+	if(empty($sim_pool)) $sim_pool = array_keys($mapinfo['plsinfo']);
+	$pls = $sim_pool[array_rand($sim_pool)];
+	return isset($mapinfo['plsinfo'][$pls]) ? $pls : NULL;
+}
+
 // 开局批量刷新 — 替代 rs_game() mode&8 的NPC初始化逻辑
 // num/pls 从 gameresource 的 $npc_spawn_config['init'] 读取，sub级pls从 $npc_sub_pls 读取
 function spawn_npc_all($time = 0) {
@@ -318,27 +349,24 @@ function spawn_npc_all($time = 0) {
 			if(!empty($npc['club'])) changeclub($npc['club'], $npc);
 			if(!empty($npc['clubskill']) || !empty($npc['clubskillpara'])) customtclubskill($npc);
 
-			// 位置：优先 sub_pls配置 > spawn_config('init') > 随机
+			// 位置：优先 sub_pls配置 > spawn_config('init') > 随机；候选均限制在本局地图集合内（快速模式废图不落点）
 			$sub_pls = get_npc_sub_pls($type, $name);
-			if($sub_pls !== null) {
+			if(is_array($sub_pls)) $sub_pls = array_values(array_intersect($sub_pls, array_keys($mapinfo['plsinfo'])));
+			if(!empty($sub_pls)) {
 				$npc['pls'] = $sub_pls[array_rand($sub_pls)];
 			} elseif(is_array($cfg_pls)) {
-				$npc['pls'] = $cfg_pls[array_rand($cfg_pls)];
+				$t_pls = array_values(array_intersect($cfg_pls, array_keys($mapinfo['plsinfo'])));
+				$npc['pls'] = !empty($t_pls) ? $t_pls[array_rand($t_pls)] : rand_npc_pls(in_array($npc['type'], $hidding_typelist));
 			} elseif($cfg_pls === 99 || $cfg_pls === null) {
-				// 随机区域：排除norandom_npc地图（原：rand(1,..)隐性排0+写死排34）；躲避类NPC另避deepzone
-				if(in_array($npc['type'], $hidding_typelist)) {
-					do {
-						$rpls = rand(0, $plsnum - 1);
-					} while(in_array($rpls, $deepzones) || in_array($rpls, $norandnpc_pls));
-				} else {
-					do {
-						$rpls = rand(0, $plsnum - 1);
-					} while(in_array($rpls, $norandnpc_pls));
-				}
-				$npc['pls'] = $rpls;
+				// 随机区域：模拟全量大地图随机+摘出到本局（每图NPC密度与全量一致）；躲避类另避deepzone；落废图丢弃该NPC
+				$spls = sim_npc_pls(in_array($npc['type'], $hidding_typelist));
+				if($spls === NULL) continue;
+				$npc['pls'] = $spls;
 			} else {
-				// 'name:地图名' 寻靶（免写死坐标，地图数据改名/重排id自动跟随）；其余按字面值固定
+				// 'name:地图名' 寻靶（免写死坐标，地图数据改名/重排id自动跟随）；其余按字面值固定；
+				// 落到本局未入选的标准图（<35且不在plsinfo）时回退随机，隐藏图id(35+)不受限
 				$npc['pls'] = resolve_npc_target_pls($cfg_pls);
+				if($npc['pls'] < 35 && !isset($mapinfo['plsinfo'][$npc['pls']])) $npc['pls'] = rand_npc_pls(false);
 			}
 
 			$npc['state'] = 0;

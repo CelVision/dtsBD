@@ -120,6 +120,18 @@ if(strpos($command,'expand_') === 0) {
 				$chg++;
 			}
 		}
+		// 地图分类tag（单值下拉：growth=一类发育/equip=二类装备/shop=商店/seed=种火；空=未分类；非法值拒收）
+		// 同一图各分支应标同一类（轮换不改变地图用途）；用于快速模式按类抽图
+		if(isset($_POST['tagword'])) {
+			$tv = trim(admin_cfg_decode($_POST['tagword']));
+			if(!in_array($tv, Array('growth','equip','shop','seed'), true)) $tv = '';
+			$otv = isset($b['tag']) ? $b['tag'] : '';
+			if($tv !== $otv) {
+				if($tv === '') unset($b['tag']);
+				else $b['tag'] = $tv;
+				$chg++;
+			}
+		}
 		// 物品行合并语义：只有POST中出现的行号才参与修改/删除，未提交的行（其他分页）保持原样
 		$origitems = $b['item'];
 		$origcnt = count($origitems);
@@ -184,6 +196,32 @@ if(strpos($command,'expand_') === 0) {
 		$expanded_bi = $sbi;
 		$expanded_page = 0;
 	}
+} elseif($command == 'savetags') {
+	// 批量打标（图级）：POST tagmap[mid]一次性写入该图全部分支，同图同类约定强制满足
+	$chg = 0;
+	if(isset($_POST['tagmap']) && is_array($_POST['tagmap'])) {
+		foreach($_POST['tagmap'] as $tmid => $tv) {
+			$tmid = intval($tmid);
+			if($tmid == 99 || !isset($maps[$tmid])) continue;
+			$tv = trim(admin_cfg_decode($tv));
+			if(!in_array($tv, Array('growth','equip','shop','seed'), true)) $tv = '';
+			foreach($maps[$tmid] as $bi => $b) {
+				$otv = isset($b['tag']) ? $b['tag'] : '';
+				if($tv !== $otv) {
+					if($tv === '') unset($maps[$tmid][$bi]['tag']);
+					else $maps[$tmid][$bi]['tag'] = $tv;
+					$chg++;
+				}
+			}
+		}
+	}
+	if($chg) {
+		regenerate_gameresource_file($resource_file, $maps, $npc_spawn_config, $npc_sub_pls);
+		adminlog('resourcemng', 'savetags', $gamecfg);
+		$cmd_info = "批量打标完成：共修改 {$chg} 处分支tag，已写入配置文件。";
+	} else {
+		$cmd_info = '批量打标：未检测到任何修改。';
+	}
 } elseif($command == 'restore') {
 	$bakfile = $resource_file.'.bak';
 	if(file_exists($bakfile)) {
@@ -245,6 +283,11 @@ foreach($maps as $mid => $branches) {
 			$r['f_areainfo'] = htmlspecialchars(isset($branch['areainfo']) ? $branch['areainfo'] : '');
 			$r['f_eventsword'] = htmlspecialchars(implode(',', isset($branch['events']) ? $branch['events'] : Array()));
 			$r['f_flagsword'] = htmlspecialchars(implode(',', isset($branch['flags']) ? $branch['flags'] : Array()));
+			$r['f_tagword'] = isset($branch['tag']) ? $branch['tag'] : '';
+			$r['tagsel_growth'] = $r['f_tagword'] === 'growth' ? ' selected' : '';
+			$r['tagsel_equip'] = $r['f_tagword'] === 'equip' ? ' selected' : '';
+			$r['tagsel_shop'] = $r['f_tagword'] === 'shop' ? ' selected' : '';
+			$r['tagsel_seed'] = $r['f_tagword'] === 'seed' ? ' selected' : '';
 			// npc字段双形态：结构化 typeId=>num 渲染为 "typeId:num"；扁平 typeId 渲染为 "typeId"
 			$narr = isset($branch['npc']) ? $branch['npc'] : Array();
 			$nkeys = array_keys($narr);
@@ -269,4 +312,26 @@ foreach($maps as $mid => $branches) {
 		$mapdisplay[] = $r;
 	}
 }
+// 批量打标区数据（图级：一行一图，保存时写入该图全部分支；按两列预分组渲染）
+$tagquick = Array();
+foreach($maps as $mid => $branches) {
+	if($mid == 99) continue;
+	$tqname = '';
+	$tqtag = '';
+	foreach($branches as $b) {
+		if($tqname === '' && !empty($b['plsinfo'])) $tqname = $b['plsinfo'];
+		if($tqtag === '' && isset($b['tag'])) $tqtag = $b['tag'];
+	}
+	$tagquick[] = Array(
+		'mid' => $mid,
+		'name' => $tqname !== '' ? $tqname : '（待补充）',
+		'sel_growth' => $tqtag === 'growth' ? ' selected' : '',
+		'sel_equip' => $tqtag === 'equip' ? ' selected' : '',
+		'sel_shop' => $tqtag === 'shop' ? ' selected' : '',
+		'sel_seed' => $tqtag === 'seed' ? ' selected' : '',
+	);
+}
+$tagq_l = array_slice($tagquick, 0, ceil(count($tagquick) / 2));
+$tagq_r = array_slice($tagquick, ceil(count($tagquick) / 2));
+
 include template('admin_resourcemng');

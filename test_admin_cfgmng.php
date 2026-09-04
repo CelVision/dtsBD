@@ -279,6 +279,130 @@ include GAME_ROOT.'./include/admin/resourcemng.php';
 $out = ob_get_clean();
 check('flags渲染:99池无flagsword输入框', strpos($out, 'name="flagsword"') === false);
 
+// ── 6i2. tag编辑：34-0设growth ──
+$_POST = Array(
+	'mid' => '34', 'bi' => '0',
+	'tagword' => gstrfilter('growth'),
+	'itemcount' => '0',
+);
+$command = 'submit';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+ob_end_clean();
+unset($maps);
+include $res98;
+check('tag保存:34-0设为growth', isset($maps[34][0]['tag']) && $maps[34][0]['tag'] === 'growth');
+check('tag保存:0-0未受影响无tag键', !isset($maps[0][0]['tag']));
+
+// ── 6i3. tag清空：空tagword → 键移除 ──
+$_POST['tagword'] = gstrfilter('');
+$command = 'submit';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+ob_end_clean();
+unset($maps);
+include $res98;
+check('tag清空:34-0键移除', !isset($maps[34][0]['tag']));
+
+// ── 6i4. tag非法值拒收（视为未分类）──
+$_POST = Array(
+	'mid' => '34', 'bi' => '0',
+	'tagword' => gstrfilter('evil'),
+	'itemcount' => '0',
+);
+$command = 'submit';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+ob_end_clean();
+unset($maps);
+include $res98;
+check('tag非法值:evil未生效无键', !isset($maps[34][0]['tag']));
+
+// ── 6i5. 未POST tagword → 保持原样 ──
+$_POST = Array(
+	'mid' => '34', 'bi' => '0',
+	'tagword' => gstrfilter('equip'),
+	'itemcount' => '0',
+);
+$command = 'submit';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+ob_end_clean();
+unset($maps);
+include $res98;
+check('tag重设:34-0设为equip', isset($maps[34][0]['tag']) && $maps[34][0]['tag'] === 'equip');
+$_POST = Array(
+	'mid' => '34', 'bi' => '0',
+	'itemcount' => '0',
+);
+$command = 'submit';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+ob_end_clean();
+unset($maps);
+include $res98;
+check('tag保留:未POST时保持equip', isset($maps[34][0]['tag']) && $maps[34][0]['tag'] === 'equip');
+
+// ── 6i6. tag渲染：展开区含tag下拉/说明/选中态 ──
+$command = 'expand_0_0';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+$out = ob_get_clean();
+check('tag渲染:展开区含tag下拉', strpos($out, 'name="tagword"') !== false);
+check('tag渲染:含tag说明行', strpos($out, 'tag说明') !== false);
+$ptag = strpos($out, '<select name="tagword">');
+$seg = substr($out, $ptag, 130);
+check('tag渲染:未分类图首项无选中', $ptag !== false && strpos($seg, '<option value="">未分类') !== false && strpos($seg, 'selected') === false);
+$command = 'expand_34_0';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+$out = ob_get_clean();
+check('tag渲染:34-0选中equip', strpos($out, 'value="equip" selected') !== false);
+$command = 'expand_99_0';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+$out = ob_get_clean();
+check('tag渲染:99池无tag下拉', strpos($out, 'name="tagword"') === false);
+
+// ── 6i7. 批量打标savetags：图级统一写入全部分支 ──
+$_POST = Array(
+	'tagmap' => gstrfilter(Array(
+		'0' => 'growth',
+		'2' => 'equip',
+		'5' => 'evil',
+	)),
+);
+$command = 'savetags';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+$saveinfo = $cmd_info;
+ob_end_clean();
+unset($maps);
+include $res98;
+check('批量:0-0设为growth', isset($maps[0][0]['tag']) && $maps[0][0]['tag'] === 'growth');
+check('批量:2双分支统一equip', isset($maps[2][0]['tag']) && $maps[2][0]['tag'] === 'equip' && isset($maps[2][1]['tag']) && $maps[2][1]['tag'] === 'equip');
+check('批量:非法值evil→未分类', !isset($maps[5][0]['tag']));
+check('批量:未POST的34-0保持equip', isset($maps[34][0]['tag']) && $maps[34][0]['tag'] === 'equip');
+check('批量:提示完成', strpos($saveinfo, '批量打标完成') !== false);
+
+// ── 6i8. 批量未改再提交 → 无修改提示 ──
+$command = 'savetags';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+$saveinfo = $cmd_info;
+ob_end_clean();
+check('批量:同值重提无修改', strpos($saveinfo, '未检测到任何修改') !== false);
+
+// ── 6i9. 批量打标区渲染 ──
+$command = 'list';
+ob_start();
+include GAME_ROOT.'./include/admin/resourcemng.php';
+$out = ob_get_clean();
+check('批量渲染:含保存所有按钮', strpos($out, 'value="保存所有"') !== false);
+check('批量渲染:含tagmap下拉', strpos($out, 'name="tagmap[0]"') !== false);
+check('批量渲染:2-0下拉选中equip', strpos($out, 'value="equip" selected') !== false);
+check('批量渲染:两列均有行', strpos($out, 'tagmap[0]"') !== false && strpos($out, 'tagmap[34]"') !== false);
+
 // ── 6j. npcword结构化语法：32-0保存88:5 ──
 $_POST = Array(
 	'mid' => '32', 'bi' => '0',

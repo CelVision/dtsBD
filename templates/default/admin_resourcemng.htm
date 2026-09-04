@@ -4,6 +4,50 @@
 <input type="hidden" name="mode" value="resourcemng">
 <input type="hidden" id="command" name="command" value="list">
 <input type="submit" value="从备份恢复（撤销最近一次保存）" onclick="if(!confirm('确定用保存前的备份覆盖当前配置文件吗？')){return false;}$('command').value='restore'">
+<input type="submit" value="保存所有" onclick="if(!confirm('将下方批量打标区的分类一次性写入全部地图（各图全部分支统一设置），确定？')){return false;}$('command').value='savetags'">
+<br><br>
+<span class="yellow">批量打标（图级，保存时统一写入该图全部分支）：</span>
+<table class="admin" style="text-align:left;">
+	<tr>
+		<td style="vertical-align:top;padding:0;">
+			<table class="admin">
+				<tr><th width="45">编号</th><th>名字</th><th width="180">分类tag</th></tr>
+				<!--{loop $tagq_l $tq}-->
+				<tr>
+					<td>{$tq['mid']}</td>
+					<td>{$tq['name']}</td>
+					<td><select name="tagmap[{$tq['mid']}]">
+						<option value="">未分类</option>
+						<option value="growth"{$tq['sel_growth']}>growth（一类·发育）</option>
+						<option value="equip"{$tq['sel_equip']}>equip（二类·装备）</option>
+						<option value="shop"{$tq['sel_shop']}>shop（商店）</option>
+						<option value="seed"{$tq['sel_seed']}>seed（种火）</option>
+					</select></td>
+				</tr>
+				<!--{/loop}-->
+			</table>
+		</td>
+		<td style="vertical-align:top;padding:0;">
+			<table class="admin">
+				<tr><th width="45">编号</th><th>名字</th><th width="180">分类tag</th></tr>
+				<!--{loop $tagq_r $tq}-->
+				<tr>
+					<td>{$tq['mid']}</td>
+					<td>{$tq['name']}</td>
+					<td><select name="tagmap[{$tq['mid']}]">
+						<option value="">未分类</option>
+						<option value="growth"{$tq['sel_growth']}>growth（一类·发育）</option>
+						<option value="equip"{$tq['sel_equip']}>equip（二类·装备）</option>
+						<option value="shop"{$tq['sel_shop']}>shop（商店）</option>
+						<option value="seed"{$tq['sel_seed']}>seed（种火）</option>
+					</select></td>
+				</tr>
+				<!--{/loop}-->
+			</table>
+		</td>
+	</tr>
+</table>
+<br>
 <table class="admin">
 	<tr>
 		<th width="55">编号</th>
@@ -51,6 +95,18 @@
 				<tr>
 					<th>flags说明</th>
 					<td colspan="7" class="grey">可用值：deepzone（NPC避开的危险图）、norandom_drop（全图随机池物品不落入）、norandom_npc（全图随机池NPC不刷入）、noesc_tp（躲禁区被动传送不去）、lockbranch（开局锁死基础分支不轮换）；逗号分隔，留空为无。开局提取进mapinfo，仅对新开局生效</td>
+				</tr>
+				<tr>
+					<th>分类tag</th>
+					<td><select name="tagword">
+						<option value="">未分类</option>
+						<option value="growth"{$r['tagsel_growth']}>growth（一类·发育）</option>
+						<option value="equip"{$r['tagsel_equip']}>equip（二类·装备）</option>
+						<option value="shop"{$r['tagsel_shop']}>shop（商店）</option>
+						<option value="seed"{$r['tagsel_seed']}>seed（种火）</option>
+					</select></td>
+					<th>tag说明</th>
+					<td colspan="5" class="grey">growth=一类发育 / equip=二类装备 / shop=商店 / seed=种火；同一图各分支标同一类（轮换不改变地图用途）。快速模式按类抽图时使用，不影响常规模式行为</td>
 				</tr>
 				<tr>
 					<th>简介</th>

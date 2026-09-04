@@ -31,7 +31,7 @@ if(!empty($roomact))
 
 	if($roomact == 'create')
 	{
-		roommng_create_new_room($udata);
+		roommng_create_new_room($udata, isset($roommode) ? (int)$roommode : 1);
 	}
 	elseif(strpos($roomact,'join') !== false)
 	{
@@ -66,6 +66,8 @@ else
       $room['status'] = $gstate[$rinfo['gamestate']];
       $room['owner'] = $rinfo['groomownid'];
       $room['nums'] = $rinfo['groomnums'];
+      // 房间绑定的游戏模式（gamecfg：未登记的旧房间回退常规模式）
+      $room['mode'] = empty($roommodes[$rinfo['gamecfg']]) ? $roommodes[1] : $roommodes[$rinfo['gamecfg']];
       $action = array();
       if (!empty($cuser) && !empty($cpass)) {
         if (!empty($groomid)) {
@@ -122,6 +124,8 @@ else
     "maxRooms" => $max_rooms,
     // 是否可创建房间
     "canCreateRoom" => $now_rooms < $max_rooms && !$groomid && (!empty($cuser) && !empty($cpass)),
+    // 可选的房间游戏模式（模式号=>模式名，建房时提交 roommode）
+    "roomModes" => $roommodes,
     // 房间
     "rooms" => $rooms,
 	  // 站长留言
