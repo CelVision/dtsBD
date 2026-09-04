@@ -43,12 +43,16 @@ function get_npc_sub_pls($type, $name) {
 // 扁平 Array(typeId,...) 不入计划，继续走全局 $npc_spawn_config['init']（兼容旧数据）
 // 注：同一type配在多图时后者覆盖前者（当前语义：固定刷新type↔图一一对应）
 function get_map_npc_plan() {
-	global $mapid;
+	global $mapid,$mapinfo;
 	load_npc_spawn_data();
 	if(empty($GLOBALS['maps']) || !is_array($GLOBALS['maps'])) return array();
 	$plan = array();
 	foreach($GLOBALS['maps'] as $mid => $branches) {
 		if($mid == 99 || !is_array($branches)) continue; // 99池：随机散布类走全局config
+		// 本局图集已定时（rs_game后）：未入选图的图级NPC不入计划——图级内容跟随图
+		// （快速模式英灵殿34/SCP32等缺席时这些NPC不刷；否则会被"落废图回退随机"撒到本局各图）
+		// mapinfo未初始化的上下文（旧测试/工具）不过滤，保持全量plan兼容
+		if(!empty($mapinfo['plsinfo']) && !isset($mapinfo['plsinfo'][$mid])) continue;
 		$bid = (isset($mapid[$mid]) && isset($branches[$mapid[$mid]])) ? intval($mapid[$mid]) : 0;
 		if(!isset($branches[$bid]['npc']) || !is_array($branches[$bid]['npc'])) continue;
 		$narr = $branches[$bid]['npc'];
@@ -364,9 +368,10 @@ function spawn_npc_all($time = 0) {
 				$npc['pls'] = $spls;
 			} else {
 				// 'name:地图名' 寻靶（免写死坐标，地图数据改名/重排id自动跟随）；其余按字面值固定；
-				// 落到本局未入选的标准图（<35且不在plsinfo）时回退随机，隐藏图id(35+)不受限
+				// 开局固定刷新：目标图未入选本局→不刷（图级内容跟随图）；
+				// 运行时召唤的落废图回退随机在 spawn_npc add 路径，语义不同不共用
 				$npc['pls'] = resolve_npc_target_pls($cfg_pls);
-				if($npc['pls'] < 35 && !isset($mapinfo['plsinfo'][$npc['pls']])) $npc['pls'] = rand_npc_pls(false);
+				if($npc['pls'] < 35 && !isset($mapinfo['plsinfo'][$npc['pls']])) continue;
 			}
 
 			$npc['state'] = 0;

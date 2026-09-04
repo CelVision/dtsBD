@@ -278,6 +278,31 @@ check('房间副本:create_room派生副本', strpos($rmsrc, 'roommng_spawn_room
 $admsrc = file_get_contents(GAME_ROOT.'./include/admin/resourcemng.php');
 check('房间副本:resourcemng支持rescfg目标切换', strpos($admsrc, "rescfg") !== false && strpos($admsrc, "mode_(\d+)") !== false && strpos($admsrc, "room_(\d+)") !== false);
 
+// ── 6e. 图级NPC跟随图：未入选图的图级NPC不刷（英灵殿34缺席不撒本局各图） ──
+$gamecfg = 1;
+$GLOBALS['npc_spawn_config'] = null; $GLOBALS['npc_sub_pls'] = null; $GLOBALS['maps'] = null;
+$mapid = Array();
+// 本局图集={0,5}：34/32未入选→plan不含英灵殿(20/21/22/24/26)与SCP(88)，0号图type1保留
+$mapinfo = Array('plsinfo' => Array(0 => '无月之影', 5 => '指挥中心'));
+$plan = get_map_npc_plan();
+$has_valhalla = false;
+foreach(Array(20,21,22,24,26) as $vt) if(isset($plan[$vt])) $has_valhalla = true;
+check('图级NPC:未入选图不入plan(英灵殿缺席)', !$has_valhalla && !isset($plan[88]));
+check('图级NPC:入选图照常入plan(0号图红暮type1)', isset($plan[1]) && $plan[1]['pls'] == 0 && $plan[1]['num'] >= 1);
+// mapinfo未初始化（旧测试/工具上下文）：不过滤保持全量plan兼容（34图npc字段进plan）
+$mapinfo = Array();
+$plan_full = get_map_npc_plan();
+$has_valhalla_full = false;
+foreach(Array(20,21,22,24,26) as $vt) if(isset($plan_full[$vt])) $has_valhalla_full = true;
+check('图级NPC:mapinfo未设时全量plan兼容(英灵殿在plan)', $has_valhalla_full || isset($plan_full[88]));
+// spawn_npc_all固定pls：开局目标图未入选改跳过（原回退随机会撒图）；运行时spawn_npc的回退保留不动
+$nsrc = file_get_contents(GAME_ROOT.'./include/game/npcdict.func.php');
+$p_sna = strpos($nsrc, 'function spawn_npc_all');
+$sna_seg = substr($nsrc, $p_sna, 5000);
+$p_fix = strpos($sna_seg, "if(\$npc['pls'] < 35 && !isset(\$mapinfo['plsinfo'][\$npc['pls']])) continue;");
+$p_rand = strpos($sna_seg, "= rand_npc_pls(false);");
+check('图级NPC:固定分支为continue非rand_npc_pls', $p_sna !== false && $p_fix !== false && $p_rand === false);
+
 // ── 结果 ──
 echo $fail ? "\n*** {$fail} FAILURES ***\n" : "\nALL PASSED\n";
 exit($fail ? 1 : 0);

@@ -137,6 +137,10 @@
 - 每图item/npc字段（非99池）本来就只刷本局图，无需改
 - 测试：`test_room_mode.php` 第6c节（sim_npc_pls双模式行为+rs_game分支顺序）；
   `test_init_pool.php` 用例5修正（type1走map_plan而非全局init池，历史遗留）
+- **图级NPC跟随图修复**（`npcdict.func.php:55`/`:374`）：`get_map_npc_plan`遍历全量$maps时
+  按本局plsinfo过滤——未入选图（英灵殿34/SCP32）的图级NPC不入plan→不刷；
+  spawn_npc_all固定pls开局落废图由"回退随机撒本局"改跳过（运行时召唤spawn_npc的回退保留）；
+  mapinfo未初始化的旧上下文不过滤保持全量plan兼容。测试第6e节
 
 #### 2.6 房间私有resource副本（gameresource_room_N）✅ 已实现（2026-09-04）
 - **建房派生**：`roommng_create_new_room`→`roommng_spawn_room_resource($roomId,$mode)`——
