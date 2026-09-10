@@ -20,3 +20,5 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: ./ # Adjust path to your server's root web folder
+          protocol: ftps # Change to ftps if host requires SSL/TLS
+          security: loose # Bypasses self-signed certificate errors
