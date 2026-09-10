@@ -10,7 +10,7 @@ jobs:
     name: Sync Files
     runs-on: ubuntu-latest
     steps:
-      - name: 🚚 Get latest code
+      - name: 🚚 Get latest code 1
         uses: actions/checkout@v4
 
       - name: 📂 Sync files to FTP
