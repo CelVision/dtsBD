@@ -6,66 +6,24 @@ if(!defined('IN_GAME')) exit('Access Denied');
 //
 // 索引方式：spawn_npc($typeId, $npcName, $num, ...)
 // 数据来源：$npcdict (npcdict_1.php) + $npc_evolve (进化关系映射)
-// 刷新配置：pls/num 已从辞典移出，由下方 $npc_spawn_config 管理
+// 刷新配置：$npc_spawn_config / $npc_sub_pls 迁至 gameresource（gamedata/cache/gameresource_1.php 文末）
+// 地图分支 'npc' 字段双语义：扁平 Array(typeId,...)=引用标注（数量查全局config，兼容旧数据）；
+// 结构化 Array(typeId => num)=图级固定刷新（数量直接由地图分支定义，试点：88 SCP→图32）；99段为全图随机池
 
-// ── 刷新配置 ──────────────────────────────────────────
-// 从 npc_1.php / addnpc_1.php 父类提取，typeId 级别的 spawn 参数
-// init = 开局刷新(rs_game mode&8)，add = 动态召唤(addnpc)
-// pls: 0=无月之影, 34=禁区, 99=随机, 具体数字=固定地点, array=多地择一, null=按sub配置
-$npc_spawn_config = array(
-	'init' => array(
-		1  => array('num' => 1,   'pls' => 0),
-		14 => array('num' => 3,   'pls' => 99),
-		15 => array('num' => 0,   'pls' => 99),  // 不刷新，仅addnpc
-		19 => array('num' => 0,   'pls' => 0),   // 不刷新，仅addnpc
-		20 => array('num' => 10,  'pls' => 34),
-		21 => array('num' => 5,   'pls' => 34),
-		22 => array('num' => 2,   'pls' => 34),
-		24 => array('num' => 3,   'pls' => 34),
-		26 => array('num' => 1,   'pls' => 34),
-		88 => array('num' => 4,   'pls' => 32),
-		90 => array('num' => 280, 'pls' => 99),
-		91 => array('num' => 1,   'pls' => 99),
-		92 => array('num' => 100, 'pls' => null, 'exclude' => array('✦真实的火种')), // sub有各自pls，✦真实的火种不参与开局刷新
-	),
-	'add' => array(
-		1  => array('num' => 1,   'pls' => 0),
-		2  => array('num' => 16,  'pls' => 99),
-		4  => array('num' => 1,   'pls' => 33),
-		5  => array('num' => 2,   'pls' => 99),
-		6  => array('num' => 1,   'pls' => 99),
-		7  => array('num' => 3,   'pls' => 99),
-		9  => array('num' => 1,   'pls' => 0),
-		11 => array('num' => 6,   'pls' => 99),
-		12 => array('num' => 1,   'pls' => 99),
-		13 => array('num' => 3,   'pls' => 99),
-		15 => array('num' => 1,   'pls' => 99),
-		19 => array('num' => 1,   'pls' => 0),
-		25 => array('num' => 0,   'pls' => 99),
-		89 => array('num' => 1,   'pls' => 99),
-		90 => array('num' => 1,   'pls' => 99),
-		99 => array('num' => 1,   'pls' => 99),  // 迷之搬运工：仅通过addnpc生成
-		92 => array('num' => 100, 'pls' => 99),
-	),
-);
-
-// sub级别pls覆盖（typeId 92篝火：每个sub有固定刷新位置）
-$npc_sub_pls = array(
-	92 => array(
-		'✦覆唱的篝火' => array(2, 15),
-		'✦爱恋的埋火' => array(3, 22),
-		'✦怜悯的永火' => array(18, 23),
-		'✦执念的残火' => array(20, 24),
-		'✦希望的焰火' => array(12, 29),
-	),
-);
-
-// 导出到全局作用域（include_once 在函数内时变量不会自动进入全局）
-$GLOBALS['npc_spawn_config'] = $npc_spawn_config;
-$GLOBALS['npc_sub_pls'] = $npc_sub_pls;
+// 懒加载刷新配置（数据在 gameresource；任意调用上下文可用）
+function load_npc_spawn_data() {
+	if(isset($GLOBALS['npc_spawn_config']) && isset($GLOBALS['npc_sub_pls'])) return;
+	global $gamecfg;
+	// gameresource 同时定义 $maps / $npc_spawn_config / $npc_sub_pls
+	include config('gameresource', $gamecfg);
+	$GLOBALS['npc_spawn_config'] = $npc_spawn_config;
+	$GLOBALS['npc_sub_pls'] = $npc_sub_pls;
+	if(!isset($GLOBALS['maps'])) $GLOBALS['maps'] = $maps;
+}
 
 // 获取typeId的spawn配置
 function get_npc_spawn_config($type, $mode = 'init') {
+	load_npc_spawn_data();
 	if(isset($GLOBALS['npc_spawn_config'][$mode][$type])) {
 		return $GLOBALS['npc_spawn_config'][$mode][$type];
 	}
@@ -74,10 +32,37 @@ function get_npc_spawn_config($type, $mode = 'init') {
 
 // 获取sub级别pls覆盖
 function get_npc_sub_pls($type, $name) {
+	load_npc_spawn_data();
 	if(isset($GLOBALS['npc_sub_pls'][$type][$name])) {
 		return $GLOBALS['npc_sub_pls'][$type][$name];
 	}
 	return null;
+}
+
+// 地图分支npc字段结构化（typeId=>num）→ 图级固定刷新计划（试点：88 SCP→图32）
+// 扁平 Array(typeId,...) 不入计划，继续走全局 $npc_spawn_config['init']（兼容旧数据）
+// 注：同一type配在多图时后者覆盖前者（当前语义：固定刷新type↔图一一对应）
+function get_map_npc_plan() {
+	global $mapid,$mapinfo;
+	load_npc_spawn_data();
+	if(empty($GLOBALS['maps']) || !is_array($GLOBALS['maps'])) return array();
+	$plan = array();
+	foreach($GLOBALS['maps'] as $mid => $branches) {
+		if($mid == 99 || !is_array($branches)) continue; // 99池：随机散布类走全局config
+		// 本局图集已定时（rs_game后）：未入选图的图级NPC不入计划——图级内容跟随图
+		// （快速模式英灵殿34/SCP32等缺席时这些NPC不刷；否则会被"落废图回退随机"撒到本局各图）
+		// mapinfo未初始化的上下文（旧测试/工具）不过滤，保持全量plan兼容
+		if(!empty($mapinfo['plsinfo']) && !isset($mapinfo['plsinfo'][$mid])) continue;
+		$bid = (isset($mapid[$mid]) && isset($branches[$mapid[$mid]])) ? intval($mapid[$mid]) : 0;
+		if(!isset($branches[$bid]['npc']) || !is_array($branches[$bid]['npc'])) continue;
+		$narr = $branches[$bid]['npc'];
+		$keys = array_keys($narr);
+		if(empty($keys) || $keys === range(0, count($keys) - 1)) continue; // 扁平引用
+		foreach($narr as $type => $num) {
+			$plan[intval($type)] = array('num' => intval($num), 'pls' => intval($mid), 'exclude' => array());
+		}
+	}
+	return $plan;
 }
 
 // 加载NPC辞典（单例缓存）
@@ -108,6 +93,21 @@ function get_npcdict_data($type, $name) {
 	return $d['dict'][$type][$name];
 }
 
+// 开局刷新池 — 还原原版 npc_1.php 语义：
+// 同组内优先取 sub 来源（原 npc_1.php 条目）；纯 asub 组（如92种火）回退用全部 asub 条目；
+// esub（进化目标）与同组内的 asub（addnpc专属召唤，如type1的强版红暮）不参与开局刷新
+function get_npc_init_pool($type) {
+	$d = get_npcdict();
+	if(!isset($d['dict'][$type])) return array();
+	$sub_names = $asub_names = array();
+	foreach($d['dict'][$type] as $name => $data) {
+		$src = isset($data['source']) ? $data['source'] : 'sub';
+		if($src == 'sub') $sub_names[] = $name;
+		elseif($src == 'asub') $asub_names[] = $name;
+	}
+	return !empty($sub_names) ? $sub_names : $asub_names;
+}
+
 // 统一spawn函数 — 替代 addnpc()
 // 参数与 addnpc() 对齐，$sub 数字下标改为 $name 字符串
 function spawn_npc($type, $name, $num = 1, $time = 0, $anpcdata = NULL, $pls_override = NULL) {
@@ -116,7 +116,6 @@ function spawn_npc($type, $name, $num = 1, $time = 0, $anpcdata = NULL, $pls_ove
 	include_once GAME_ROOT."./include/game/clubslct.func.php";
 
 	$time = $time == 0 ? $now : $time;
-	$plsnum = sizeof($mapinfo['plsinfo']);
 
 	$npcdata = get_npcdict_data($type, $name);
 	if(!$npcdata) {
@@ -149,13 +148,15 @@ function spawn_npc($type, $name, $num = 1, $time = 0, $anpcdata = NULL, $pls_ove
 			$npc['pls'] = $pls_override;
 		} else {
 			$sub_pls = get_npc_sub_pls($type, $name);
-			if($sub_pls !== null) {
+			if(is_array($sub_pls)) $sub_pls = array_values(array_intersect($sub_pls, array_keys($mapinfo['plsinfo'])));
+			if(!empty($sub_pls)) {
 				$npc['pls'] = $sub_pls[array_rand($sub_pls)];
 			} else {
 				$cfg = get_npc_spawn_config($type, 'add');
 				$cfg_pls = $cfg['pls'];
 				if(is_array($cfg_pls)) {
-					$npc['pls'] = $cfg_pls[array_rand($cfg_pls)];
+					$t_pls = array_values(array_intersect($cfg_pls, array_keys($mapinfo['plsinfo'])));
+					$npc['pls'] = !empty($t_pls) ? $t_pls[array_rand($t_pls)] : rand_npc_pls(false);
 				} elseif($cfg_pls === 99 || $cfg_pls === null) {
 					$areaarr = array_slice($arealist, $areanum + 1);
 					if(empty($areaarr)) {
@@ -171,7 +172,9 @@ function spawn_npc($type, $name, $num = 1, $time = 0, $anpcdata = NULL, $pls_ove
 						}
 					}
 				} else {
-					$npc['pls'] = $cfg_pls;
+					// 'name:地图名' 寻靶（免写死坐标，地图数据改名/重排id自动跟随）；其余按字面值固定；落到本局未入选标准图时回退随机
+					$npc['pls'] = resolve_npc_target_pls($cfg_pls);
+					if($npc['pls'] < 35 && !isset($mapinfo['plsinfo'][$npc['pls']])) $npc['pls'] = rand_npc_pls(false);
 				}
 			}
 		}
@@ -221,6 +224,32 @@ function spawn_npc($type, $name, $num = 1, $time = 0, $anpcdata = NULL, $pls_ove
 	return;
 }
 
+// 位置寻靶：'name:地图名' → 按本局选中分支的 plsinfo 匹配图id（地图id重排/分支改名自动跟随，免写死坐标）
+// 匹配不到（改名/删除/未填充分支）时回退全图随机（与 pls=99 同语义）
+function resolve_npc_target_pls($pls) {
+	global $arealist, $areanum, $mapid, $log;
+	if(is_string($pls) && strpos($pls, 'name:') === 0) {
+		$tname = trim(substr($pls, 5));
+		load_npc_spawn_data();
+		if(is_array($GLOBALS['maps'])) {
+			foreach($GLOBALS['maps'] as $mid => $branches) {
+				if($mid == 99 || !is_array($branches)) continue;
+				$bid = (isset($mapid[$mid]) && isset($branches[$mapid[$mid]])) ? intval($mapid[$mid]) : 0;
+				if(isset($branches[$bid]['plsinfo']) && $branches[$bid]['plsinfo'] === $tname) return intval($mid);
+			}
+		}
+		// 寻靶失败：回退随机并提示（不中断召唤流程）
+		$areaarr = array_slice($arealist, $areanum + 1);
+		if(!empty($areaarr)) {
+				if(isset($log) && $log !== '') $log .= '但预定目标区域似乎并不存在于这个世界，召唤偏离了预定地点……<br>';
+				shuffle($areaarr);
+				return $areaarr[0];
+		}
+		return 0;
+	}
+	return $pls;
+}
+
 // 随机spawn — 从某个typeId下随机选一个NPC生成
 // 用于电掣召唤仪等随机召唤场景
 function spawn_npc_random($type, $num = 1, $time = 0, $anpcdata = NULL, $pls_override = NULL) {
@@ -230,11 +259,40 @@ function spawn_npc_random($type, $num = 1, $time = 0, $anpcdata = NULL, $pls_ove
 	return spawn_npc($type, $name, $num, $time, $anpcdata, $pls_override);
 }
 
+// 随机落点：本局图池排除norandnpc（+躲避类另避deepzone）后随机（池差集，无死循环，等价原do-while分布）
+function rand_npc_pls($avoiddeep = false) {
+	global $mapinfo,$deepzones,$norandnpc_pls;
+	$keys = array_keys($mapinfo['plsinfo']);
+	$pool = array_diff($keys, $norandnpc_pls);
+	if($avoiddeep) $pool = array_diff($pool, $deepzones);
+	if(empty($pool)) $pool = $keys;
+	return $pool[array_rand($pool)];
+}
+
+// 全图模拟落点（开局批量刷新专用）：“刷到完整大地图再摘出到本局”——全量模拟池随机
+// （npc/npcdeep按躲避类型，排除norandom_npc/+deepzone），落点不在本局的返回NULL=丢弃该NPC
+// （保持每图NPC密度与全量一致；全量模式模拟池=全集无丢弃；运行时召唤请用 rand_npc_pls）
+// 快速模式：改为“平摊”——总量保持，落点直接随机本局图池（不模拟全量、不丢弃），每图密度上升适应短局
+function sim_npc_pls($avoiddeep = false) {
+	global $gamevars,$mapinfo,$deepzones,$norandnpc_pls,$gamecfg;
+	if($gamecfg == 2) return rand_npc_pls($avoiddeep);
+	$key = $avoiddeep ? 'npcdeep' : 'npc';
+	if(!empty($gamevars['sim_full_pls'][$key])) {
+		$sim_pool = $gamevars['sim_full_pls'][$key];
+	} else {
+		$sim_pool = array_values(array_diff(array_keys($mapinfo['plsinfo']), $norandnpc_pls));
+		if($avoiddeep) $sim_pool = array_values(array_diff($sim_pool, $deepzones));
+	}
+	if(empty($sim_pool)) $sim_pool = array_keys($mapinfo['plsinfo']);
+	$pls = $sim_pool[array_rand($sim_pool)];
+	return isset($mapinfo['plsinfo'][$pls]) ? $pls : NULL;
+}
+
 // 开局批量刷新 — 替代 rs_game() mode&8 的NPC初始化逻辑
-// num/pls 从 $npc_spawn_config['init'] 读取，sub级pls从 $npc_sub_pls 读取
+// num/pls 从 gameresource 的 $npc_spawn_config['init'] 读取，sub级pls从 $npc_sub_pls 读取
 function spawn_npc_all($time = 0) {
 	global $now,$db,$gtablepre,$tablepre,$log,$mapinfo,$typeinfo,$arealist,$areanum,$gamecfg;
-	global $hidding_typelist,$deepzones;
+	global $hidding_typelist,$deepzones,$norandnpc_pls;
 	include_once GAME_ROOT."./include/game/clubslct.func.php";
 
 	$time = $time == 0 ? $now : $time;
@@ -244,11 +302,14 @@ function spawn_npc_all($time = 0) {
 	// 清空旧NPC
 	$db->query("DELETE FROM {$tablepre}players WHERE type>0");
 
+	// 地图分支结构化npc（typeId=>num）优先于全局init配置（图级固定刷新，试点：88 SCP→图32）
+	$map_plan = get_map_npc_plan();
 
 	foreach($d['dict'] as $type => $npcs) {
-		$names = array_keys($npcs);
-		// 从 spawn 配置读取 typeId 级别的 num 和 pls
-		$cfg = get_npc_spawn_config($type, 'init');
+		// 开局刷新池（sub优先/纯asub组回退/排除esub进化目标，见 get_npc_init_pool）
+		$names = get_npc_init_pool($type);
+		// 从 spawn 配置读取 typeId 级别的 num 和 pls（地图结构化npc优先）
+		$cfg = isset($map_plan[$type]) ? $map_plan[$type] : get_npc_spawn_config($type, 'init');
 		// 排除不参与开局刷新的NPC
 		$exclude = isset($cfg['exclude']) ? $cfg['exclude'] : array();
 		if(!empty($exclude)) {
@@ -292,26 +353,25 @@ function spawn_npc_all($time = 0) {
 			if(!empty($npc['club'])) changeclub($npc['club'], $npc);
 			if(!empty($npc['clubskill']) || !empty($npc['clubskillpara'])) customtclubskill($npc);
 
-			// 位置：优先 sub_pls配置 > spawn_config('init') > 随机
+			// 位置：优先 sub_pls配置 > spawn_config('init') > 随机；候选均限制在本局地图集合内（快速模式废图不落点）
 			$sub_pls = get_npc_sub_pls($type, $name);
-			if($sub_pls !== null) {
+			if(is_array($sub_pls)) $sub_pls = array_values(array_intersect($sub_pls, array_keys($mapinfo['plsinfo'])));
+			if(!empty($sub_pls)) {
 				$npc['pls'] = $sub_pls[array_rand($sub_pls)];
 			} elseif(is_array($cfg_pls)) {
-				$npc['pls'] = $cfg_pls[array_rand($cfg_pls)];
+				$t_pls = array_values(array_intersect($cfg_pls, array_keys($mapinfo['plsinfo'])));
+				$npc['pls'] = !empty($t_pls) ? $t_pls[array_rand($t_pls)] : rand_npc_pls(in_array($npc['type'], $hidding_typelist));
 			} elseif($cfg_pls === 99 || $cfg_pls === null) {
-				// 随机区域
-				if(in_array($npc['type'], $hidding_typelist)) {
-					do {
-						$rpls = rand(1, $plsnum - 1);
-					} while(in_array($rpls, $deepzones));
-				} else {
-					do {
-						$rpls = rand(1, $plsnum - 1);
-					} while($rpls == 34);
-				}
-				$npc['pls'] = $rpls;
+				// 随机区域：模拟全量大地图随机+摘出到本局（每图NPC密度与全量一致）；躲避类另避deepzone；落废图丢弃该NPC
+				$spls = sim_npc_pls(in_array($npc['type'], $hidding_typelist));
+				if($spls === NULL) continue;
+				$npc['pls'] = $spls;
 			} else {
-				$npc['pls'] = $cfg_pls;
+				// 'name:地图名' 寻靶（免写死坐标，地图数据改名/重排id自动跟随）；其余按字面值固定；
+				// 开局固定刷新：目标图未入选本局→不刷（图级内容跟随图）；
+				// 运行时召唤的落废图回退随机在 spawn_npc add 路径，语义不同不共用
+				$npc['pls'] = resolve_npc_target_pls($cfg_pls);
+				if($npc['pls'] < 35 && !isset($mapinfo['plsinfo'][$npc['pls']])) continue;
 			}
 
 			$npc['state'] = 0;

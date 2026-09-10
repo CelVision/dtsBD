@@ -2030,11 +2030,15 @@ function itemuse($itmn,&$data=NULL) {
 				itemget($data);
 			}
 		}elseif ($itm == '『G.A.M.E.O.V.E.R』') {
-			//global $url;
-			$state = 6;
-			$url = 'end.php';
-			include_once GAME_ROOT . './include/system.func.php';
-			gameover ( $now, 'end7', $name );
+			if($gamecfg == 2) {
+				//快速模式仅"解除锁定"结局；幻境解离链（C.H.A.O.S→三卡）与三女主无关，需单独拒绝
+				$log .= '虚拟幻境的出口并不认可这张卡片……<br><span class="yellow">（快速模式没有这个结局）</span><br>';
+			} else {
+				$state = 6;
+				$url = 'end.php';
+				include_once GAME_ROOT . './include/system.func.php';
+				gameover ( $now, 'end7', $name );
+			}
 		}elseif ($itm == '杏仁豆腐的ID卡') {
 			include_once GAME_ROOT . './include/system.func.php';
 			$duelstate = duel($now,$itm);

@@ -4,7 +4,7 @@ define('CURSCRIPT', 'help');
 
 require './include/common.inc.php';
 
-$mapitemfile = config('mapitemresource',$gamecfg);
+$mapitemfile = config('gameresource',$gamecfg);
 $writefile = GAME_ROOT.TPLDIR.'/itemhelp.htm';
 
 if(filemtime($mapitemfile) > filemtime($writefile))
@@ -20,16 +20,17 @@ if(filemtime($mapitemfile) > filemtime($writefile))
 			<td class=\"b1\"><span>刷新时间与数量</span></td>
 		</tr>
 		";
-	global $mapitems;
+	global $maps;
 	include $mapitemfile;
 	//登记非功能性地点信息时合并隐藏地点
 	foreach($hplsinfo as $hgroup=>$hpls) $mapinfo['plsinfo'] += $hpls;
-	//遍历所有地图和分支，显示全部可能出现的物品
-	foreach($mapitems as $imap => $branches)
+	//遍历所有地图和分支，显示全部可能出现的物品（item数据已合入mapresource）
+	foreach($maps as $imap => $branches)
 	{
-		foreach($branches as $ibranch => $itemlist)
+		foreach($branches as $ibranch => $branch)
 		{
-			foreach($itemlist as $item)
+			if(empty($branch['item'])) continue;
+			foreach($branch['item'] as $item)
 			{
 				list($iarea,$inum,$iname,$ikind,$ieff,$ista,$iskind) = $item;
 				if ($imap==99) $mixhelpinfo.="<tr><td class=\"b3\" height=20px><span>全图随机</span></td>\n"; else $mixhelpinfo.="<tr><td class=\"b3\" height=20px><span>{$mapinfo['plsinfo'][$imap]}</span></td>\n";

@@ -20,7 +20,6 @@ function check_can_move($pls,$pgroup,$moveto)
 		$log .= "不能重复移动。<br>";
 		return 0;
 	}
-	$plsnum = sizeof($mapinfo['plsinfo']);
 	if(!isset($mapinfo['plsinfo'][$pls]) && isset($hplsinfo[$pgroup]))
 	{
 		//玩家位于隐藏地点组内，不能通过常规移动方式回到标准地点，也不能移动到其他隐藏地点组
@@ -32,8 +31,8 @@ function check_can_move($pls,$pgroup,$moveto)
 	}
 	else
 	{
-		//玩家位于标准地点组内
-		if((!array_key_exists($moveto,$mapinfo['plsinfo']))||($moveto == 'main')||($moveto < 0 )||($moveto >= $plsnum))
+		//玩家位于标准地点组内（快速模式图id非连续，合法性以plsinfo键集为准）
+		if((!array_key_exists($moveto,$mapinfo['plsinfo']))||($moveto == 'main')||($moveto < 0 ))
 		{
 			$log .= '请选择正确的移动地点。<br>';
 			return 0;
@@ -59,8 +58,6 @@ function move($moveto = 99,&$data=NULL)
 	}
 	extract($data,EXTR_REFS);
 
-	$plsnum = sizeof($mapinfo['plsinfo']);
-
 	if($pls == $moveto)
 	{
 		$log .= '相同地点，不需要移动。<br>';
@@ -79,8 +76,8 @@ function move($moveto = 99,&$data=NULL)
 	}
 	else
 	{
-		//玩家位于标准地点组内
-		if((!array_key_exists($moveto,$mapinfo['plsinfo']))||($moveto == 'main')||($moveto < 0 )||($moveto >= $plsnum))
+		//玩家位于标准地点组内（快速模式图id非连续，合法性以plsinfo键集为准）
+		if((!array_key_exists($moveto,$mapinfo['plsinfo']))||($moveto == 'main')||($moveto < 0 ))
 		{
 			$log .= '请选择正确的移动地点。<br>';
 			return;

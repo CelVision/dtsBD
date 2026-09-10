@@ -1,0 +1,218 @@
+<div class="subtitle">$lang['resourcemng'] <span class="grey" style="font-size:9pt;">$resource_short</span></div>
+<div><span class="yellow">$cmd_info</span></div>
+<form method="get" style="display:inline;">
+<input type="hidden" name="mode" value="resourcemng">
+<span class="yellow">编辑目标：</span>
+<select name="rescfg">
+	<option value="">当前生效（跟随房间/模式）</option>
+	<option value="mode_1">模式1主文件（常规）</option>
+	<option value="mode_2">模式2主文件（快速）</option>
+	<!--{loop $room_res_opts $o}-->
+	<option value="{$o['val']}"{$o['sel']}>{$o['label']}</option>
+	<!--{/loop}-->
+</select>
+<input type="submit" value="切换">
+</form>
+<br>
+<form method="post" name="resourcemng">
+<input type="hidden" name="mode" value="resourcemng">
+<input type="hidden" id="command" name="command" value="list">
+<input type="submit" value="从备份恢复（撤销最近一次保存）" onclick="if(!confirm('确定用保存前的备份覆盖当前配置文件吗？')){return false;}$('command').value='restore'">
+<input type="submit" value="保存所有" onclick="if(!confirm('将下方批量打标区的分类一次性写入全部地图（各图全部分支统一设置），确定？')){return false;}$('command').value='savetags'">
+<br><br>
+<span class="yellow">批量打标（图级，保存时统一写入该图全部分支）：</span>
+<table class="admin" style="text-align:left;">
+	<tr>
+		<td style="vertical-align:top;padding:0;">
+			<table class="admin">
+				<tr><th width="45">编号</th><th>名字</th><th width="180">分类tag</th></tr>
+				<!--{loop $tagq_l $tq}-->
+				<tr>
+					<td>{$tq['mid']}</td>
+					<td>{$tq['name']}</td>
+					<td><select name="tagmap[{$tq['mid']}]">
+						<option value="">未分类</option>
+						<option value="growth"{$tq['sel_growth']}>growth（一类·发育）</option>
+						<option value="equip"{$tq['sel_equip']}>equip（二类·装备）</option>
+						<option value="shop"{$tq['sel_shop']}>shop（商店）</option>
+						<option value="seed"{$tq['sel_seed']}>seed（种火）</option>
+					</select></td>
+				</tr>
+				<!--{/loop}-->
+			</table>
+		</td>
+		<td style="vertical-align:top;padding:0;">
+			<table class="admin">
+				<tr><th width="45">编号</th><th>名字</th><th width="180">分类tag</th></tr>
+				<!--{loop $tagq_r $tq}-->
+				<tr>
+					<td>{$tq['mid']}</td>
+					<td>{$tq['name']}</td>
+					<td><select name="tagmap[{$tq['mid']}]">
+						<option value="">未分类</option>
+						<option value="growth"{$tq['sel_growth']}>growth（一类·发育）</option>
+						<option value="equip"{$tq['sel_equip']}>equip（二类·装备）</option>
+						<option value="shop"{$tq['sel_shop']}>shop（商店）</option>
+						<option value="seed"{$tq['sel_seed']}>seed（种火）</option>
+					</select></td>
+				</tr>
+				<!--{/loop}-->
+			</table>
+		</td>
+	</tr>
+</table>
+<br>
+<table class="admin">
+	<tr>
+		<th width="55">编号</th>
+		<th>名字</th>
+		<th width="55">坐标</th>
+		<th width="40">环境</th>
+		<th width="50">物品数</th>
+		<th width="90">NPC</th>
+		<th width="100">操作</th>
+	</tr>
+	<!--{loop $mapdisplay $r}-->
+	<tr>
+		<td>{$r['id']}</td>
+		<td>{$r['name']}</td>
+		<td>{$r['xy']}</td>
+		<td>{$r['indoor']}</td>
+		<td>{$r['itemcnt']}</td>
+		<td>{$r['npclist']}</td>
+		<td><input type="submit" value="{$r['btnword']}" onclick="$('command').value='{$r['btncmd']}'"></td>
+	</tr>
+	<!--{if $r['expanded']}-->
+	<tr>
+		<td colspan="7" style="padding:8px;">
+			<input type="hidden" name="mid" value="{$r['mid']}">
+			<input type="hidden" name="bi" value="{$r['bi']}">
+			<table class="admin">
+				<tr>
+					<th width="70">地图名</th>
+					<td><input size="16" type="text" name="plsinfo" value="{$r['f_plsinfo']}" maxlength="40"></td>
+					<th width="40">坐标</th>
+					<td><input size="8" type="text" name="xyinfo" value="{$r['f_xyinfo']}" maxlength="10"></td>
+					<th width="50">背景图</th>
+					<td><input size="4" type="text" name="bg" value="{$r['f_bg']}" maxlength="4"></td>
+					<th width="40">环境</th>
+					<td><select name="isindoor"><option value="0"{$r['sel0']}>室内</option><option value="1"{$r['sel1']}>室外</option></select></td>
+				</tr>
+				<tr>
+					<th>NPC类别</th>
+					<td><input size="12" type="text" name="npcword" value="{$r['f_npcword']}" maxlength="60">（typeId 或 typeId:数量，逗号分隔；带数量=图级固定刷新）</td>
+					<th>特殊事件</th>
+					<td><input size="14" type="text" name="events" value="{$r['f_eventsword']}" maxlength="100">（逗号分隔，留空为无）</td>
+					<th>特性flags</th>
+					<td><input size="30" type="text" name="flagsword" value="{$r['f_flagsword']}" maxlength="90"></td>
+				</tr>
+				<tr>
+					<th>flags说明</th>
+					<td colspan="7" class="grey">可用值：deepzone（NPC避开的危险图）、norandom_drop（全图随机池物品不落入）、norandom_npc（全图随机池NPC不刷入）、noesc_tp（躲禁区被动传送不去）、lockbranch（开局锁死基础分支不轮换）；逗号分隔，留空为无。开局提取进mapinfo，仅对新开局生效</td>
+				</tr>
+				<tr>
+					<th>分类tag</th>
+					<td><select name="tagword">
+						<option value="">未分类</option>
+						<option value="growth"{$r['tagsel_growth']}>growth（一类·发育）</option>
+						<option value="equip"{$r['tagsel_equip']}>equip（二类·装备）</option>
+						<option value="shop"{$r['tagsel_shop']}>shop（商店）</option>
+						<option value="seed"{$r['tagsel_seed']}>seed（种火）</option>
+					</select></td>
+					<th>tag说明</th>
+					<td colspan="5" class="grey">growth=一类发育 / equip=二类装备 / shop=商店 / seed=种火；同一图各分支标同一类（轮换不改变地图用途）。快速模式按类抽图时使用，不影响常规模式行为</td>
+				</tr>
+				<tr>
+					<th>简介</th>
+					<td colspan="7"><textarea name="areainfo" cols="90" rows="3">{$r['f_areainfo']}</textarea></td>
+				</tr>
+			</table>
+			<br>物品掉落表（勾选“删”后保存即可删除该行，可新增行；多页时翻页后保存不影响其他页）：
+			<table class="admin">
+				<tr>
+					<th width="50">禁</th>
+					<th width="55">数量</th>
+					<th>物品名</th>
+					<th width="55">类别</th>
+					<th width="55">效果</th>
+					<th width="55">耐久</th>
+					<th width="55">属性</th>
+					<th width="30">删</th>
+				</tr>
+				<tbody id="item_body">
+				{$r['itemrows']}
+				</tbody>
+			</table>
+			<input type="hidden" name="itemcount" id="itemcount" value="{$r['itemcount']}">
+			{$r['pagebtns']}
+			<input type="button" value="新增物品行" onclick="add_item_row()">
+			<input type="submit" value="保存修改" onclick="$('command').value='submit'">
+		</td>
+	</tr>
+	<!--{/if}-->
+	<!--{/loop}-->
+</table>
+<br>
+<table class="admin">
+	<tr>
+		<th colspan="3" class="tdtitle">全图随机刷新池（编号99，非地图：物品与NPC在全地图随机刷新）</th>
+	</tr>
+	<tr>
+		<th width="60">物品数</th>
+		<th>NPC类别</th>
+		<th width="100">操作</th>
+	</tr>
+	<tr>
+		<td>{$randpool['itemcnt']}</td>
+		<td>{$randpool['npclist']}</td>
+		<td><input type="submit" value="{$randpool['btnword']}" onclick="$('command').value='{$randpool['btncmd']}'"></td>
+	</tr>
+	<!--{if $randpool['expanded']}-->
+	<tr>
+		<td colspan="3" style="padding:8px;">
+			<input type="hidden" name="mid" value="99">
+			<input type="hidden" name="bi" value="{$randpool['bi']}">
+			NPC类别：<input size="14" type="text" name="npcword" value="{$randpool['f_npcword']}" maxlength="60">（typeId，逗号分隔）
+			<br>物品掉落表（勾选“删”后保存即可删除该行，可新增行；分页提交，翻页后保存不影响其他页）：
+			<table class="admin">
+				<tr>
+					<th width="50">禁</th>
+					<th width="55">数量</th>
+					<th>物品名</th>
+					<th width="55">类别</th>
+					<th width="55">效果</th>
+					<th width="55">耐久</th>
+					<th width="55">属性</th>
+					<th width="30">删</th>
+				</tr>
+				<tbody id="item_body">
+				{$randpool['itemrows']}
+				</tbody>
+			</table>
+			<input type="hidden" name="itemcount" id="itemcount" value="{$randpool['itemcount']}">
+			{$randpool['pagebtns']}
+			<input type="button" value="新增物品行" onclick="add_item_row()">
+			<input type="submit" value="保存修改" onclick="$('command').value='submit'">
+		</td>
+	</tr>
+	<!--{/if}-->
+</table>
+</form>
+<script type="text/javascript">
+function add_item_row(){
+	var tb = document.getElementById('item_body');
+	var ic = document.getElementById('itemcount');
+	if(!tb || !ic) return;
+	var seq = parseInt(ic.value);
+	if(isNaN(seq) || seq >= 5000) return;
+	var tr = tb.insertRow(-1);
+	var cols = ['area','num','name','kind','eff','sta','sk'];
+	var sizes = [6,6,16,6,6,6,6];
+	for(var i = 0; i < 7; i++){
+		var td = tr.insertCell(-1);
+		td.innerHTML = '<input size="'+sizes[i]+'" type="text" name="item_'+seq+'_'+cols[i]+'" value="">';
+	}
+	tr.insertCell(-1).innerHTML = '<input type="checkbox" name="itemdel_'+seq+'" value="1">';
+	ic.value = seq + 1;
+}
+</script>

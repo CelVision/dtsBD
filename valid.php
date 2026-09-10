@@ -98,7 +98,8 @@ if($mode == 'enter') {
 	$pls = 0;
 	$killnum = 0;
 	$lvl = 0;
-	$exp = $areanum * 20;
+	//快速模式(gamecfg=2)入场起点相当于普通模式2禁进入（+2禁经验）；普通模式不变
+	$exp = ($areanum + ($gamecfg == 2 ? 2 : 0)) * 20;
 	$money = 20;
 	$rage = 0;
 	$pose = 3;

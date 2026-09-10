@@ -6,8 +6,8 @@ error_reporting(E_ERROR | E_WARNING | E_PARSE);
 define('IN_GAME', TRUE);
 define('GAME_ROOT', '');
 
-if(version_compare(PHP_VERSION, '4.3.0', '<')) {
-	exit('PHP version must >= 4.3.0!');
+if(version_compare(PHP_VERSION, '7.3.0', '<')) {
+	exit('PHP version must >= 7.3.0! (game code uses PHP 7.3+ syntax)');
 }
 
 $action = $_POST['action'] ? $_POST['action'] : $_GET['action'];
@@ -495,7 +495,6 @@ if(!$action) {
 				$bbsurl = setconfig($_POST['bbsurl']);
 				$gameurl = setconfig($_POST['gameurl']);
 				$moveut = (int)$_POST['moveut'];
-        $salt = bin2hex(random_bytes(16)); 
 
 				$fp = fopen('./config.inc.php', 'r');
 				$configfile = fread($fp, filesize('./config.inc.php'));
@@ -510,8 +509,6 @@ if(!$action) {
 				$configfile = preg_replace("/[$]bbsurl\s*\=\s*[\"'].*?[\"'];/is", "\$bbsurl = '$bbsurl';", $configfile);
 				$configfile = preg_replace("/[$]gameurl\s*\=\s*[\"'].*?[\"'];/is", "\$gameurl = '$gameurl';", $configfile);
 				$configfile = preg_replace("/[$]moveut\s*\=\s*-?[0-9]+;/is", "\$moveut = $moveut;", $configfile);
-        $configfile = preg_replace("/[$]salt\s*\=\s*[\"'].*?[\"'];/is", "\$salt = '$salt';", $configfile);
-    
 
 				$fp = fopen('./config.inc.php', 'w');
 				fwrite($fp, trim($configfile));
@@ -657,8 +654,8 @@ if(!$action) {
 	$curr_os = PHP_OS;
 
 	$curr_php_version = PHP_VERSION;
-  if(version_compare($curr_php_version, '4.3.0', '<')) {
-		$msg .= "<font color=\"#FF0000\">$lang[php_version_430]</font>\t";
+  if(version_compare($curr_php_version, '7.3.0', '<')) {
+		$msg .= "<font color=\"#FF0000\">$lang[php_version_730]</font>\t";
 		$quit = TRUE;
 	}
 
@@ -680,7 +677,7 @@ if(!$action) {
 
 	$curr_disk_space = intval(diskfreespace('.') / (1024 * 1024)).'M';
 
-	if(dir_writeable('./templates')) {
+	if(dir_writeable('./gamedata/templates')) {
 		$curr_tpl_writeable = $lang['writeable'];
 	} else {
 		$curr_tpl_writeable = $lang['unwriteable'];

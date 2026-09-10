@@ -1,7 +1,94 @@
-<?php
+﻿<?php
 
 if(!defined('IN_GAME')) {
 	exit('Access Denied');
+}
+
+// 快速模式抽图：按gameresource的$game_maps_mode配方（tag池抽取+entry锁定+exclude排除）
+// 返回本局入选图id列表；无配置/空=全量（常规模式行为不变）
+function rs_game_active_maps($maps, $mode_cfg = null)
+{
+	$allmaps = Array();
+	foreach($maps as $mid => $branches) { if($mid != 99) $allmaps[] = $mid; }
+
+	if(empty($mode_cfg) || !is_array($mode_cfg)) return $allmaps;
+
+	$entry = isset($mode_cfg['entry']) ? (int)$mode_cfg['entry'] : 0;
+	$exclude = isset($mode_cfg['exclude']) && is_array($mode_cfg['exclude']) ? $mode_cfg['exclude'] : Array();
+	$pick = isset($mode_cfg['pick']) && is_array($mode_cfg['pick']) ? $mode_cfg['pick'] : Array();
+
+	// 图级tag池（约定同图各分支同类，取首个非空分支tag）
+	$pools = Array();
+	foreach($allmaps as $mid) {
+		if($mid == $entry || in_array($mid, $exclude)) continue;
+		$tag = '';
+		foreach($maps[$mid] as $b) { if(!empty($b['tag'])) { $tag = $b['tag']; break; } }
+		if($tag !== '') $pools[$tag][] = $mid;
+	}
+
+	$active = Array($entry);
+	foreach($pick as $tag => $num) {
+		if(empty($pools[$tag])) continue;
+		$num = min((int)$num, count($pools[$tag]));
+		if($num <= 0) continue;
+		$picked = $num == 1 ? Array(array_rand(array_flip($pools[$tag]))) : array_rand(array_flip($pools[$tag]), $num);
+		foreach($picked as $pmid) $active[] = (int)$pmid;
+	}
+	return $active;
+}
+
+// 开局地图组装：activelist推导→分支轮换（lockbranch数据驱动锁分支）→mapinfo构建
+// 从rs_game mode&2抽出为独立函数（可测）；plsinfo等键=入选图id（快速模式为非连续子集）
+function rs_game_build_mapinfo($maps, $mode_cfg = null)
+{
+	$activelist = rs_game_active_maps($maps, $mode_cfg);
+	$entry = $activelist[0];
+
+	//生成出一个0和1组成的array，每个位置对应一个地图（entry不轮换）
+	$mapid = Array($entry => 0);
+	foreach($activelist as $id) {
+		if($id == $entry) continue;
+		$mapid[$id] = rand(0,99) > 50 ? 1 : 0;
+	}
+	//lockbranch地图（如英灵殿/雏菊）锁死基础分支不轮换，特性见gameresource地图flags
+	foreach($activelist as $id) {
+		if(isset($maps[$id][0]['flags']) && in_array('lockbranch', $maps[$id][0]['flags'])) $mapid[$id] = 0;
+	}
+	//tada!地图序号表：全字段按图id提取；选中分支缺失/空名时兜底0号分支
+	$mapinfo = Array();
+	foreach($activelist as $id) {
+		if (!isset($maps[$id][$mapid[$id]]) || empty($maps[$id][$mapid[$id]]['plsinfo']))
+		{//32个地图我还没有构思好,有替代就用，没有就用0
+			$mapid[$id] = 0;
+		}
+		$mapinfo['plsinfo'][$id] = $maps[$id][$mapid[$id]]['plsinfo'];
+		$mapinfo['xyinfo'][$id] = $maps[$id][$mapid[$id]]['xyinfo'];
+		$mapinfo['areainfo'][$id] = $maps[$id][$mapid[$id]]['areainfo'];
+		$mapinfo['events'][$id] = $maps[$id][$mapid[$id]]['events'];
+		$mapinfo['bg'][$id] = $maps[$id][$mapid[$id]]['bg'];
+		$mapinfo['isindoor'][$id] = $maps[$id][$mapid[$id]]['isindoor'];
+		//提取选中分支的特性flags（分支级差异：轮换到不同分支可有不同特性）
+		$mapinfo['flags'][$id] = isset($maps[$id][$mapid[$id]]['flags']) ? $maps[$id][$mapid[$id]]['flags'] : Array();
+	}
+	return Array($mapid, $mapinfo);
+}
+
+// 全量模拟落点池：快速模式随机落点“刷到完整大地图再摘出到本局”的数据基础
+// 三池：drop(排norandom_drop) / npc(排norandom_npc) / npcdeep(npc池再排deepzone)
+// 排除按全量图各分支flags并集（保守：任一分支带排除flag即不入池）；
+// 全量模式时本局=全集，摘出无丢弃，行为与原模式一致
+function rs_game_sim_pools($maps)
+{
+	$drop = Array(); $npc = Array(); $deep = Array();
+	foreach($maps as $mid => $branches) {
+		if($mid == 99) continue;
+		$flg = Array();
+		foreach($branches as $b) { if(!empty($b['flags'])) $flg = array_unique(array_merge($flg, $b['flags'])); }
+		if(!in_array('norandom_drop', $flg)) $drop[] = $mid;
+		if(!in_array('norandom_npc', $flg)) $npc[] = $mid;
+		if(in_array('deepzone', $flg)) $deep[] = $mid;
+	}
+	return Array('drop'=>$drop, 'npc'=>$npc, 'npcdeep'=>array_values(array_diff($npc, $deep)));
 }
 
 function rs_game($mode = 0) {
@@ -47,50 +134,15 @@ function rs_game($mode = 0) {
 	}
 	if ($mode & 2) {
 
-//生成地图(吐槽一下循环调用)
-		include config('mapresource',$gamecfg);
-		global $mapid, $mapinfo,$mapid;
-		//生成出一个0和1组成的array，每个位置对应一个地图
-		$mapid = Array();
-		//无月，雏菊，英灵不动他
-		$mapid[0] = 0;
-		$mapid[33] = 0;
-		$mapid[34] = 0;
-		for($id=1 ; $id<33 ; $id++)
-			{
-				$dice = rand(0,99);
-				if($dice > 50){
-					$mapid[$id] = 1;
-				}else{
-					$mapid[$id] = 0;
-				} ;
-				
-			}
-		//tada!地图序号表
-		/*$mapinfo = Array();
-		for($id=0 ; $id<35 ; $id++)
-			{
-				if (isset($maps[$id][$mapid[$id]]))
-				{
-					$mapinfo[$id] = $maps[$id][$mapid[$id]];
-				}else{//32个地图我还没有构思好,有替代就用，没有就用0号
-					$mapinfo[$id] = $maps[$id][$mapid[0]];
-				}
-			}*/
-		for($id=0 ; $id<35 ; $id++)
-			{
-				if (!isset($maps[$id][$mapid[$id]]) || empty($maps[$id][$mapid[$id]]['plsinfo']))
-				{//32个地图我还没有构思好,有替代就用，没有就用0
-					$mapid[$id] = 0;
-				}
-				// 
-				$mapinfo['plsinfo'][$id] = $maps[$id][$mapid[$id]]['plsinfo'];
-				$mapinfo['xyinfo'][$id] = $maps[$id][$mapid[$id]]['xyinfo'];
-				$mapinfo['areainfo'][$id] = $maps[$id][$mapid[$id]]['areainfo'];
-				$mapinfo['events'][$id] = $maps[$id][$mapid[$id]]['events'];
-			$mapinfo['bg'][$id] = $maps[$id][$mapid[$id]]['bg'];
-				$mapinfo['isindoor'][$id] = $maps[$id][$mapid[$id]]['isindoor'];
-			}
+//生成地图（快速模式按$game_maps_mode抽图，详见 rs_game_active_maps / rs_game_build_mapinfo）
+		include config('gameresource',$gamecfg);
+		global $mapid, $mapinfo, $gamevars;
+		list($mapid, $mapinfo) = rs_game_build_mapinfo($maps, isset($game_maps_mode) ? $game_maps_mode : null);
+		//新mapinfo生成后立即派生全局排除表，供同调用的mode&16（物品刷新）使用
+		derive_map_flaglists();
+		//全量模拟池存入gamevars（持久化）：快速模式随机落点“刷到完整大地图再摘出到本局”用
+		//（99池物品落图 mode&16 / 开局NPC随机 sim_npc_pls；全量模式模拟池=全集，无丢弃）
+		$gamevars['sim_full_pls'] = rs_game_sim_pools($maps);
 		save_gameinfo();
 //地图生成部分结束
 /*      留个纪念吧
@@ -251,7 +303,9 @@ save_gameinfo();
 		list($sec,$min,$hour,$day,$month,$year,$wday,$yday,$isdst) = localtime($starttime);
 		$areatime = (ceil(($starttime + $areahour*60)/600))*600;//$areahour已改为按分钟计算，ceil是为了让禁区分钟为10的倍数
 		$plsnum = sizeof($mapinfo['plsinfo']);
-		$arealist = range(1,$plsnum-1);
+		//arealist：本局全部图id随机排序，入口图(0)固定队首；快速模式为非连续键集，从mapinfo派生
+		$arealist = array_keys($mapinfo['plsinfo']);
+		$arealist = array_values(array_diff($arealist, Array(0)));
 		shuffle($arealist);
 		array_unshift($arealist,0);
 		//file_put_contents( GAME_ROOT.'./debug.txt',var_export($arealist,1),FILE_APPEND);
@@ -274,100 +328,12 @@ save_gameinfo();
 	if ($mode & 8) {
 		//echo " - NPC初始化 - ";
 		include_once GAME_ROOT."./include/game/npcdict.func.php";
-		global $npc_spawn_config, $npc_sub_pls;
 		spawn_npc_all($now);
-		/* OLD CODE PRESERVED FOR ROLLBACK
-		$db->query("DELETE FROM {$tablepre}players WHERE type>0 ");
-		include config('npctemplate',$gamecfg);
-		include_once GAME_ROOT."./include/game/clubslct.func.php";
-		//$typenum = sizeof($typeinfo);
-		$plsnum = sizeof($mapinfo['plsinfo']);
-		$npcqry = '';
-		
-		//for($i = 1; $i < $typenum; $i++) {
-		foreach ($npcinfo as $i => $npcs){
-			if(!empty($npcs)) {
-				if (sizeof($npcs['sub'])>$npcs['num'])shuffle($npcs['sub']);
-				for($j = 1; $j <= $npcs['num']; $j++) {
-					$npc = array_merge($npcinit,$npcs);
-					//$npc = $npcinfo[$i];
-					$npc['type'] = $i;
-					$npc['endtime'] = $now;
-					$npc['sNo'] = $j;
-					
-					//if(($npc['mode'] == 1)&&($npc['num'] <= $npc['sub'])){
-					//	$npc = array_merge($npc,$npc[$j]);
-					//} elseif($npc['mode'] == 2) {
-					//	$k = rand(1,$npc['sub']);
-					//	$npc = array_merge($npc,$npc[$k]);
-					//} else {
-					//	$npc = array_merge($npc,$npc[1]);
-					//}
-					
-					
-					$subnum = sizeof($npc['sub']);
-					$sub = $j % $subnum;
-					$npc = array_merge($npc,$npc['sub'][$sub]);
-					$npc['hp'] = $npc['mhp'];
-					$npc['sp'] = $npc['msp'];
-					$npc['exp'] = round(2*$npc['lvl']*$GLOBALS['baseexp']);
-					foreach(Array('p','k','g','c','d','f') as $val){
-						if(!$npc['w'.$val]){
-							$npc['w'.$val] = $npc['skill'];
-						}
-					}
-					//$npc['wp'] = $npc['wk'] = $npc['wg'] = $npc['wc'] = $npc['wd'] = $npc['wf'] = $npc['skill'];
-					if($npc['gd'] == 'r'){$npc['gd'] = rand(0,1) ? 'm':'f';}
-
-					# NPC称号技能初始化
-					if(!empty($npc['club'])) changeclub($npc['club'],$npc);
-					# NPC自定义技能初始化
-					if(!empty($npc['clubskill']) || !empty($npc['clubskillpara'])) customtclubskill($npc);
-					
-					# 初始化NPC所在位置
-					global $hidding_typelist,$deepzones;
-
-					# 位置信息为数组时，在两地中择一随机刷新
-					if(is_array($npc['pls'])) $npc['pls'] = $npc['pls'][array_rand($npc['pls'])];
-
-					# 女主不会刷新在危险区域
-					if(in_array($npc['type'],$hidding_typelist))
-					{
-						do{
-							$rpls=rand(1,$plsnum-1);
-						}while (in_array($rpls,$deepzones));
-					}
-					else 
-					{
-						do{$rpls=rand(1,$plsnum-1);}while ($rpls==34);
-					}
-					if($npc['pls'] == 99)
-					{
-						$npc['pls'] = $rpls; 
-					}
-
-					$npc['state'] = 0;
-					$npc=player_format_with_db_structure($npc);
-					$db->array_insert("{$tablepre}players", $npc);
-					//$npcqry .= "('".$npc['name']."','".$npc['pass']."','".$npc['type']."','".$npc['endtime']."','".$npc['gd']."','".$npc['sNo']."','".$npc['icon']."','".$npc['club']."','".$npc['rp']."','".$npc['hp']."','".$npc['mhp']."','".$npc['sp']."','".$npc['msp']."','".$npc['att']."','".$npc['def']."','".$npc['pls']."','".$npc['lvl']."','".$npc['exp']."','".$npc['money']."','".$npc['bid']."','".$npc['inf']."','".$npc['rage']."','".$npc['pose']."','".$npc['tactic']."','".$npc['killnum']."','".$npc['state']."','".$npc['wp']."','".$npc['wk']."','".$npc['wg']."','".$npc['wc']."','".$npc['wd']."','".$npc['wf']."','".$npc['teamID']."','".$npc['teamPass']."','".$npc['wep']."','".$npc['wepk']."','".$npc['wepe']."','".$npc['weps']."','".$npc['arb']."','".$npc['arbk']."','".$npc['arbe']."','".$npc['arbs']."','".$npc['arh']."','".$npc['arhk']."','".$npc['arhe']."','".$npc['arhs']."','".$npc['ara']."','".$npc['arak']."','".$npc['arae']."','".$npc['aras']."','".$npc['arf']."','".$npc['arfk']."','".$npc['arfe']."','".$npc['arfs']."','".$npc['art']."','".$npc['artk']."','".$npc['arte']."','".$npc['arts']."','".$npc['itm0']."','".$npc['itmk0']."','".$npc['itme0']."','".$npc['itms0']."','".$npc['itm1']."','".$npc['itmk1']."','".$npc['itme1']."','".$npc['itms1']."','".$npc['itm2']."','".$npc['itmk2']."','".$npc['itme2']."','".$npc['itms2']."','".$npc['itm3']."','".$npc['itmk3']."','".$npc['itme3']."','".$npc['itms3']."','".$npc['itm4']."','".$npc['itmk4']."','".$npc['itme4']."','".$npc['itms4']."','".$npc['itm5']."','".$npc['itmk5']."','".$npc['itme5']."','".$npc['itms5']."','".$npc['itm6']."','".$npc['itmk6']."','".$npc['itme6']."','".$npc['itms6']."','".$npc['wepsk']."','".$npc['arbsk']."','".$npc['arhsk']."','".$npc['arask']."','".$npc['arfsk']."','".$npc['artsk']."','".$npc['itmsk0']."','".$npc['itmsk1']."','".$npc['itmsk2']."','".$npc['itmsk3']."','".$npc['itmsk4']."','".$npc['itmsk5']."','".$npc['itmsk6']."','".$npc['skills']."'),";
-					//$db->query("INSERT INTO {$tablepre}players (name,pass,type,endtime,gd,sNo,icon,club,hp,mhp,sp,msp,att,def,pls,lvl,`exp`,money,bid,inf,rage,pose,tactic,killnum,state,wp,wk,wg,wc,wd,wf,teamID,teamPass,wep,wepk,wepe,weps,arb,arbk,arbe,arbs,arh,arhk,arhe,arhs,ara,arak,arae,aras,arf,arfk,arfe,arfs,art,artk,arte,arts,itm0,itmk0,itme0,itms0,itm1,itmk1,itme1,itms1,itm2,itmk2,itme2,itms2,itm3,itmk3,itme3,itms3,itm4,itmk4,itme4,itms4,itm5,itmk5,itme5,itms5,wepsk,arbsk,arhsk,arask,arfsk,artsk,itmsk0,itmsk1,itmsk2,itmsk3,itmsk4,itmsk5) VALUES ('".$npc['name']."','".$npc['pass']."','".$npc['type']."','".$npc['endtime']."','".$npc['gd']."','".$npc['sNo']."','".$npc['icon']."','".$npc['club']."','".$npc['hp']."','".$npc['mhp']."','".$npc['sp']."','".$npc['msp']."','".$npc['att']."','".$npc['def']."','".$npc['pls']."','".$npc['lvl']."','".$npc['exp']."','".$npc['money']."','".$npc['bid']."','".$npc['inf']."','".$npc['rage']."','".$npc['pose']."','".$npc['tactic']."','".$npc['killnum']."','".$npc['death']."','".$npc['wp']."','".$npc['wk']."','".$npc['wg']."','".$npc['wc']."','".$npc['wd']."','".$npc['wf']."','".$npc['teamID']."','".$npc['teamPass']."','".$npc['wep']."','".$npc['wepk']."','".$npc['wepe']."','".$npc['weps']."','".$npc['arb']."','".$npc['arbk']."','".$npc['arbe']."','".$npc['arbs']."','".$npc['arh']."','".$npc['arhk']."','".$npc['arhe']."','".$npc['arhs']."','".$npc['ara']."','".$npc['arak']."','".$npc['arae']."','".$npc['aras']."','".$npc['arf']."','".$npc['arfk']."','".$npc['arfe']."','".$npc['arfs']."','".$npc['art']."','".$npc['artk']."','".$npc['arte']."','".$npc['arts']."','".$npc['itm0']."','".$npc['itmk0']."','".$npc['itme0']."','".$npc['itms0']."','".$npc['itm1']."','".$npc['itmk1']."','".$npc['itme1']."','".$npc['itms1']."','".$npc['itm2']."','".$npc['itmk2']."','".$npc['itme2']."','".$npc['itms2']."','".$npc['itm3']."','".$npc['itmk3']."','".$npc['itme3']."','".$npc['itms3']."','".$npc['itm4']."','".$npc['itmk4']."','".$npc['itme4']."','".$npc['itms4']."','".$npc['itm5']."','".$npc['itmk5']."','".$npc['itme5']."','".$npc['itms5']."','".$npc['wepsk']."','".$npc['arbsk']."','".$npc['arhsk']."','".$npc['arask']."','".$npc['arfsk']."','".$npc['artsk']."','".$npc['itmsk0']."','".$npc['itmsk1']."','".$npc['itmsk2']."','".$npc['itmsk3']."','".$npc['itmsk4']."','".$npc['itmsk5']."')");
-					unset($npc);
-				}
-			}
-		}
-		/*if(!empty($npcqry)){
-			$npcqry = "INSERT INTO {$tablepre}players (name,pass,type,endtime,gd,sNo,icon,club,rp,hp,mhp,sp,msp,att,def,pls,lvl,`exp`,money,bid,inf,rage,pose,tactic,killnum,state,wp,wk,wg,wc,wd,wf,teamID,teamPass,wep,wepk,wepe,weps,arb,arbk,arbe,arbs,arh,arhk,arhe,arhs,ara,arak,arae,aras,arf,arfk,arfe,arfs,art,artk,arte,arts,itm0,itmk0,itme0,itms0,itm1,itmk1,itme1,itms1,itm2,itmk2,itme2,itms2,itm3,itmk3,itme3,itms3,itm4,itmk4,itme4,itms4,itm5,itmk5,itme5,itms5,itm6,itmk6,itme6,itms6,wepsk,arbsk,arhsk,arask,arfsk,artsk,itmsk0,itmsk1,itmsk2,itmsk3,itmsk4,itmsk5,itmsk6,skills) VALUES ".substr($npcqry, 0, -1);
-			$db->query($npcqry);
-			unset($npcqry);
-		}*/
-
-		
 	}
 	if ($mode & 16) {
 		//echo " - 地图道具/陷阱初始化 - ";
 		//感谢 Martin1994 提供地图道具数据库化的源代码
-		global $gamevars;
-		$plsnum = sizeof($mapinfo['plsinfo']);
+		global $gamevars,$mapinfo,$noranddrop_pls;
 		$iqry = $tqry = '';
 //		if($gamestate == 0){
 //			global $checkstr;
@@ -380,15 +346,15 @@ save_gameinfo();
 
 
 
-//通过mapid分支选择对应地图的物品列表
-		global $mapid, $mapitems;
-		include config('mapitemresource',$gamecfg);
+//通过mapid分支选择对应地图的物品列表（item数据已合入gameresource）
+		global $mapid, $maps;
+		include config('gameresource',$gamecfg);
 		$an = $areanum ? ceil($areanum/$areaadd) : 0;
-		//遍历每个地图ID，根据$mapid选择分支
-		for($imap = 0; $imap < $plsnum; $imap++) {
+		//遍历本局每个地图ID（快速模式为非连续键集），根据$mapid选择分支
+		foreach(array_keys($mapinfo['plsinfo']) as $imap) {
 			$ibranch = isset($mapid[$imap]) ? $mapid[$imap] : 0;
-			if(!isset($mapitems[$imap][$ibranch])) continue;
-			foreach($mapitems[$imap][$ibranch] as $item) {
+			if(!isset($maps[$imap][$ibranch]['item'])) continue;
+			foreach($maps[$imap][$ibranch]['item'] as $item) {
 				list($iarea,$inum,$iname,$ikind,$ieff,$ista,$iskind) = $item;
 				if(($iarea == $an)||($iarea == 99)) {
 					//破灭之诗使用后不再刷新无月之影的煤气罐
@@ -404,13 +370,22 @@ save_gameinfo();
 			}
 		}
 		//处理全图随机掉落物品 (imap=99)
-		if(isset($mapitems[99][0])) {
-			foreach($mapitems[99][0] as $item) {
+		if(isset($maps[99][0]['item'])) {
+			//全图随机池落点：全量模式“刷到完整大地图再摘出到本局”——全量模拟池随机，落点不在本局的丢弃该实例
+			//（保持每图物品密度与全量一致；全量模式模拟池=全集无丢弃=行为不变；排除norandom_drop已含在模拟池）
+			//快速模式改“平摊”：总量保持，落点直接随机本局图池（不放回废图摘出，每图密度上升适应短局）
+			if($gamecfg == 2) {
+				$sim_pool = array_diff(array_keys($mapinfo['plsinfo']), $noranddrop_pls);
+			} else {
+				$sim_pool = !empty($gamevars['sim_full_pls']['drop']) ? $gamevars['sim_full_pls']['drop'] : array_diff(array_keys($mapinfo['plsinfo']), $noranddrop_pls);
+			}
+			if(empty($sim_pool)) $sim_pool = array_keys($mapinfo['plsinfo']);
+			foreach($maps[99][0]['item'] as $item) {
 				list($iarea,$inum,$iname,$ikind,$ieff,$ista,$iskind) = $item;
 				if(($iarea == $an)||($iarea == 99)) {
 					for($j = $inum; $j>0; $j--) {
-						$rmap = rand(1,$plsnum-1);
-						while ($rmap==34){$rmap = rand(1,$plsnum-1);}
+						$rmap = $sim_pool[array_rand($sim_pool)];
+						if(!isset($mapinfo['plsinfo'][$rmap])) continue;   // 摘出：落废图丢弃该实例
 						if(strpos($ikind,'TO')===0){
 							$tqry .= "('$iname', '$ikind','$ieff','$ista','$iskind','$rmap'),";
 						}else{
@@ -530,7 +505,7 @@ function rs_sttime() {
 function add_once_area($atime) {
 	//实际上GAMEOVER的判断是在common.inc.php里
 	global $db,$gtablepre,$tablepre,$now,$gamestate,$areaesc,$arealist,$areanum,$arealimit,$areaadd,$mapinfo,$weather,$hack,$validnum,$alivenum,$deathnum;
-	global $gamevars,$deepzones,$sentinel_typelist,$npc_away_from_deepzones;
+	global $gamevars,$deepzones,$sentinel_typelist,$npc_away_from_deepzones,$noesc_pls;
 	
 	if (($gamestate > 10)&&($now > $atime)) {
 		$plsnum = sizeof($mapinfo['plsinfo']) - 1;
@@ -589,7 +564,8 @@ function add_once_area($atime) {
 					addnews($endtime,"death$state",$sub['name'],$sub['type'],$deathpls);
 					$deathnum++;
 					} else {
-					do{$pls = $arealist[rand($areanum+1,$plsnum)];}while ($pls==34);
+					//玩家躲禁区传送排除noesc_tp地图（原：写死排34，防被动传送绕过英灵殿gate）
+					do{$pls = $arealist[rand($areanum+1,$plsnum)];}while (in_array($pls,$noesc_pls));
 					$db->query("UPDATE {$tablepre}players SET pls='$pls' WHERE pid=$pid ");
 					}
 				//躲避禁区判定
@@ -613,7 +589,7 @@ function add_once_area($atime) {
 					{
 					    do{
 							$pls = $arealist[rand($areanum+1,$plsnum)];
-						}while ($pls==34);
+						}while (in_array($pls,$noesc_pls));
 					}
 					$db->query("UPDATE {$tablepre}players SET pls='$pls' WHERE pid=$pid");
 				}
@@ -872,186 +848,12 @@ function addnpc($type,$sub,$num,$time = 0,$anpcdata = NULL,$pls_override = NULL)
 	// C4: 委托给新系统 addnpc_compat() -> spawn_npc()
 	include_once GAME_ROOT."./include/game/npcdict.func.php";
 	return addnpc_compat($type, $sub, $num, $time, $anpcdata, $pls_override);
-	/* OLD CODE PRESERVED FOR ROLLBACK
-	global $now,$db,$gtablepre,$tablepre,$log,$mapinfo,$typeinfo,$arealist,$areanum,$gamecfg;
-	global $hidding_typelist,$deepzones;
-	include_once GAME_ROOT."./include/game/clubslct.func.php";
-
-	$time = $time == 0 ? $now : $time;
-	$plsnum = sizeof($mapinfo['plsinfo']);
-	$npcinit = get_npcinit();
-	$anpcinfo = get_addnpcinfo();
-	$anpc_namelist = Array();
-	$anpc = array_merge($npcinit,$anpcinfo[$type]);
-	$anpc = array_merge($anpc,$anpc['sub'][$sub]);	
-	if(!$anpc){
-		return;
-	} else {
-		for($i=0;$i< $num;$i++)
-		{
-			$npc = $anpc;
-			$npc['type'] = $type;
-			$npc['endtime'] = $time;
-			$npc['exp'] = round(($npc['lvl']*2+1)*$GLOBALS['baseexp']);
-			$npc['sNo'] = $i;
-			$npc['hp'] = $npc['mhp'];
-			$npc['sp'] = $npc['msp'];
-			if(!isset($npc['state'])){$npc['state'] = 0;}
-			foreach(Array('p','k','g','c','d','f') as $val){
-				if(!$npc['w'.$val]){
-					$npc['w'.$val] = $npc['skill'];
-				}
-			}
-			//$npc['wp'] = $npc['wk'] = $npc['wg'] = $npc['wc'] = $npc['wd'] = $npc['wf'] = $npc['skill'];
-			if($npc['gd'] == 'r'){$npc['gd'] = rand(0,1) ? 'm':'f';}
-			
-			# 位置信息为数组时，在两地中择一随机刷新
-			if(is_array($npc['pls']))
-			{
-				$npc['pls'] = $npc['pls'][array_rand($npc['pls'])];
-			}
-			elseif($npc['pls'] == 99)
-			{
-				$areaarr = array_slice($arealist,$areanum+1);
-				if(empty($areaarr)){
-					$npc['pls'] = 0;
-				}else{
-					shuffle($areaarr);
-					//特定NPC不会生成在危险区域
-					$npc['pls'] = $areaarr[0];
-					if(in_array($npc['type'],$hidding_typelist))
-					{
-						while(in_array($npc['pls'],$deepzones))
-						{
-							shuffle($areaarr);
-							$npc['pls'] = $areaarr[0];
-						}
-					}
-				}
-				//$npc['pls'] = rand(1,$plsnum-1);
-			}	
-
-			# NPC称号技能初始化
-			if(!empty($npc['club'])) changeclub($npc['club'],$npc);
-			# NPC自定义技能初始化
-			if(!empty($npc['clubskill']) || !empty($npc['clubskillpara'])) customtclubskill($npc);
-
-			# 自定义数据不为空时，覆盖原本预设的NPC数据
-			if(!empty($anpcdata))
-			{
-				foreach($anpcdata as $adkey => $advalue)
-				{
-					# 暂时跳过一些复杂内容，特事特判
-					if(is_array($advalue)) continue;
-					$npc[$adkey] = $advalue;
-				}
-				# 自定义addnpc身上的社团参数，会覆盖原本预设的参数。
-				if(isset($anpcdata['clbstatus']))
-				{
-					foreach(Array('a','b','c','d','e') as $cbs)
-					{
-						if(isset($anpcdata['clbstatus'][$cbs])) $npc['clbstatus'.$cbs] = $anpcdata['clbstatus'][$cbs];
-					}
-				}
-				if(isset($anpcdata['clbpara']))
-				{
-					$npc['clbpara'] = is_array($npc['clbpara']) ? array_merge($npc['clbpara'],$anpcdata['clbpara']) : $anpcdata['clbpara'];
-				}
-			}
-			
-			# 对将要插入数据库的npc数组格式化，现在可以直接在npc配置文件里预设那些后添加的字段了。
-			$npc=player_format_with_db_structure($npc);
-			$db->array_insert("{$tablepre}players", $npc);
-			$summon_ids[] = $db->insert_id();
-			//获取新生成npc的pid。不知道高并发时会不会出BUG……呃……出BUG了再看看？但是出BUG了我也不会修啊！
-			$newsname=$typeinfo[$type].' '.$npc['name'];
-			if($num > 1)
-			{
-				$anpc_namelist[$newsname] += 1;
-			}
-			else
-			{
-				addnews($now, 'addnpc', $newsname);
-			}
-			unset($npc);
-		}
-	}
-	if($num > 1)
-	{
-		foreach($anpc_namelist as $aname => $anum)
-		{
-			addnews($now, 'addnpcs', $aname, $anum);
-		}
-		unset($anpc_namelist);
-	}
-	else 
-	{
-		return $summon_ids;
-	}
-	return;
-	*/
 }
 
 function evonpc($type,$name){
 	// C4: 委托给新系统 evolve_npc()
 	include_once GAME_ROOT."./include/game/npcdict.func.php";
 	return evolve_npc($type, $name);
-	/* OLD CODE PRESERVED FOR ROLLBACK
-	global $now,$db,$gtablepre,$tablepre,$log,$mapinfo,$typeinfo,$enpcinfo,$gamecfg;
-	if(!$type || !$name){return false;}
-	if(empty($enpcinfo)){
-		include config('npctemplate',$gamecfg);
-	}
-	if(!isset($enpcinfo[$type])){return false;}
-	$result = $db->query("SELECT * FROM {$tablepre}players WHERE type = '$type' AND name = '$name'");
-	$num = $db->num_rows($result);
-	if(!$num){return false;}	
-	if(!isset($enpcinfo[$type][$name])){return false;}
-	$npc=$enpcinfo[$type][$name];
-	$npc['hp'] = $npc['mhp'];
-	$npc['sp'] = $npc['msp'];
-	$npc['exp'] = round(($npc['lvl']*2+1)*$GLOBALS['baseexp']);
-	if(!isset($npc['state'])){$npc['state'] = 0;}
-	$npc['wp'] = $npc['wk'] = $npc['wg'] = $npc['wc'] = $npc['wd'] = $npc['wf'] = $npc['skill'];
-	unset($npc['skill']);
-	$qry = '';
-	# NPC进化后技能初始化
-	// 社团技能初始化
-	global $club_skillslist;
-	if(isset($club_skillslist[$npc['club']]))
-	{
-		if(empty($npc['clbpara'])) $npc['clbpara']['skill'] = Array();
-		$npc_csk = $club_skillslist[$npc['club']];
-		foreach($npc_csk as $sk) getclubskill($sk,$npc['clbpara']);
-	}
-	// 自定技能初始化
-	global $cskills;
-	if(!empty($npc['clubskill']))
-	{
-		foreach($npc['clubskill'] as $sk) getclubskill($sk,$npc['clbpara']);
-	}
-	// 自定技能参数初始化
-	if(!empty($npc['clubskillpara']))
-	{
-		foreach($npc['clubskillpara'] as $sk => $skarr)
-		{
-			foreach($skarr as $skpara => $skvalue) set_skillpara($sk,$skpara,$skvalue,$npc['clbpara']);
-		}
-	}
-	unset($npc['clubskill']);unset($npc['clubskillpara']);
-	# todo:整理下这堆烂摊子
-	$npc['clbpara'] = json_encode($npc['clbpara'],JSON_UNESCAPED_UNICODE);
-	//$npc = player_format_with_db_structure($npc);
-	foreach($npc as $key => $val){
-		$qry .= "$key = '{$val}',";
-	}
-	if(!empty($qry)){
-		$qry = substr($qry,0,-1);
-		$db->query( "UPDATE {$tablepre}players SET $qry WHERE type = '$type' AND name = '$name'" );
-	}
-		
-	return $npc;
-	*/
 }
 
 function antiAFK($timelimit = 0){

@@ -1,0 +1,45 @@
+<div class="subtitle">$lang['npcdictmng'] <span class="grey" style="font-size:9pt;">$dict_file</span></div>
+<div><span class="yellow">$cmd_info</span></div>
+<form method="post" name="npcdictmng">
+<input type="hidden" name="mode" value="npcdictmng">
+<input type="hidden" id="command" name="command" value="list">
+<input type="submit" value="从备份恢复（撤销最近一次保存）" onclick="if(!confirm('确定用保存前的备份覆盖当前配置文件吗？')){return false;}$('command').value='restore'">
+<table class="admin">
+	<tr>
+		<th width="40">编号</th>
+		<th>名字</th>
+		<th width="50">来源</th>
+		<th width="40">等级</th>
+		<th width="70">生命</th>
+		<th width="60">攻/防</th>
+		<th>武器</th>
+		<th width="100">操作</th>
+	</tr>
+	<!--{loop $npcdisplay $n $r}-->
+	<tr>
+		<td>{$r['type']}</td>
+		<td>{$r['name']}</td>
+		<td>{$r['source']}</td>
+		<td>{$r['lvl']}</td>
+		<td>{$r['mhp']}</td>
+		<td>{$r['ad']}</td>
+		<td>{$r['wep']}</td>
+		<td>
+			<input type="hidden" name="rtype_{$n}" value="{$r['type']}">
+			<input type="hidden" name="rname_{$n}" value="{$r['name_h']}">
+			<input type="submit" value="{$r['btnword']}" onclick="$('command').value='{$r['btncmd']}'">
+		</td>
+	</tr>
+	<!--{if $r['expanded']}-->
+	<tr>
+		<td colspan="8" style="padding:8px;">
+			<input type="hidden" name="typeId" value="{$r['type']}">
+			<input type="hidden" name="npcname" value="{$r['name_h']}">
+			<table class="admin">{$r['edittable']}</table>
+			<input type="submit" value="保存修改" onclick="$('command').value='submit'">
+		</td>
+	</tr>
+	<!--{/if}-->
+	<!--{/loop}-->
+</table>
+</form>

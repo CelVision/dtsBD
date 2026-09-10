@@ -1,0 +1,152 @@
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+
+{template header}
+
+
+<div class="subtitle">地图百科</div>
+
+<HR>
+<div align="left" style="text-align: left; PADDING-LEFT: 2em;PADDING-right: 2em">
+
+<p>游戏中各地区一览如下。表中整合了地图特性、基准遇敌率、特殊事件、简介、固定掉落物与固定刷新NPC。</p>
+<p><span class="yellow">部分地图存在两种随机形态，此处均已列出；实际游戏开局时会随机选择其中一种。标注「待补充」的分支形态尚未填写资料，对应位置留空。</span></p>
+<p><span class="grey">基准遇敌率为游戏常规阶段的数值（基础40% + 地图修正）；连斗阶段遇敌率+20%，死斗阶段+40%；遇敌率越低，道具发现率越高（未遭遇敌人时按70%的概率发现道具）。姿态、天气、社团技能另有修正，详见玩法介绍。</span></p>
+<p><span class="grey">地图特性：商店=可购买道具；安全箱=可存取道具；医院=可执行「静养」快速恢复。</span></p>
+<p><span class="lime">若只想查找合成表中某物品的掉落位置，可将鼠标停留在合成表中该物品上查看。</span></p>
+<p><a href="itemhelp.php"><u>&gt;&gt;点我查看按地点排序的掉落物品一览表&lt;&lt;</u></a></p>
+<br>
+
+<!--{loop $mapdisplay $k $md}-->
+<table border="1" cellspacing="0" cellpadding="0" valign="middle" width="100%">
+	<tr>
+		<td width="140" rowspan="2" valign="top" class="mapbgcell" style="background-image:url('$md['bgimg']');">
+			<div class="mapbgfill"></div>
+		</td>
+		<td>
+			<table border="1" cellspacing="0" cellpadding="0" width="100%" valign="middle">
+				<tr>
+					<td width="100px" align="center" class="b1">地图名称</td>
+					<td align="center" class="b3">
+						<!--{if $md['unfilled']}-->
+							<span class="grey">（待补充）</span>
+						<!--{else}-->
+							<span class="lime b">$md['title']</span>
+						<!--{/if}-->
+					</td>
+					<td width="100px" align="center" class="b1">分支形态</td>
+					<td align="center" class="b3">$md['branchlabel']</td>
+				</tr>
+				<tr>
+					<td align="center" class="b1">坐标</td>
+					<td align="center" class="b3"><!--{if $md['xy']}-->$md['xy']<!--{else}--><span class="grey">—</span><!--{/if}--></td>
+					<td align="center" class="b1">环境</td>
+					<td align="center" class="b3"><!--{if $md['indoor']}-->$md['indoor']<!--{else}--><span class="grey">—</span><!--{/if}--></td>
+				</tr>
+				<tr>
+					<td align="center" class="b1">地图特性</td>
+					<td align="center" class="b3"><!--{if $md['features']}--><span class="yellow">$md['features']</span><!--{else}--><span class="grey">—</span><!--{/if}--></td>
+					<td align="center" class="b1">基准遇敌率</td>
+					<td align="center" class="b3">$md['findword']</td>
+				</tr>
+				<tr>
+					<td align="center" class="b1">特殊事件</td>
+					<td align="center" class="b3" colspan="3"><!--{if $md['events']}-->$md['events']<!--{else}--><span class="grey">—</span><!--{/if}--></td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<table border="1" cellspacing="0" cellpadding="0" width="100%" valign="middle">
+				<tr>
+					<td width="140px" align="center" class="b1">简介</td>
+					<td class="b3" style="padding:4px;">
+						<!--{if $md['area']}-->$md['area']<!--{else}--><span class="grey">—</span><!--{/if}-->
+					</td>
+				</tr>
+				<tr>
+					<td align="center" class="b1">固定掉落物</td>
+					<td class="b3" style="padding:4px;">
+						<!--{if !empty($md['items'])}-->
+						<table cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+								<td class="b1" height=20px><span>刷新时间</span></td>
+								<td class="b1"><span>物品名称</span></td>
+								<td class="b1"><span>物品类型</span></td>
+								<td class="b1"><span>效/耐</span></td>
+								<td class="b1"><span>物品属性</span></td>
+								<td class="b1"><span>数量</span></td>
+							</tr>
+							<!--{loop $md['items'] $ik $it}-->
+							<tr>
+								<td class="b3"><span>$it['area']</span></td>
+								<td class="b3"><span>$it['name']</span></td>
+								<td class="b3"><span>$it['kind']</span></td>
+								<td class="b3"><span>$it['effsta']</span></td>
+								<td class="b3"><span>$it['sk']</span></td>
+								<td class="b3"><span>$it['num']</span></td>
+							</tr>
+							<!--{/loop}-->
+						</table>
+						<!--{else}-->
+						<span class="grey">—</span>
+						<!--{/if}-->
+					</td>
+				</tr>
+				<tr>
+					<td align="center" class="b1">固定刷新NPC</td>
+					<td class="b3" style="padding:4px;">
+						<!--{if $md['npcword']}-->
+							<span class="yellow">$md['npcword']</span> <span class="grey">（NPC详细资料见NPC图鉴）</span>
+						<!--{else}-->
+							<span class="grey">—</span>
+						<!--{/if}-->
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<br>
+<!--{/loop}-->
+
+<!--{if !empty($poolitems)}-->
+<p><span class="subtitle2">全图随机掉落</span></p>
+<p>以下物品不固定出现在某一地区，而是会在对应禁区阶段随机散落到全图各地：</p>
+<table>
+	<tr>
+		<td class="b1" height=20px><span>刷新时间</span></td>
+		<td class="b1"><span>物品名称</span></td>
+		<td class="b1"><span>物品类型</span></td>
+		<td class="b1"><span>效/耐</span></td>
+		<td class="b1"><span>物品属性</span></td>
+		<td class="b1"><span>数量</span></td>
+	</tr>
+	<!--{loop $poolitems $pk $pt}-->
+	<tr>
+		<td class="b3"><span>$pt['area']</span></td>
+		<td class="b3"><span>$pt['name']</span></td>
+		<td class="b3"><span>$pt['kind']</span></td>
+		<td class="b3"><span>$pt['effsta']</span></td>
+		<td class="b3"><span>$pt['sk']</span></td>
+		<td class="b3"><span>$pt['num']</span></td>
+	</tr>
+	<!--{/loop}-->
+</table>
+<br>
+<!--{/if}-->
+
+<!--{if !empty($randnpcword)}-->
+<p><span class="subtitle2">全图随机刷新NPC</span></p>
+<p>以下NPC开局时会散落在全图各地随机位置：</p>
+<!--{loop $randnpcword $rk $rw}-->
+<p><span class="yellow">$rw</span></p>
+<!--{/loop}-->
+<!--{/if}-->
+
+</div>
+
+{template footer}

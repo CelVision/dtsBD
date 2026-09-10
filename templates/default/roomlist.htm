@@ -2,18 +2,28 @@
 <span class="yellow b"><div id="roomerror" style="padding-bottom: 5px;"></div></span>
 <form method="post" name="roomact" onsubmit="return false;" >
 <input type="hidden" name="roomact" id="roomact" value="">
+<input type="hidden" name="roommode" id="roommode" value="1">
 
 <!--{eval $now_rooms = !empty($roomlist) ? count($roomlist) : 0;}-->
 	<span class="evergreen">当前房间列表（{$now_rooms}/{$max_rooms}） 
 <!--{if $now_rooms < $max_rooms && !$groomid && (!empty($cuser) && !empty($cpass))}-->
-	<input type="button" value="点击创建一个新的房间" onclick="$('roomact').value='create';postCmd('roomact','index.php');" >
+	<input type="button" value="点击创建一个新的房间" onclick="$('roommodebox').style.display = $('roommodebox').style.display == 'none' ? '' : 'none';">
+	<div id="roommodebox" style="display:none;padding:3px 0 3px 10px;">
+		<span class="yellow">请选择房间模式：</span><br>
+		<span tooltip2="完整地图列表，标准对局节奏">
+			<input type="button" value="常规模式" onclick="$('roomact').value='create';$('roommode').value='1';postCmd('roomact','index.php');" >
+		</span>
+		<span tooltip2="精简地图列表，更快的对局节奏">
+			<input type="button" value="快速模式" onclick="$('roomact').value='create';$('roommode').value='2';postCmd('roomact','index.php');" >
+		</span>
+	</div>
 <!--{/if}-->
 	<br>
 	<div style="height:5px;">&nbsp;</div>
 		<table CellSpacing=0 CellPadding=0 class="infotable">
 			<tr>
 				<td class="b1" width="60px">编号</td>
-				<!--<td class="b1" width="80px">游戏模式</td>-->
+				<td class="b1" width="80px">游戏模式</td>
 				<td class="b1" width="60px">状态</td>
 				<td class="b1" width="120px">创建者/房主</td>
 				<td class="b1" width="60px">人数</td>
@@ -26,7 +36,10 @@
 				<td class="b3" width="60px" height="30px">
 					$rkey
 				</td>
-				<!--<td class="b3" width="80px">游戏模式</td>-->
+				<!--{eval $rmodename = empty($roommodes[$rinfo['gamecfg']]) ? $roommodes[1] : $roommodes[$rinfo['gamecfg']];}-->
+				<td class="b3" width="80px">
+					$rmodename
+				</td>
 				<td class="b3" width="60px">
 					$gstate[$rinfo['gamestate']]
 				</td>

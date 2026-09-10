@@ -322,14 +322,15 @@ function get_item_place($which)
 	foreach($hplsinfo as $hgroup=>$hpls) $$plsinfo = array_merge($plsinfo,$hpls);
 	//获取某物品的获取方式，如刷新地点或商店是否有卖等
 	$result="";
-	global $mapitems;
-	include config('mapitemresource',$gamecfg);
-	//遍历所有地图和分支查找物品
-	foreach($mapitems as $imap => $branches)
+	global $maps;
+	include config('gameresource',$gamecfg);
+	//遍历所有地图和分支查找物品（item数据已合入gameresource）
+	foreach($maps as $imap => $branches)
 	{
-		foreach($branches as $ibranch => $itemlist)
+		foreach($branches as $ibranch => $branch)
 		{
-			foreach($itemlist as $item)
+			if(empty($branch['item'])) continue;
+			foreach($branch['item'] as $item)
 			{
 				list($iarea,$inum,$iname,$ikind,$ieff,$ista,$iskind) = $item;
 				if ($iname==$which)
@@ -453,40 +454,22 @@ function get_item_place($which)
 
 function get_item_npcdrop($which)
 {
-	include config('npctemplate',1);
+	include_once GAME_ROOT.'./include/game/npcdict.func.php';
+	$d = get_npcdict();
 
 	$result = '';
-	$nownpclist = $npcinfo;
-	foreach($enpcinfo as $ekey => $enpcs)
+	foreach($d['dict'] as $ntype => $npcs)
 	{
-		foreach($enpcs as $sname => $enpc)
+		foreach($npcs as $nname => $npc)
 		{
-			$nownpclist[$ekey]['sub'][$sname] = $enpc;
-		}
-	}
-	foreach($anpcinfo as $akey => $anpcs)
-	{
-		foreach($anpcs['sub'] as $aid => $anpc)
-		{
-			$nownpclist[$akey]['sub']['a'.$aid] = $anpc;
-		}
-	}
-	foreach($nownpclist as $ntype => $npcs)
-	{
-		foreach(array('wep','arb','arh','ara','arf','art','itm1','itm2','itm3','itm4','itm5','itm6') as $nipval)
-		{
-			if(!empty($npcs['sub'])) 
+			foreach(array('wep','arb','arh','ara','arf','art','itm1','itm2','itm3','itm4','itm5','itm6') as $nipval)
 			{
-				foreach($npcs['sub'] as $npc)
+				if(isset($npc[$nipval]) && ($which == $npc[$nipval]))
 				{
-					$npc = array_merge($npcs,$npc);
-					if(isset($npc[$nipval]) && ($which == $npc[$nipval]))
+					$nresult ="击败{$npc['name']}后拾取 \r";
+					if(strpos($result,$nresult)===false)
 					{
-						$nresult ="击败{$npc['name']}后拾取 \r";
-						if(strpos($result,$nresult)===false)
-						{
-							$result .= $nresult;
-						}
+						$result .= $nresult;
 					}
 				}
 			}

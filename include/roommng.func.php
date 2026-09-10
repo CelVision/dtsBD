@@ -34,6 +34,13 @@ function roommng_verify_db_game_structure()
 		echo "向game表中添加了字段groomownid<br>";
 	}
 
+	$result = $db->query("DESCRIBE {$gtablepre}game gamecfg");
+	if(!$db->num_rows($result))
+	{
+		$db->query("ALTER TABLE {$gtablepre}game ADD gamecfg tinyint(3) unsigned NOT NULL DEFAULT '1' AFTER groomownid");
+		echo "向game表中添加了字段gamecfg<br>";
+	}
+
 	$result = $db->query("DESCRIBE {$gtablepre}users u_templateid");
 	if(!$db->num_rows($result))
 	{
@@ -63,17 +70,46 @@ function roommng_verify_db_game_structure()
 	return;
 }
 
-# 创建一个新房间
-function roommng_create_new_room(&$udata)
+# 探测当前用户所在房间绑定的游戏配置号（game表gamecfg列）
+# 返回0=未登录/未进房/房间不存在（调用方保持默认1号配置）；返回N=房间模式号
+# 供common.inc.php在require config(...)系列加载之前调用，实现"进快速模式房间→全套配置按2号加载"
+# 副作用：没进房时置 $room_resolved_id=0，进房置房间号（供common.inc探测房间私有resource副本）
+function roommng_resolve_gamecfg($cuser)
+{
+	global $db,$gtablepre,$roommodes;
+	$GLOBALS['room_resolved_id'] = 0;
+
+	if(empty($cuser)) return 0;
+
+	$result = $db->query("SELECT roomid FROM {$gtablepre}users WHERE username='$cuser'");
+	if(!$db->num_rows($result)) return 0;
+	$roomid = $db->fetch_array($result)['roomid'];
+	if(empty($roomid)) return 0;
+
+	$result = $db->query("SELECT gamecfg FROM {$gtablepre}game WHERE groomid='$roomid'");
+	if(!$db->num_rows($result)) return 0;
+	$GLOBALS['room_resolved_id'] = (int)$roomid;
+	$roomcfg = (int)$db->fetch_array($result)['gamecfg'];
+
+	//未注册的配置号回退常规模式(1)
+	return isset($roommodes[$roomcfg]) ? $roomcfg : 1;
+}
+
+# 创建一个新房间（$roommode：房间游戏模式号，即游戏配置号，见system.php的$roommodes）
+function roommng_create_new_room(&$udata, $roommode = 1)
 {
 	global $db,$gtablepre,$now;
-	global $startmin,$max_rooms,$ip_max_rooms,$rerror;
+	global $startmin,$max_rooms,$ip_max_rooms,$rerror,$roommodes;
 
 	if(!empty($udata['roomid']))
 	{
 		$rerror = 'alreay_in_room';
 		return;
 	}
+
+	# 校验模式号：未注册的模式一律回退常规模式(1)
+	$roommode = (int)$roommode;
+	if(!isset($roommodes[$roommode])) $roommode = 1;
 
 	# 根据IP判断是否可新建房间
 	$ipresult = $db->query("SELECT roomid FROM {$gtablepre}users WHERE roomid>0 AND ip='{$udata['ip']}'");
@@ -107,9 +143,13 @@ function roommng_create_new_room(&$udata)
 	$result = $db->query("SELECT max(gamenum) AS max_value FROM {$gtablepre}game WHERE groomid>=0 ");
 	$new_gamenum = $db->fetch_array($result)['max_value'];
 
-	# 新建并初始化房间状态
+	# 新建并初始化房间状态（gamecfg：本房间绑定的游戏配置号/模式）
 	$starttime = $now + $startmin*5;
-	$db->query("INSERT INTO {$gtablepre}game (gamenum,groomid,groomownid,gamestate,starttime) VALUES ('$new_gamenum','$new_room_id','{$udata['username']}','0','$starttime')");
+	$db->query("INSERT INTO {$gtablepre}game (gamenum,groomid,groomownid,gamestate,starttime,gamecfg) VALUES ('$new_gamenum','$new_room_id','{$udata['username']}','0','$starttime','$roommode')");
+
+	# 派生房间私有resource副本（gameresource_room_{id}=模式主文件完整copy）：房主经resourcemng编辑副本，
+	# 不影响模式主文件/其他房间；关闭房间自动删除
+	roommng_spawn_room_resource($new_room_id, $roommode);
 
 	# 加入房间
 	roommng_join_room($new_room_id,$udata);
@@ -233,6 +273,21 @@ function roommng_close_own_room(&$udata)
 	return;
 }
 
+# 派生/重置房间私有resource副本（幂等：先删旧副本，防同号旧局异常残留污染新房间）
+# 源=模式主文件（直接拼路径不走config()，避免common.inc自动重建房间时被副本替换逻辑命中残留副本）
+function roommng_spawn_room_resource($roomid, $mode)
+{
+	$dst = GAME_ROOT."./gamedata/cache/gameresource_room_{$roomid}.php";
+	$src = GAME_ROOT."./gamedata/cache/gameresource_{$mode}.php";
+	if(!file_exists($src)) $src = GAME_ROOT."./gamedata/cache/gameresource_1.php";
+	$tag = '// ⚛ 房间私有resource副本 room='.$roomid.' mode='.$mode.' generated='.$GLOBALS['now'].'（编辑不影响模式主文件/其他房间；关闭房间自动删除；本行勿删）'."\n";
+	if(file_exists($dst)) @unlink($dst);
+	$content = readover($src);
+	writeover($dst, $tag.$content, 'w');
+	//writeover无返回值，以文件落盘+非空判定成功
+	return file_exists($dst) && filesize($dst) > 100;
+}
+
 # 强制解散指定房间
 function roommng_close_room($rkey,$adminlog = 0,$check_in_game = 0)
 {
@@ -260,6 +315,8 @@ function roommng_close_room($rkey,$adminlog = 0,$check_in_game = 0)
 		}
 		# 清空房间内玩家
 		if($gdata['groomnums']) $db->query("UPDATE {$gtablepre}users SET roomid=0 WHERE roomid='{$rkey}'");
+		# 删除房间私有resource副本
+		@unlink(GAME_ROOT."./gamedata/cache/gameresource_room_{$rkey}.php");
 		# 关闭房间
 		$db->query("DELETE FROM {$gtablepre}game WHERE groomid='{$rkey}'");
 		$cmd_info .= "已关闭房间 {$rkey} 号<br>";
