@@ -3,7 +3,7 @@ name: 🚀 Deploy Website via FTP
 on:
   push:
     branches:
-      - testversion # Triggers upload whenever you push to main
+      - main # Triggers upload whenever you push to main
 
 jobs:
   web-deploy:
